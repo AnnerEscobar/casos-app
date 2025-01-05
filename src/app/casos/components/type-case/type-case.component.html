@@ -1,0 +1,12 @@
+<div class="container-fluid min-w-48 ">
+  <mat-form-field class="w-96">
+    <mat-label>Selecciona el tipo de caso a registrar</mat-label>
+    <mat-select class="w-96">
+      @for (caso of casos; track caso) {
+      <mat-option [value]="caso.value">{{caso.viewValue}}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+2509
+6747

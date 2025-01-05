@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { AddCaseComponent } from "./casos/pages/add-case/add-case.component";
-import { TypeCaseComponent } from "./casos/components/type-case/type-case.component";
+import { DashboardCaseComponent } from "./casos/dashboard-case/dashboard-case.component";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, AddCaseComponent, TypeCaseComponent],
+  imports: [RouterOutlet, DashboardCaseComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
