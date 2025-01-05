@@ -29,7 +29,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
   templateUrl: './add-case-maltrato.component.html',
   styleUrl: './add-case-maltrato.component.css'
 })
-export class AddCaseMaltratoComponent {
+export default class AddCaseMaltratoComponent {
 
   foods = [
     {value: 'Informado', viewValue: 'Informado'},

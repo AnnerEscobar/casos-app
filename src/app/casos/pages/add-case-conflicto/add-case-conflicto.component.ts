@@ -31,7 +31,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './add-case-conflicto.component.html',
   styleUrl: './add-case-conflicto.component.css'
 })
-export class AddCaseConflictoComponent {
+export default class AddCaseConflictoComponent {
 
   foods = [
     { value: 'Informado', viewValue: 'Informado' },

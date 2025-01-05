@@ -32,7 +32,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './add-case-alerta.component.html',
   styleUrl: './add-case-alerta.component.css'
 })
-export class AddCaseAlertaComponent {
+export default class AddCaseAlertaComponent {
 
   foods = [
     {value: 'Informado', viewValue: 'Informado'},
