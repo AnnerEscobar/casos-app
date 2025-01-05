@@ -1,0 +1,155 @@
+<h1 class="text-3xl ml-7">Registro de caso --Conflicto--</h1>
+<form class="example-forme w-full p-2">
+  <p class="text ml-5">Identificadores del caso</p>
+
+  <div class="gap-4 p-5 grid grid-cols-1 md:grid-cols-2">
+
+    <mat-form-field class="w-full">
+      <mat-label>Numero de Caso (DEIC)</mat-label>
+      <input matInput placeholder="DEIC52-2025-01-02-01" value="">
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label>Numero de Caso (MP)</mat-label>
+      <input matInput placeholder="M0030-2025-100" value="">
+    </mat-form-field>
+
+  </div>
+
+
+<p class="text ml-5">Datos del Infractor</p>
+  <div class="gap-4 p-5 grid grid-cols-1 md:grid-cols-2">
+
+    <mat-form-field class="">
+      <mat-label>Nombre</mat-label>
+      <input matInput placeholder="Juan Daviz Gonzalez Mendez" value="">
+    </mat-form-field>
+
+    <mat-form-field class="">
+      <mat-label>Numero de CUI</mat-label>
+      <input matInput placeholder="3423-35413-2204" value="">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Fecha de Nacimiento</mat-label>
+      <input matInput [matDatepicker]="picker">
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field class="">
+      <mat-label>Direccion del hecho o desaparicion</mat-label>
+      <input matInput placeholder="5 avenida 6-34 zona 1, Guatemala" value="">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Estado de la Investigacion</mat-label>
+      <mat-select>
+        @for (food of foods; track food) {
+        <mat-option [value]="food.value">{{food.viewValue}}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+<!-- Sección para datos de víctimas -->
+<p class="text ml-5">Datos de las Víctimas</p>
+<div class="victimas-container p-5">
+  <div
+    *ngFor="let victima of victimas; let i = index"
+    class="gap-4 p-5 mb-5 grid grid-cols-1 md:grid-cols-2 border border-gray-300 rounded-lg"
+  >
+    <mat-form-field class="w-full">
+      <mat-label>Nombre de la Víctima</mat-label>
+      <input
+        matInput
+        placeholder="Nombre completo"
+        [(ngModel)]="victima.nombre"
+        name="nombreVictima-{{ i }}"
+      />
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label>Edad</mat-label>
+      <input
+        matInput
+        type="number"
+        placeholder="Edad en años"
+        [(ngModel)]="victima.edad"
+        name="edadVictima-{{ i }}"
+      />
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label>Direccion</mat-label>
+      <input
+        matInput
+        placeholder="Direccion de residencia"
+        [(ngModel)]="victima.direccion"
+        name="direccion-{{ i }}"
+      />
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label>Cui</mat-label>
+      <input
+        matInput
+        placeholder="Numero de cui"
+        [(ngModel)]="victima.cui"
+        name="cui-{{ i }}"
+      />
+    </mat-form-field>
+
+    <button
+      type="button"
+      (click)="eliminarVictima(i)"
+      class="col-span-full text-red-500 underline text-sm mt-2"
+    >
+      Eliminar esta víctima
+    </button>
+  </div>
+
+  <div class="text-center">
+    <button
+      type="button"
+      (click)="agregarVictima()"
+      class="px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-700"
+    >
+      Añadir Víctima
+    </button>
+  </div>
+</div>
+
+
+  <p class="text ml-5">Cargar archivo de investigacion</p>
+  <div class="file-upload-container p-5 mx-5 bg-gray-100 rounded-lg">
+    <label for="fileInput" class="file-upload-label">
+      <div class="flex items-center space-x-2 cursor-pointer">
+        <img
+          src="https://img.icons8.com/ios-glyphs/30/upload.png"
+          alt="Upload Icon"
+          class="h-6"
+        />
+        <span>Cargar Archivo</span>
+      </div>
+    </label>
+    <input
+      id="fileInput"
+      type="file"
+      class="file-input hidden"
+      (change)="onFileSelected($event)"
+    />
+    <div class="file-preview mt-3">
+      <p *ngIf="fileName">Archivo seleccionado: {{ fileName }}</p>
+      <p *ngIf="!fileName">No se ha seleccionado ningún archivo.</p>
+    </div>
+  </div>
+
+  <section class="p-2">
+    <div class="">
+      <button mat-flat-button class="w-full">Registrar Caso</button>
+    </div>
+  </section>
+
+</form>
