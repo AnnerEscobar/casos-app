@@ -22,6 +22,21 @@ export const routes: Routes = [
         loadComponent: () => import('./casos/pages/add-case-conflicto/add-case-conflicto.component')
       },
       {
+        path: 'estadisticas',
+        title: 'Estadisticas generales',
+        loadComponent: () => import('./dashboard/estadistics/estadistics.component')
+      },
+      {
+        path: 'Busquedas',
+        title: 'Busquedas',
+        loadComponent: () => import('./busquedas/search-profile/search-profile.component')
+      },
+      {
+        path: 'profile',
+        title: 'Perfil',
+        loadComponent: () => import('./busquedas/profile/profile.component')
+      },
+      {
         path: '', redirectTo: 'add-case-alerta', pathMatch: 'full'
       }
     ]

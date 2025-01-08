@@ -1,1 +1,21 @@
-<p>estadistics works!</p>
+<div class="grid gap-5 w-full h-full grid-rows-[auto_auto_1fr] grid-cols-1 p-5">
+
+<div class="w-full h-36 p-4 gap-5 grid grid-cols-2 md:grid-cols-6">
+  @for (tag of exps; track $index) {
+    <mat-card class="w-44 h-full">
+      <mat-card-header class="justify-center text-center">
+        <mat-card-subtitle>{{tag.tag}}</mat-card-subtitle>
+        <mat-card-title>{{tag.amount}}</mat-card-title>
+      </mat-card-header>
+    </mat-card>
+  }
+  </div>
+
+  <div class="border-2 w-full h-52 p-4 my-32 gap-5 grid grid-cols-2 md:grid-cols-6 md:my-4">
+    <h1>Gráficas</h1>
+  </div>
+
+  <div class="w-full h-full">
+    <h1>Estadística comparativa</h1>
+  </div>
+</div>

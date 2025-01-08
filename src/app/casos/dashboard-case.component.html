@@ -1,13 +1,14 @@
 <mat-drawer-container class="example-container h-full">
 
-  <mat-drawer mode="side" opened>
+  <mat-drawer #sidenav mode="side" [(opened)]="opened" (opened)="events.push('opened!')" (closed)="events.push('closed!')">
     <app-sidenav></app-sidenav>
   </mat-drawer>
 
-
   <mat-drawer-content>
+    <p><button mat-button (click)="sidenav.toggle()">
+      <mat-icon>menu</mat-icon>
+    </button></p>
     <router-outlet />
   </mat-drawer-content>
-
 
 </mat-drawer-container>
