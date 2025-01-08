@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {MatListModule} from '@angular/material/list';
+import { MatListModule } from '@angular/material/list';
 import { RouterModule } from '@angular/router';
 import { routes } from '../../app.routes';
 
@@ -12,9 +12,9 @@ import { routes } from '../../app.routes';
 export class SidenavComponent {
 
   public menuItems = routes
-  .map(route => route.children ?? [])
-  .flat()
-  .filter(route => route && route.path)
-  .filter(route => !route.path?.includes(':'));
+    .map(route => route.children ?? [])
+    .flat()
+    .filter(route => route && route.path)
+    .filter(route => !route.path?.includes(':'));
 
 }

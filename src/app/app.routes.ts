@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
 
   {
-    path: 'dashboard',
+    path: 'casos',
     loadComponent: () => import('./casos/dashboard-case.component'),
     children: [
       {
@@ -22,10 +22,26 @@ export const routes: Routes = [
         loadComponent: () => import('./casos/pages/add-case-conflicto/add-case-conflicto.component')
       },
       {
-        path: '', redirectTo: '/add-case-alerta', pathMatch: 'full'
+        path: '', redirectTo: 'add-case-alerta', pathMatch: 'full'
       }
     ]
+  },
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./dashboard/dashboard-principal.component'),
+    children:[
+      {
+        path: 'estadisticas',
+        title: 'Estadisticas generales',
+        loadComponent: () => import('./dashboard/estadistics/estadistics.component')
+      },
+      {
+        path: '',
+        redirectTo: 'estadisticas',
+        pathMatch: 'full',
+      },
 
+    ]
   },
 
   {

@@ -16,42 +16,77 @@
 
   </div>
 
-
-<p class="text ml-5">Datos del Infractor</p>
-  <div class="gap-4 p-5 grid grid-cols-1 md:grid-cols-2">
-
-    <mat-form-field class="">
-      <mat-label>Nombre</mat-label>
-      <input matInput placeholder="Juan Daviz Gonzalez Mendez" value="">
+ <!-- Datos del Infractor -->
+<p class="text ml-5">Datos de los Infractores</p>
+<div class="infractores-container p-5">
+  <div
+    *ngFor="let infractor of infractores; let i = index"
+    class="gap-4 p-5 mb-5 grid grid-cols-1 md:grid-cols-2 border border-gray-300 rounded-lg"
+  >
+    <mat-form-field class="w-full">
+      <mat-label>Nombre del Infractor</mat-label>
+      <input
+        matInput
+        placeholder="Nombre completo"
+        [(ngModel)]="infractor.nombre"
+        name="nombreInfractor-{{ i }}"
+      />
     </mat-form-field>
 
-    <mat-form-field class="">
-      <mat-label>Numero de CUI</mat-label>
-      <input matInput placeholder="3423-35413-2204" value="">
+    <mat-form-field class="w-full">
+      <mat-label>CUI</mat-label>
+      <input
+        matInput
+        placeholder="Número de CUI"
+        [(ngModel)]="infractor.cui"
+        name="cuiInfractor-{{ i }}"
+      />
     </mat-form-field>
 
     <mat-form-field>
       <mat-label>Fecha de Nacimiento</mat-label>
-      <input matInput [matDatepicker]="picker">
-      <mat-hint>MM/DD/YYYY</mat-hint>
-      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
+      <input
+        matInput
+        [matDatepicker]="pickerInfractor"
+        [(ngModel)]="infractor.fechaNacimiento"
+        name="fechaNacimientoInfractor-{{ i }}"
+      />
+      <mat-datepicker-toggle matSuffix [for]="pickerInfractor"></mat-datepicker-toggle>
+      <mat-datepicker #pickerInfractor></mat-datepicker>
     </mat-form-field>
 
-    <mat-form-field class="">
-      <mat-label>Direccion del hecho o desaparicion</mat-label>
-      <input matInput placeholder="5 avenida 6-34 zona 1, Guatemala" value="">
+    <mat-form-field class="w-full">
+      <mat-label>Dirección</mat-label>
+      <input
+        matInput
+        placeholder="Dirección de residencia"
+        [(ngModel)]="infractor.direccion"
+        name="direccionInfractor-{{ i }}"
+      />
     </mat-form-field>
 
-    <mat-form-field>
-      <mat-label>Estado de la Investigacion</mat-label>
-      <mat-select>
-        @for (food of foods; track food) {
-        <mat-option [value]="food.value">{{food.viewValue}}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+    <button
+      type="button"
+      (click)="eliminarInfractor(i)"
+      class="col-span-full text-red-500 underline text-sm mt-2"
+    >
+      Eliminar este infractor
+    </button>
   </div>
+
+  <div class="text-center">
+    <button
+      type="button"
+      (click)="agregarInfractor()"
+      class="px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-700"
+    >
+      Añadir Infractor
+    </button>
+  </div>
+</div>
+
+<!-- Datos de las Víctimas (sin cambios) -->
+
 
 <!-- Sección para datos de víctimas -->
 <p class="text ml-5">Datos de las Víctimas</p>

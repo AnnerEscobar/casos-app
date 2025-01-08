@@ -46,4 +46,6 @@ export default class AddCaseMaltratoComponent {
       console.log('Archivo seleccionado:', file);
     }
   }
+
+  
 }

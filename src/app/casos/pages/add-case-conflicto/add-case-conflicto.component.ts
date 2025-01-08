@@ -49,16 +49,30 @@ export default class AddCaseConflictoComponent {
     }
   }
 
-  victimas: { nombre: string; edad: number; direccion: string; cui: string }[] = [];
+  victimas: { nombre: string; edad: number; direccion: string; cui: string }[] = [
+    { nombre: '', edad: 0, direccion: '', cui: '' },
+  ];
 
-  // Método para agregar una nueva víctima
+  infractores: { nombre: string; cui: string; fechaNacimiento: Date | null; direccion: string }[] = [
+    { nombre: '', cui: '', fechaNacimiento: null, direccion: '' },
+  ];
+
+  // Métodos para manejar víctimas
   agregarVictima() {
-    this.victimas.push({ nombre: '', edad: 5, direccion: '', cui: '' });
+    this.victimas.push({ nombre: '', edad: 0, direccion: '', cui: '' });
   }
 
-  // Método para eliminar una víctima
   eliminarVictima(index: number) {
     this.victimas.splice(index, 1);
+  }
+
+  // Métodos para manejar infractores
+  agregarInfractor() {
+    this.infractores.push({ nombre: '', cui: '', fechaNacimiento: null, direccion: '' });
+  }
+
+  eliminarInfractor(index: number) {
+    this.infractores.splice(index, 1);
   }
 
 }
