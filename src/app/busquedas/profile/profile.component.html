@@ -1,42 +1,55 @@
 <div class="bg-blue-100 border-2 p-5 h-full w-full">
 
-<mat-card class="">
+  <mat-card class="">
     <mat-card-header class="">
-        <mat-card-title>Anner Ronaldo Escobar Cruz</mat-card-title>
-        <mat-card-subtitle>Datos obtenidos a traves de investigaciones</mat-card-subtitle>
+      <mat-card-title>Anner Ronaldo Escobar Cruz</mat-card-title>
+      <mat-card-subtitle>Datos obtenidos a traves de investigaciones</mat-card-subtitle>
     </mat-card-header>
-    <img class="mat-card-image w-72 h-72 rounded-full border-4 border-blue-800 " src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
-    <mat-card-content>Informacion</mat-card-content>
-    <!-- <mat-card-actions align="end">
-        <button mat-button >Action1</button>
-    </mat-card-actions> -->
+    <div class="justify-items-center">
+      <img class="mat-card-image w-48 h-48 rounded-full border-4 border-blue-800 "
+        src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
+      <mat-card-content>Informacion</mat-card-content>
+    </div>
+
     <mat-divider></mat-divider>
-    <mat-grid-list cols="2" rowHeight="2:1">
-      <mat-grid-tile>
-        <ul>
-          <h1>Datos personales</h1>
-          <br>
-          <li>Nombre: Anner Ronaldo Escobar Cruz</li>
-          <li>Cui: 3423354132201</li>
-          <li>Nacionalidad: Guatemalteco</li>
-          <li>fecha Nac_: 05/09/1997</li>
-          <li>Edad:28 años</li>
-          <li>Departamento: Jutiapa</li>
-          <li>Direccion: Calle Principal zona 0, Aldea Sitio Viejo, Jutiapa, Jutiapa</li>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+      <!-- Columna 1 -->
+      <div class="bg-white shadow-lg rounded-lg p-4">
+        <h1 class="text-xl font-semibold mb-4">Datos personales</h1>
+        <ul class="space-y-2">
+          <li><strong>Nombre:</strong> Anner Ronaldo Escobar Cruz</li>
+          <li><strong>Cui:</strong> 3423354132201</li>
+          <li><strong>Nacionalidad:</strong> Guatemalteco</li>
+          <li><strong>Fecha Nac:</strong> 05/09/1997</li>
+          <li><strong>Edad:</strong> 28 años</li>
+          <li><strong>Teléfono:</strong> 41284104</li>
+          <li><strong>Departamento:</strong> Jutiapa</li>
+          <li><strong>Dirección:</strong> Calle Principal zona 0, Aldea Sitio Viejo, Jutiapa, Jutiapa</li>
         </ul>
-      </mat-grid-tile>
-      <mat-grid-tile>
+      </div>
 
-        <ul>
-        <h1>Casos relacionados</h1>
-        <li>M0030-2024-1</li>
+      <!-- Columna 2 -->
+      <div class="bg-white shadow-lg rounded-lg p-4">
+        <h1 class="text-xl font-semibold mb-4">Casos relacionados</h1>
+        <ul class="space-y-2">
+          <li class="flex items-center justify-between">
+            <span>M0030-2024-1</span>
+            <button mat-flat-button>Download</button>
+          </li>
+          <li class="flex items-center justify-between">
+            <span>M0030-2024-1</span>
+            <button mat-flat-button>Download</button>
+          </li>
+          <li class="flex items-center justify-between">
+            <span>M0030-2024-1</span>
+            <button mat-flat-button>Download</button>
+          </li>
         </ul>
+      </div>
+    </div>
 
-      </mat-grid-tile>
-    </mat-grid-list>
-
-
-</mat-card>
+  </mat-card>
 
 
 
