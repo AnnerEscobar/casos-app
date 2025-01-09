@@ -66,6 +66,7 @@
     </mat-form-field>
 
     <button
+    mat-stroked-button
       type="button"
       (click)="eliminarInfractor(i)"
       class="col-span-full text-red-500 underline text-sm mt-2"
@@ -76,9 +77,10 @@
 
   <div class="text-center">
     <button
+    mat-flat-button
       type="button"
       (click)="agregarInfractor()"
-      class="px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-700"
+      class=""
     >
       Añadir Infractor
     </button>
@@ -137,6 +139,7 @@
     </mat-form-field>
 
     <button
+    mat-stroked-button
       type="button"
       (click)="eliminarVictima(i)"
       class="col-span-full text-red-500 underline text-sm mt-2"
@@ -147,10 +150,10 @@
 
   <div class="text-center">
     <button
+    mat-flat-button
       type="button"
       (click)="agregarVictima()"
-      class="px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-700"
-    >
+          >
       Añadir Víctima
     </button>
   </div>
