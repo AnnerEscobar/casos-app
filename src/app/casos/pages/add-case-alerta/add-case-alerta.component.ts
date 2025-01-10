@@ -1,45 +1,69 @@
-
-import { Component } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatInputModule } from '@angular/material/input';
-import { MatIconModule } from '@angular/material/icon';
-import {MatButtonModule} from '@angular/material/button';
-import {MatDatepickerModule} from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
-import { CommonModule } from '@angular/common';
-
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 
 @Component({
   selector: 'app-add-case-alerta',
-  providers:[
+  providers: [
     provideNativeDateAdapter(),
   ],
   imports: [
-    MatFormFieldModule,
-    MatSelectModule,
-    ReactiveFormsModule,
-    MatSlideToggleModule,
-    MatInputModule,
-    MatIconModule,
+    CommonModule,
     MatButtonModule,
     MatDatepickerModule,
-    CommonModule
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatSelectModule,
+    MatSlideToggleModule,
+    ReactiveFormsModule,
   ],
   templateUrl: './add-case-alerta.component.html',
   styleUrl: './add-case-alerta.component.css'
 })
 export default class AddCaseAlertaComponent {
 
-  foods = [
-    {value: 'Informado', viewValue: 'Informado'},
-    {value: 'Concluido', viewValue: 'Concluido'},
+  //Inyeccion de dependencias
+  private formBuilder = inject(FormBuilder);
+
+  //variables
+  fileName: string | null = null;
+  estados = [
+    { value: 'Informado', viewValue: 'Informado' },
+    { value: 'Concluido', viewValue: 'Concluido' },
+    { value: 'Remitido', viewValue: 'Remitido' },
   ];
 
-  fileName: string | null = null;
+
+  myForm = this.formBuilder.group({
+    numeroDeic: ['', [Validators.required]],
+    numeroMp: ['', [Validators.required]],
+    numeroAlerta: ['', [Validators.required]],
+    nombreDesaparecido: ['', [Validators.required]],
+    fecha_Nac: [null, [Validators.required]],
+    estadoInvestigacion: ['', [Validators.required]],
+    direccion: this.formBuilder.group({
+      departamento: ['', [Validators.required]],
+      municipio: ['', [Validators.required]],
+      direccionDetallada: ['', [Validators.required]],
+    }),
+    fileUrls: this.formBuilder.array([])
+  });
+
+  registrarCaso(){
+    console.log(this.myForm.value)
+    console.log(this.fileName)
+  }
+
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -49,4 +73,5 @@ export default class AddCaseAlertaComponent {
       console.log('Archivo seleccionado:', file);
     }
   }
+
 }
