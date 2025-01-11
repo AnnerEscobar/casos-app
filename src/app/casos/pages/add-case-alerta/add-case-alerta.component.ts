@@ -9,6 +9,9 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import { AlertaService } from '../../alerta.service';
+import { response } from 'express';
 
 
 @Component({
@@ -34,9 +37,14 @@ export default class AddCaseAlertaComponent {
 
   //Inyeccion de dependencias
   private formBuilder = inject(FormBuilder);
+  private _snackBar = inject(MatSnackBar);
+  private alertaService = inject(AlertaService);
+
+
 
   //variables
   fileName: string | null = null;
+  selectedFile: File | null = null;
   estados = [
     { value: 'Informado', viewValue: 'Informado' },
     { value: 'Concluido', viewValue: 'Concluido' },
@@ -60,18 +68,54 @@ export default class AddCaseAlertaComponent {
   });
 
   registrarCaso(){
-    console.log(this.myForm.value)
-    console.log(this.fileName)
+
+    if(this.myForm.invalid || !this.selectedFile){
+      this._snackBar.open('Debes completar todos los campos y seleccionar un archivo', 'Cerrar', {
+        duration:3000
+      });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('numeroDeic', this.myForm.value.numeroDeic || '');
+    formData.append('numeroMp', this.myForm.value.numeroMp || '');
+    formData.append('numeroAlerta', this.myForm.value.numeroAlerta || '');
+    formData.append('nombreDesaparecido', this.myForm.value.nombreDesaparecido || '');
+    formData.append('fecha_Nac', this.myForm.value.fecha_Nac || '' );
+    formData.append('estadoInvestigacion', this.myForm.value.estadoInvestigacion || '');
+    formData.append('direccion[departamento]', this.myForm.value.direccion?.departamento || '');
+    formData.append('direccion[municipio]', this.myForm.value.direccion?.municipio || '');
+    formData.append('direccion[direccionDetallada]', this.myForm.value.direccion?.direccionDetallada || '');
+    formData.append('file', this.selectedFile);
+
+    this.alertaService.registrarAlerta(formData).subscribe({
+      next: (response) => {
+        this._snackBar.open('Caso registrado correctamente', 'cerrado', { duration: 3000 });
+        console.log('Respuesta del servidor', response);
+      },
+      error: (error) => {
+        this._snackBar.open('Error al registrar el caso', 'cerrar', { duration: 3500 });
+        console.log('Error al registrar el caso', error);
+      },
+      complete: () => {
+        console.log('La operación de registro de caso ha finalizado.');
+      }
+    });
+
   }
 
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      this.fileName = file.name;
-      console.log('Archivo seleccionado:', file);
+      this.selectedFile = input.files[0];
+      this.fileName = this.selectedFile.name;
+      console.log('Archivo seleccionado:', this.selectedFile);
+    } else {
+      this.selectedFile = null;
+      this.fileName = null;
     }
   }
+
 
 }
