@@ -5,16 +5,14 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class AlertaService {
+export class ConflictoService {
 
-  private baseUrl = 'http://localhost:3000/alertas';
+  private baseUrl = 'http://localhost:3000/conflictos'; // Cambia la URL según tu backend
   private http = inject(HttpClient);
 
   constructor() { }
 
-  registrarAlerta(formData: FormData): Observable<any>{
-    return this.http.post<any>(`${this.baseUrl}/crear-alerta`, formData);
+  sendFormData(formData: FormData): Observable<any> {
+    return this.http.post(this.baseUrl, formData);
   }
-
-
 }

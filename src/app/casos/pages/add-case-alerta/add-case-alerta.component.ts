@@ -10,7 +10,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import { AlertaService } from '../../alerta.service';
+import { AlertaService } from '../../services/alerta.service';
 import { response } from 'express';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
