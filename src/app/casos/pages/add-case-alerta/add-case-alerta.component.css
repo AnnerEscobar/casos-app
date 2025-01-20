@@ -37,3 +37,33 @@
   font-size: 14px;
   color: #333;
 }
+
+
+.form-container {
+  position: relative;  /* Permite que el overlay esté posicionado dentro de este contenedor */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  /* Otras propiedades que puedas necesitar para tu contenedor */
+}
+
+/* Overlay con el spinner */
+.form-container.loading .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2); /* Fondo semitransparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+mat-spinner {
+  display: block;
+  margin: 0 auto;
+  /* Ajusta el tamaño del spinner según tus necesidades */
+}

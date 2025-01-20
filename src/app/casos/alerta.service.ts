@@ -7,15 +7,14 @@ import { Observable } from 'rxjs';
 })
 export class AlertaService {
 
-  private baseUrl = 'Api'
+  private baseUrl = 'http://localhost:3000/alertas';
   private http = inject(HttpClient);
 
   constructor() { }
 
   registrarAlerta(formData: FormData): Observable<any>{
-    return this.http.post<any>(this.baseUrl, formData);
+    return this.http.post<any>(`${this.baseUrl}/crear-alerta`, formData);
   }
-
 
 
 }

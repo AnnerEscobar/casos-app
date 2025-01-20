@@ -12,6 +12,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import { AlertaService } from '../../alerta.service';
 import { response } from 'express';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 
 @Component({
@@ -29,6 +30,7 @@ import { response } from 'express';
     MatSelectModule,
     MatSlideToggleModule,
     ReactiveFormsModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './add-case-alerta.component.html',
   styleUrl: './add-case-alerta.component.css'
@@ -43,6 +45,7 @@ export default class AddCaseAlertaComponent {
 
 
   //variables
+  isLoading = false;
   fileName: string | null = null;
   selectedFile: File | null = null;
   estados = [
@@ -76,6 +79,8 @@ export default class AddCaseAlertaComponent {
       return;
     }
 
+    this.isLoading = true;
+
     const formData = new FormData();
     formData.append('numeroDeic', this.myForm.value.numeroDeic || '');
     formData.append('numeroMp', this.myForm.value.numeroMp || '');
@@ -92,15 +97,21 @@ export default class AddCaseAlertaComponent {
       next: (response) => {
         this._snackBar.open('Caso registrado correctamente', 'cerrado', { duration: 3000 });
         console.log('Respuesta del servidor', response);
+
+        this.resetFormState(this.myForm);
+        this.selectedFile = null;
+        this.isLoading = false;
       },
       error: (error) => {
         this._snackBar.open('Error al registrar el caso', 'cerrar', { duration: 3500 });
         console.log('Error al registrar el caso', error);
+        this.isLoading = false;
       },
       complete: () => {
         console.log('La operación de registro de caso ha finalizado.');
       }
     });
+
 
   }
 
@@ -115,6 +126,13 @@ export default class AddCaseAlertaComponent {
       this.selectedFile = null;
       this.fileName = null;
     }
+  }
+
+
+  resetFormState(formulario: FormGroup) {
+    formulario.reset()
+    formulario.markAsPristine();
+    formulario.markAsUntouched();
   }
 
 
