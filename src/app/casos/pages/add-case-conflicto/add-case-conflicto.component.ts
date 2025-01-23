@@ -1,4 +1,3 @@
-
 import { Component, inject } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -35,18 +34,22 @@ import { response } from 'express';
 })
 export default class AddCaseConflictoComponent {
 
+  //Inyeccion de dependencias
   private formBuider = inject(FormBuilder);
   private conflictoService = inject(ConflictoService)
 
+  //Arrays
   foods = [
     { value: 'Informado', viewValue: 'Informado' },
     { value: 'Concluido', viewValue: 'Concluido' },
   ];
 
+  //variables
   fileName: string | null = null;
   selectedFile: File | null = null;
 
 
+  //metodo para seleccionar un archvio
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -59,6 +62,7 @@ export default class AddCaseConflictoComponent {
     }
   }
 
+  //formbuilder
   myForm = this.formBuider.group({
     numeroDeic: ['', [Validators.required]],
     numeroMp: ['', [Validators.required]],
@@ -66,6 +70,7 @@ export default class AddCaseConflictoComponent {
     victimas: this.formBuider.array([]),
     fileUrls: this.formBuider.array([]),
   });
+
 
   // Getters para acceder a los FormArrays
   get infractores(): FormArray<FormGroup> {
@@ -87,6 +92,7 @@ export default class AddCaseConflictoComponent {
     this.infractores.push(infractorForm);
   }
 
+  //metodos para eliminar infractores
   eliminarInfractor(index: number) {
     this.infractores.removeAt(index);
   }
@@ -102,14 +108,15 @@ export default class AddCaseConflictoComponent {
     this.victimas.push(victimaForm);
   }
 
+  //metod para eliminar victimas
   eliminarVictima(index: number) {
     this.victimas.removeAt(index);
   }
 
-  registrarCaso(){
+  //metodo para registrar caso
+  registrarCaso() {
 
-
-    if(this.myForm.valid && this.selectedFile){
+    if (this.myForm.valid && this.selectedFile) {
       const formData = new FormData();
 
       formData.append('numeroDeic', this.myForm.value.numeroDeic || '');
@@ -119,17 +126,17 @@ export default class AddCaseConflictoComponent {
       formData.append('file', this.selectedFile)
 
       this.conflictoService.sendFormData(formData)
-      .subscribe(
-        (response) =>{
-          console.log('Caso registrado con exito', response);
-          console.log(this.myForm.value)
-        },
-        (error) =>{
-          console.error('Error al registrar el caso', error)
-          console.log(this.myForm.value)
-        }
-      )
-
+        .subscribe(
+          (response) => {
+            console.log('Caso registrado con exito', response);
+            console.log(this.myForm.value);
+            console.log('ESte es el archvio seleccionado', this.selectedFile);
+          },
+          (error) => {
+            console.error('Error al registrar el caso', error)
+            console.log(this.myForm.value)
+          }
+        )
     }
   }
 
