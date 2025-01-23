@@ -7,13 +7,13 @@ import { Observable } from 'rxjs';
 })
 export class MaltratoService {
 
-    private baseUrl = 'http://localhost:3000/conflictos'; // Cambia la URL según tu backend
+    private baseUrl = 'http://localhost:3000/maltrato'; // Cambia la URL según tu backend
     private http = inject(HttpClient);
 
     constructor() { }
 
     sendFormData(formData: FormData): Observable<any> {
-      return this.http.post(this.baseUrl, formData);
+      return this.http.post(`${this.baseUrl}/new-maltrato`, formData);
     }
 
 }
