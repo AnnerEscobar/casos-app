@@ -1,52 +1,175 @@
 <h1 class="text-3xl ml-7">Registro de caso --Maltrato--</h1>
-<form class="example-forme w-full p-2">
-
+<form [formGroup]="myForm" (ngSubmit)="registrarCaso()" class="example-forme w-full p-2">
 
   <p class="text ml-5">Identificadores del caso</p>
 
-  <div class="gap-4 p-5 grid grid-cols-1 md:grid-cols-2">
+  <div class="gap-4 p-5 grid grid-cols-1 md:grid-cols-3">
     <mat-form-field class="w-full">
       <mat-label>Numero de Caso (DEIC)</mat-label>
-      <input matInput placeholder="DEIC52-2025-01-02-01" value="">
+      <input
+      matInput
+      placeholder="DEIC52-2025-01-02-01"
+      formControlName="numeroDeic">
     </mat-form-field>
 
     <mat-form-field class="w-full">
       <mat-label>Numero de Caso (MP)</mat-label>
-      <input matInput placeholder="M0030-2025-100" value="">
-    </mat-form-field>
-  </div>
-
-
-<p class="text ml-5">Datos de la victima</p>
-  <div class="gap-4 p-5 grid grid-cols-1 md:grid-cols-2">
-
-    <mat-form-field class="">
-      <mat-label>Nombre</mat-label>
-      <input matInput placeholder="Juan Daviz Gonzalez Mendez" value="">
-    </mat-form-field>
-
-    <mat-form-field>
-      <mat-label>Fecha de Nacimiento</mat-label>
-      <input matInput [matDatepicker]="picker">
-      <mat-hint>MM/DD/YYYY</mat-hint>
-      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
+      <input
+      matInput
+      placeholder="M0030-2025-100"
+      formControlName="numeroMp">
     </mat-form-field>
 
     <mat-form-field class="">
-      <mat-label>Direccion del lugar de los hechos</mat-label>
-      <input matInput placeholder="5 avenida 6-34 zona 1, Guatemala" value="">
-    </mat-form-field>
-
-    <mat-form-field>
       <mat-label>Estado de la Investigacion</mat-label>
-      <mat-select>
-        @for (food of foods; track food) {
-        <mat-option [value]="food.value">{{food.viewValue}}</mat-option>
+      <mat-select
+      formControlName="estadoInvestigacion">
+        @for (estado of estados; track estado) {
+        <mat-option
+
+        [value]="estado.value">{{estado.viewValue}}</mat-option>
         }
       </mat-select>
     </mat-form-field>
   </div>
+
+ <!-- Datos del Infractor -->
+ <p class="text ml-5">Datos de los Infractores</p>
+ <div class="infractores-container p-5">
+   <div
+     *ngFor="let infractor of infractores.controls; let i = index"
+     [formGroup]="infractor"
+     class="gap-4 p-5 mb-5 grid grid-cols-1 md:grid-cols-2 border border-gray-300 rounded-lg"
+   >
+     <mat-form-field class="w-full">
+       <mat-label>Nombre del Infractor</mat-label>
+       <input
+         matInput
+         placeholder="Nombre completo"
+         formControlName="nombre"
+       />
+     </mat-form-field>
+
+     <mat-form-field class="w-full">
+       <mat-label>CUI</mat-label>
+       <input
+         matInput
+         placeholder="Número de CUI"
+         formControlName="cui"
+       />
+     </mat-form-field>
+
+     <mat-form-field>
+       <mat-label>Fecha de Nacimiento</mat-label>
+       <input
+         matInput
+         [matDatepicker]="pickerInfractor"
+         formControlName="fechaNacimiento"
+       />
+       <mat-datepicker-toggle matSuffix [for]="pickerInfractor"></mat-datepicker-toggle>
+       <mat-datepicker #pickerInfractor></mat-datepicker>
+     </mat-form-field>
+
+     <mat-form-field class="w-full">
+       <mat-label>Dirección</mat-label>
+       <input
+         matInput
+         placeholder="Dirección de residencia"
+         formControlName="direccion"
+       />
+     </mat-form-field>
+
+     <button
+     mat-stroked-button
+       type="button"
+       (click)="eliminarInfractor(i)"
+       class="col-span-full text-red-500 underline text-sm mt-2"
+     >
+       Eliminar este infractor
+     </button>
+   </div>
+
+   <div class="text-center">
+     <button
+     mat-flat-button
+       type="button"
+       (click)="agregarInfractor()"
+       class=""
+     >
+       Añadir Infractor
+     </button>
+   </div>
+ </div>
+
+ <!-- Datos de las Víctimas (sin cambios) -->
+
+
+ <!-- Sección para datos de víctimas -->
+ <p class="text ml-5">Datos de las Víctimas</p>
+ <div class="victimas-container p-5">
+   <div
+     *ngFor="let victima of victimas.controls; let i = index"
+     [formGroup]="victima"
+     class="gap-4 p-5 mb-5 grid grid-cols-1 md:grid-cols-2 border border-gray-300 rounded-lg"
+   >
+     <mat-form-field class="w-full">
+       <mat-label>Nombre de la Víctima</mat-label>
+       <input
+         matInput
+         placeholder="Nombre completo"
+         formControlName="nombre"
+       />
+     </mat-form-field>
+
+     <mat-form-field class="w-full">
+       <mat-label>Edad</mat-label>
+       <input
+         matInput
+         type="number"
+         placeholder="Edad en años"
+         formControlName="edad"
+       />
+     </mat-form-field>
+
+     <mat-form-field class="w-full">
+       <mat-label>Direccion</mat-label>
+       <input
+         matInput
+         placeholder="Direccion de residencia"
+         formControlName="direccion"
+       />
+     </mat-form-field>
+
+     <mat-form-field class="w-full">
+       <mat-label>Cui</mat-label>
+       <input
+         matInput
+         placeholder="Numero de cui"
+         formControlName="cui"
+       />
+     </mat-form-field>
+
+     <button
+     mat-stroked-button
+       type="button"
+       (click)="eliminarVictima(i)"
+       class="col-span-full text-red-500 underline text-sm mt-2"
+     >
+       Eliminar esta víctima
+     </button>
+   </div>
+
+   <div class="text-center">
+     <button
+     mat-flat-button
+       type="button"
+       (click)="agregarVictima()"
+           >
+       Añadir Víctima
+     </button>
+   </div>
+ </div>
+
 
   <p class="text ml-5">Cargar archivo de investigacion</p>
   <div class="file-upload-container p-5 mx-5 bg-gray-100 rounded-lg">
@@ -75,7 +198,12 @@
 
   <section class="p-2">
     <div class="">
-      <button mat-flat-button class="w-full">Registrar Caso</button>
+      <button
+      mat-flat-button
+      class="w-full"
+      type="submit"
+      [disabled]="myForm.invalid"
+      >Registrar Caso</button>
     </div>
   </section>
 

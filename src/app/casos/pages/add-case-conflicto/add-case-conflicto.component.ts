@@ -11,6 +11,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { CommonModule } from '@angular/common';
 import { ConflictoService } from '../../services/conflicto.service';
 import { response } from 'express';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-add-case-conflicto',
@@ -27,7 +28,8 @@ import { response } from 'express';
     MatButtonModule,
     MatDatepickerModule,
     CommonModule,
-    FormsModule
+    FormsModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './add-case-conflicto.component.html',
   styleUrl: './add-case-conflicto.component.css'
@@ -39,12 +41,13 @@ export default class AddCaseConflictoComponent {
   private conflictoService = inject(ConflictoService)
 
   //Arrays
-  foods = [
+  estados = [
     { value: 'Informado', viewValue: 'Informado' },
     { value: 'Concluido', viewValue: 'Concluido' },
   ];
 
   //variables
+  isLoading = false;
   fileName: string | null = null;
   selectedFile: File | null = null;
 
@@ -66,6 +69,7 @@ export default class AddCaseConflictoComponent {
   myForm = this.formBuider.group({
     numeroDeic: ['', [Validators.required]],
     numeroMp: ['', [Validators.required]],
+    estadoInvestigacion: ['', [Validators.required]],
     infractores: this.formBuider.array([]),
     victimas: this.formBuider.array([]),
     fileUrls: this.formBuider.array([]),
@@ -119,8 +123,11 @@ export default class AddCaseConflictoComponent {
     if (this.myForm.valid && this.selectedFile) {
       const formData = new FormData();
 
+      this.isLoading = true;
+
       formData.append('numeroDeic', this.myForm.value.numeroDeic || '');
       formData.append('numeroMp', this.myForm.value.numeroMp || '');
+      formData.append('estadoInvestigacion', this.myForm.value.estadoInvestigacion || '');
       formData.append('infractores', JSON.stringify(this.myForm.value.infractores));
       formData.append('victimas', JSON.stringify(this.myForm.value.victimas));
       formData.append('file', this.selectedFile)
@@ -131,6 +138,9 @@ export default class AddCaseConflictoComponent {
             console.log('Caso registrado con exito', response);
             console.log(this.myForm.value);
             console.log('ESte es el archvio seleccionado', this.selectedFile);
+            this.resetFormState(this.myForm);
+           this.selectedFile = null;
+            this.isLoading = false;
           },
           (error) => {
             console.error('Error al registrar el caso', error)
@@ -138,6 +148,12 @@ export default class AddCaseConflictoComponent {
           }
         )
     }
+  }
+
+  resetFormState(formulario: FormGroup) {
+    formulario.reset()
+    formulario.markAsPristine();
+    formulario.markAsUntouched();
   }
 
 
