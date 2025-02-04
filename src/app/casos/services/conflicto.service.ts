@@ -7,12 +7,12 @@ import { Observable } from 'rxjs';
 })
 export class ConflictoService {
 
-  private baseUrl = 'http://localhost:3000/conflicto'; // Cambia la URL según tu backend
+  private baseUrl = 'http://localhost:3000/conflictos';
   private http = inject(HttpClient);
 
   constructor() { }
 
-  sendFormData(formData: FormData): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/new-conflicto`, formData);
+  registrarConflicto(formData: FormData): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/crear-conflicto`, formData);
   }
 }

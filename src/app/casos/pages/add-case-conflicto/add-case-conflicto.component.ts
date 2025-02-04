@@ -1,17 +1,17 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatInputModule } from '@angular/material/input';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import { CommonModule } from '@angular/common';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConflictoService } from '../../services/conflicto.service';
-import { response } from 'express';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-add-case-conflicto',
@@ -36,9 +36,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 })
 export default class AddCaseConflictoComponent {
 
+
   //Inyeccion de dependencias
   private formBuider = inject(FormBuilder);
-  private conflictoService = inject(ConflictoService)
+  private conflictoService = inject(ConflictoService);
+  private _snackBar = inject(MatSnackBar);
+
 
   //Arrays
   estados = [
@@ -46,10 +49,12 @@ export default class AddCaseConflictoComponent {
     { value: 'Concluido', viewValue: 'Concluido' },
   ];
 
+
   //variables
   isLoading = false;
   fileName: string | null = null;
   selectedFile: File | null = null;
+
 
 
   //metodo para seleccionar un archvio
@@ -76,19 +81,24 @@ export default class AddCaseConflictoComponent {
   });
 
 
+
   // Getters para acceder a los FormArrays
   get infractores(): FormArray<FormGroup> {
     return this.myForm.get('infractores') as FormArray;
   }
 
+
+
   get victimas(): FormArray<FormGroup> {
     return this.myForm.get('victimas') as FormArray;
   }
 
+
+
   // Métodos para manejar los infractores
   agregarInfractor() {
     const infractorForm = this.formBuider.group({
-      nombreIn: ['', Validators.required],
+      nombre: ['', Validators.required],
       cui: ['', Validators.required],
       fechaNacimiento: ['', Validators.required],
       direccion: ['', Validators.required],
@@ -96,10 +106,14 @@ export default class AddCaseConflictoComponent {
     this.infractores.push(infractorForm);
   }
 
+
+
   //metodos para eliminar infractores
   eliminarInfractor(index: number) {
     this.infractores.removeAt(index);
   }
+
+
 
   // Métodos para manejar las víctimas
   agregarVictima() {
@@ -112,10 +126,13 @@ export default class AddCaseConflictoComponent {
     this.victimas.push(victimaForm);
   }
 
+
+
   //metod para eliminar victimas
   eliminarVictima(index: number) {
     this.victimas.removeAt(index);
   }
+
 
   //metodo para registrar caso
   registrarCaso() {
@@ -124,7 +141,6 @@ export default class AddCaseConflictoComponent {
       const formData = new FormData();
 
       this.isLoading = true;
-
       formData.append('numeroDeic', this.myForm.value.numeroDeic || '');
       formData.append('numeroMp', this.myForm.value.numeroMp || '');
       formData.append('estadoInvestigacion', this.myForm.value.estadoInvestigacion || '');
@@ -132,23 +148,32 @@ export default class AddCaseConflictoComponent {
       formData.append('victimas', JSON.stringify(this.myForm.value.victimas));
       formData.append('file', this.selectedFile)
 
-      this.conflictoService.sendFormData(formData)
-        .subscribe(
-          (response) => {
-            console.log('Caso registrado con exito', response);
-            console.log(this.myForm.value);
-            console.log('ESte es el archvio seleccionado', this.selectedFile);
+      this.conflictoService.registrarConflicto(formData)
+        .subscribe({
+          next: (response) => {
+            this._snackBar.open('Caso registrado con exito', 'Cerrar', { duration: 3000 });
+            console.log('Respuesta del servidor', response);
+
             this.resetFormState(this.myForm);
-           this.selectedFile = null;
+            this.selectedFile = null;
             this.isLoading = false;
+            console.log('datos del formulario', this.myForm.value);
           },
-          (error) => {
-            console.error('Error al registrar el caso', error)
-            console.log(this.myForm.value)
+          error:(error) => {
+            this._snackBar.open('Error al registrar el caso', 'Cerrar', { duration: 3500 });
+            console.log('Error al registrar el caso', error);
+            this.isLoading = false;
+            console.log('datos del formulario', this.myForm.value);
+          },
+          complete: () => {
+            console.log('Operacion finalizada con exito');
           }
+        }
         )
     }
   }
+
+
 
   resetFormState(formulario: FormGroup) {
     formulario.reset()

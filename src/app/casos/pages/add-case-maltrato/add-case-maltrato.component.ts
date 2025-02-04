@@ -1,16 +1,16 @@
-import { MaltratoService } from './../../services/maltrato.service';
+import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatInputModule } from '@angular/material/input';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { CommonModule } from '@angular/common';
-import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MaltratoService } from './../../services/maltrato.service';
 
 @Component({
   selector: 'app-add-case-maltrato',
@@ -136,19 +136,21 @@ export default class AddCaseMaltratoComponent {
     formData.append('file', this.selectedFile)
 
     this.maltratoService.sendFormData(formData)
-      .subscribe(
-        (response: any) => {
-          console.log('Caso registrado con exito', response);
+      .subscribe({
+        next: (response) => {
+          this._snackBar.open('Caso registrado con exito', 'Cerrar', { duration: 3000 });
+          console.log('Caso registrado con exito', response)
           console.log(this.myForm.value);
-          console.log('ESte es el archvio seleccionado', this.selectedFile);
           this.resetFormState(this.myForm);
           this.selectedFile = null;
           this.isLoading = false;
         },
-        (error: any) => {
+        error: (error) => {
+          this._snackBar.open('Error al registrar el caso', 'Cerrar', { duration: 3000 });
           console.error('Error al registrar el caso', error)
           console.log(this.myForm.value)
         }
+      }
       )
   }
 

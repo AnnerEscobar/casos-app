@@ -1,18 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { AlertaService } from '../../services/alerta.service';
-import { response } from 'express';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 
 @Component({
@@ -37,6 +36,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 })
 export default class AddCaseAlertaComponent {
 
+
   //Inyeccion de dependencias
   private formBuilder = inject(FormBuilder);
   private _snackBar = inject(MatSnackBar);
@@ -55,6 +55,7 @@ export default class AddCaseAlertaComponent {
   ];
 
 
+
   myForm = this.formBuilder.group({
     numeroDeic: ['', [Validators.required]],
     numeroMp: ['', [Validators.required]],
@@ -70,11 +71,11 @@ export default class AddCaseAlertaComponent {
     fileUrls: this.formBuilder.array([])
   });
 
-  registrarCaso(){
 
-    if(this.myForm.invalid || !this.selectedFile){
+  registrarCaso() {
+    if (this.myForm.invalid || !this.selectedFile) {
       this._snackBar.open('Debes completar todos los campos y seleccionar un archivo', 'Cerrar', {
-        duration:3000
+        duration: 3000
       });
       return;
     }
@@ -86,7 +87,7 @@ export default class AddCaseAlertaComponent {
     formData.append('numeroMp', this.myForm.value.numeroMp || '');
     formData.append('numeroAlerta', this.myForm.value.numeroAlerta || '');
     formData.append('nombreDesaparecido', this.myForm.value.nombreDesaparecido || '');
-    formData.append('fecha_Nac', this.myForm.value.fecha_Nac || '' );
+    formData.append('fecha_Nac', this.myForm.value.fecha_Nac || '');
     formData.append('estadoInvestigacion', this.myForm.value.estadoInvestigacion || '');
     formData.append('direccion[departamento]', this.myForm.value.direccion?.departamento || '');
     formData.append('direccion[municipio]', this.myForm.value.direccion?.municipio || '');
@@ -111,9 +112,8 @@ export default class AddCaseAlertaComponent {
         console.log('La operación de registro de caso ha finalizado.');
       }
     });
-
-
   }
+
 
 
   onFileSelected(event: Event): void {
@@ -129,6 +129,7 @@ export default class AddCaseAlertaComponent {
   }
 
 
+  
   resetFormState(formulario: FormGroup) {
     formulario.reset()
     formulario.markAsPristine();
