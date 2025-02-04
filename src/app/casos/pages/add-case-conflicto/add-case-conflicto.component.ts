@@ -88,7 +88,7 @@ export default class AddCaseConflictoComponent {
   // Métodos para manejar los infractores
   agregarInfractor() {
     const infractorForm = this.formBuider.group({
-      nombre: ['', Validators.required],
+      nombreIn: ['', Validators.required],
       cui: ['', Validators.required],
       fechaNacimiento: ['', Validators.required],
       direccion: ['', Validators.required],
@@ -104,10 +104,10 @@ export default class AddCaseConflictoComponent {
   // Métodos para manejar las víctimas
   agregarVictima() {
     const victimaForm = this.formBuider.group({
-      nombre: ['', Validators.required],
-      edad: ['', Validators.required],
-      direccion: ['', Validators.required],
-      cui: ['', Validators.required],
+      nombre: [' ', Validators.required],
+      edad: [' ', Validators.required],
+      direccion: [' ', Validators.required],
+      cui: [' ', Validators.required],
     });
     this.victimas.push(victimaForm);
   }
