@@ -54,7 +54,7 @@
           <input
           matInput
           [matDatepicker]="pickerInfractor"
-          formControlName="fechaNacimiento" />
+          formControlName="fecha_Nac" />
           <mat-datepicker-toggle matSuffix [for]="pickerInfractor"></mat-datepicker-toggle>
           <mat-datepicker #pickerInfractor></mat-datepicker>
         </mat-form-field>
@@ -96,9 +96,14 @@
           formControlName="nombre" />
         </mat-form-field>
 
-        <mat-form-field class="w-full">
-          <mat-label>Edad</mat-label>
-          <input matInput type="number" placeholder="Edad en años" formControlName="edad" />
+        <mat-form-field>
+          <mat-label>Fecha de Nacimiento</mat-label>
+          <input
+          matInput
+          [matDatepicker]="pickerInfractor"
+          formControlName="fecha_Nac" />
+          <mat-datepicker-toggle matSuffix [for]="pickerInfractor"></mat-datepicker-toggle>
+          <mat-datepicker #pickerInfractor></mat-datepicker>
         </mat-form-field>
 
         <mat-form-field class="w-full">

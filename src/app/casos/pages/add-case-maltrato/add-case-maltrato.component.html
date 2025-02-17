@@ -1,3 +1,5 @@
+<div class="form-container" [ngClass]="{ 'loading': isLoading }">
+
 <h1 class="text-3xl ml-7">Registro de caso --Maltrato--</h1>
 <form [formGroup]="myForm" (ngSubmit)="registrarCaso()" class="example-forme w-full p-2">
 
@@ -64,7 +66,7 @@
        <input
          matInput
          [matDatepicker]="pickerInfractor"
-         formControlName="fechaNacimiento"
+         formControlName="fecha_Nac"
        />
        <mat-datepicker-toggle matSuffix [for]="pickerInfractor"></mat-datepicker-toggle>
        <mat-datepicker #pickerInfractor></mat-datepicker>
@@ -121,15 +123,16 @@
        />
      </mat-form-field>
 
-     <mat-form-field class="w-full">
-       <mat-label>Edad</mat-label>
-       <input
-         matInput
-         type="number"
-         placeholder="Edad en años"
-         formControlName="edad"
-       />
-     </mat-form-field>
+     <mat-form-field>
+      <mat-label>Fecha de Nacimiento</mat-label>
+      <input
+        matInput
+        [matDatepicker]="pickerInfractor"
+        formControlName="fecha_Nac"
+      />
+      <mat-datepicker-toggle matSuffix [for]="pickerInfractor"></mat-datepicker-toggle>
+      <mat-datepicker #pickerInfractor></mat-datepicker>
+    </mat-form-field>
 
      <mat-form-field class="w-full">
        <mat-label>Direccion</mat-label>
@@ -208,3 +211,9 @@
   </section>
 
 </form>
+
+<div class="overlay" *ngIf="isLoading">
+  <mat-spinner diameter="50"></mat-spinner>
+</div>
+
+</div>

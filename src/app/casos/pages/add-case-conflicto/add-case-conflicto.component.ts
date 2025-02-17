@@ -59,11 +59,12 @@ export default class AddCaseConflictoComponent {
 
   //metodo para seleccionar un archvio
   onFileSelected(event: Event): void {
+
     const input = event.target as HTMLInputElement;
+
     if (input.files && input.files.length > 0) {
       this.selectedFile = input.files[0];
       this.fileName = this.selectedFile.name;
-      console.log('Archivo seleccionado:', this.selectedFile);
     } else {
       this.selectedFile = null;
       this.fileName = null;
@@ -88,11 +89,9 @@ export default class AddCaseConflictoComponent {
   }
 
 
-
   get victimas(): FormArray<FormGroup> {
     return this.myForm.get('victimas') as FormArray;
   }
-
 
 
   // Métodos para manejar los infractores
@@ -100,12 +99,11 @@ export default class AddCaseConflictoComponent {
     const infractorForm = this.formBuider.group({
       nombre: ['', Validators.required],
       cui: ['', Validators.required],
-      fechaNacimiento: ['', Validators.required],
+      fecha_Nac: ['', Validators.required],
       direccion: ['', Validators.required],
     });
     this.infractores.push(infractorForm);
   }
-
 
 
   //metodos para eliminar infractores
@@ -114,18 +112,16 @@ export default class AddCaseConflictoComponent {
   }
 
 
-
   // Métodos para manejar las víctimas
   agregarVictima() {
     const victimaForm = this.formBuider.group({
-      nombre: [' ', Validators.required],
-      edad: [' ', Validators.required],
-      direccion: [' ', Validators.required],
-      cui: [' ', Validators.required],
+      nombre: ['', Validators.required],
+      fecha_Nac: ['', Validators.required],
+      direccion: ['', Validators.required],
+      cui: ['', Validators.required],
     });
     this.victimas.push(victimaForm);
   }
-
 
 
   //metod para eliminar victimas
@@ -134,46 +130,53 @@ export default class AddCaseConflictoComponent {
   }
 
 
-  //metodo para registrar caso
   registrarCaso() {
 
     if (this.myForm.valid && this.selectedFile) {
       const formData = new FormData();
-
       this.isLoading = true;
-      formData.append('numeroDeic', this.myForm.value.numeroDeic || '');
-      formData.append('numeroMp', this.myForm.value.numeroMp || '');
-      formData.append('estadoInvestigacion', this.myForm.value.estadoInvestigacion || '');
-      formData.append('infractores', JSON.stringify(this.myForm.value.infractores));
-      formData.append('victimas', JSON.stringify(this.myForm.value.victimas));
-      formData.append('file', this.selectedFile)
 
+      // Validación antes de enviar
+      const infractoresValidos = Array.isArray(this.myForm.value.infractores);
+      const victimasValidas = Array.isArray(this.myForm.value.victimas);
+
+      formData.append('numeroDeic', this.myForm.value.numeroDeic?.trim() || '');
+      formData.append('numeroMp', this.myForm.value.numeroMp?.trim() || '');
+      formData.append('estadoInvestigacion', this.myForm.value.estadoInvestigacion || '');
+
+      // Enviar arrays directamente sin stringify
+      this.myForm.value.infractores?.forEach((infractor: any, index: number) => {
+        formData.append(`infractores[${index}][nombre]`, infractor.nombre);
+        formData.append(`infractores[${index}][cui]`, infractor.cui);
+        formData.append(`infractores[${index}][fecha_Nac]`, infractor.fecha_Nac);
+        formData.append(`infractores[${index}][direccion]`, infractor.direccion);
+      });
+
+      this.myForm.value.victimas?.forEach((victima: any, index: number) => {
+        formData.append(`victimas[${index}][nombre]`, victima.nombre);
+        formData.append(`victimas[${index}][fecha_Nac]`, victima.fecha_Nac);
+        formData.append(`victimas[${index}][direccion]`, victima.direccion);
+        formData.append(`victimas[${index}][cui]`, victima.cui);
+      });
+
+      formData.append('file', this.selectedFile);
+
+      // 🛠 Debugging antes de enviar
       this.conflictoService.registrarConflicto(formData)
         .subscribe({
           next: (response) => {
-            this._snackBar.open('Caso registrado con exito', 'Cerrar', { duration: 3000 });
-            console.log('Respuesta del servidor', response);
-
+            this._snackBar.open('Caso registrado con éxito', 'Cerrar', { duration: 3000 });
             this.resetFormState(this.myForm);
             this.selectedFile = null;
             this.isLoading = false;
-            console.log('datos del formulario', this.myForm.value);
           },
-          error:(error) => {
+          error: (error) => {
             this._snackBar.open('Error al registrar el caso', 'Cerrar', { duration: 3500 });
-            console.log('Error al registrar el caso', error);
             this.isLoading = false;
-            console.log('datos del formulario', this.myForm.value);
-          },
-          complete: () => {
-            console.log('Operacion finalizada con exito');
           }
-        }
-        )
+        });
     }
   }
-
-
 
   resetFormState(formulario: FormGroup) {
     formulario.reset()

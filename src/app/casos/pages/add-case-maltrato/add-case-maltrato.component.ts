@@ -11,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MaltratoService } from './../../services/maltrato.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-add-case-maltrato',
@@ -26,7 +27,8 @@ import { MaltratoService } from './../../services/maltrato.service';
     MatIconModule,
     MatButtonModule,
     MatDatepickerModule,
-    CommonModule
+    CommonModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './add-case-maltrato.component.html',
   styleUrl: './add-case-maltrato.component.css'
@@ -55,7 +57,6 @@ export default class AddCaseMaltratoComponent {
     if (input.files && input.files.length > 0) {
       this.selectedFile = input.files[0];
       this.fileName = this.selectedFile.name;
-      console.log('Archivo seleccionado:', this.selectedFile);
     } else {
       this.selectedFile = null;
       this.fileName = null;
@@ -86,7 +87,7 @@ export default class AddCaseMaltratoComponent {
     const infractorForm = this.formBuider.group({
       nombre: ['', Validators.required],
       cui: ['', Validators.required],
-      fechaNacimiento: ['', Validators.required],
+      fecha_Nac: ['', Validators.required],
       direccion: ['', Validators.required],
     });
     this.infractores.push(infractorForm);
@@ -101,7 +102,7 @@ export default class AddCaseMaltratoComponent {
   agregarVictima() {
     const victimaForm = this.formBuider.group({
       nombre: ['', Validators.required],
-      edad: ['', Validators.required],
+      fecha_Nac: ['', Validators.required],
       direccion: ['', Validators.required],
       cui: ['', Validators.required],
     });
@@ -117,8 +118,6 @@ export default class AddCaseMaltratoComponent {
   registrarCaso() {
 
     if (this.myForm.invalid || !this.selectedFile) {
-      console.log(this.myForm.status)
-      console.log('Erorr en el formulario');
       this._snackBar.open('Debes completar todos los campos y seleccionar un archivo', 'Cerrar', {
         duration: 3000
       });
@@ -128,27 +127,36 @@ export default class AddCaseMaltratoComponent {
     this.isLoading = true;
 
     const formData = new FormData();
-    formData.append('numeroDeic', this.myForm.value.numeroDeic || '');
-    formData.append('numeroMp', this.myForm.value.numeroMp || '');
+    formData.append('numeroDeic', this.myForm.value.numeroDeic?.trim() || '');
+    formData.append('numeroMp', this.myForm.value.numeroMp?.trim() || '');
     formData.append('estadoInvestigacion', this.myForm.value.estadoInvestigacion || '');
-    formData.append('infractores', JSON.stringify(this.myForm.value.infractores));
-    formData.append('victimas', JSON.stringify(this.myForm.value.victimas));
+
+    this.myForm.value.infractores?.forEach((infractor: any, index: number) => {
+      formData.append(`infractores[${index}][nombre]`, infractor.nombre);
+      formData.append(`infractores[${index}][cui]`, infractor.cui);
+      formData.append(`infractores[${index}][fecha_Nac]`, infractor.fecha_Nac);
+      formData.append(`infractores[${index}][direccion]`, infractor.direccion);
+    });
+
+    this.myForm.value.victimas?.forEach((victima: any, index: number) => {
+      formData.append(`victimas[${index}][nombre]`, victima.nombre);
+      formData.append(`victimas[${index}][fecha_Nac]`, victima.fecha_Nac);
+      formData.append(`victimas[${index}][direccion]`, victima.direccion);
+      formData.append(`victimas[${index}][cui]`, victima.cui);
+    });
+
     formData.append('file', this.selectedFile)
 
     this.maltratoService.sendFormData(formData)
       .subscribe({
         next: (response) => {
           this._snackBar.open('Caso registrado con exito', 'Cerrar', { duration: 3000 });
-          console.log('Caso registrado con exito', response)
-          console.log(this.myForm.value);
           this.resetFormState(this.myForm);
           this.selectedFile = null;
           this.isLoading = false;
         },
         error: (error) => {
           this._snackBar.open('Error al registrar el caso', 'Cerrar', { duration: 3000 });
-          console.error('Error al registrar el caso', error)
-          console.log(this.myForm.value)
         }
       }
       )
