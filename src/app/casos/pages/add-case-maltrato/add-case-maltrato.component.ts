@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -33,7 +33,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   templateUrl: './add-case-maltrato.component.html',
   styleUrl: './add-case-maltrato.component.css'
 })
-export default class AddCaseMaltratoComponent {
+export default class AddCaseMaltratoComponent implements OnInit{
+
+  ngOnInit(): void {
+    this.agregarInfractor();
+    this.agregarVictima();
+  }
 
   //Inyeccion de dependencias
   private formBuider = inject(FormBuilder);
@@ -147,6 +152,8 @@ export default class AddCaseMaltratoComponent {
 
     formData.append('file', this.selectedFile)
 
+    console.log('formData', formData);
+    console.log('datos del formulario', this.myForm.value);
     this.maltratoService.sendFormData(formData)
       .subscribe({
         next: (response) => {

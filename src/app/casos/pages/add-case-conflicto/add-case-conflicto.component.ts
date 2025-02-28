@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -34,7 +34,12 @@ import { ConflictoService } from '../../services/conflicto.service';
   templateUrl: './add-case-conflicto.component.html',
   styleUrl: './add-case-conflicto.component.css'
 })
-export default class AddCaseConflictoComponent {
+export default class AddCaseConflictoComponent implements OnInit {
+
+  ngOnInit(): void {
+    this.agregarInfractor();
+    this.agregarVictima();
+  }
 
 
   //Inyeccion de dependencias
@@ -179,10 +184,24 @@ export default class AddCaseConflictoComponent {
   }
 
   resetFormState(formulario: FormGroup) {
-    formulario.reset()
+    formulario.reset({
+      numeroDeic: '',
+      numeroMp: '',
+      estadoInvestigacion: '',
+    });
+    this.reiniciarFormulario(this.infractores);
+    this.reiniciarFormulario(this.victimas);
+    this.agregarInfractor();
+    this.agregarVictima();
     formulario.markAsPristine();
     formulario.markAsUntouched();
+
   }
 
+  reiniciarFormulario(formArray: FormArray){
+    while(formArray.length !== 0){
+      formArray.removeAt(0);
+    }
+  }
 
 }

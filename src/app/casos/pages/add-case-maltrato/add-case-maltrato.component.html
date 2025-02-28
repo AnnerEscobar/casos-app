@@ -86,6 +86,7 @@
        type="button"
        (click)="eliminarInfractor(i)"
        class="col-span-full text-red-500 underline text-sm mt-2"
+       [disabled]="infractores.length === 1"
      >
        Eliminar este infractor
      </button>
@@ -157,6 +158,7 @@
        type="button"
        (click)="eliminarVictima(i)"
        class="col-span-full text-red-500 underline text-sm mt-2"
+        [disabled]="victimas.length === 1"
      >
        Eliminar esta víctima
      </button>
