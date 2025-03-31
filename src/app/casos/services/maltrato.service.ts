@@ -16,4 +16,7 @@ export class MaltratoService {
       return this.http.post(`${this.baseUrl}/crear-maltrato`, formData);
     }
 
+    getMaltratos(): Observable<any[]> {
+      return this.http.get<any[]>(this.baseUrl);
+    }
 }

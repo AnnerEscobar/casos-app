@@ -46,11 +46,6 @@ export const routes: Routes = [
     loadComponent: () => import('./dashboard/dashboard-principal.component'),
     children:[
       {
-        path: 'estadisticas',
-        title: 'Estadisticas generales',
-        loadComponent: () => import('./dashboard/estadistics/estadistics.component')
-      },
-      {
         path: '',
         redirectTo: 'estadisticas',
         pathMatch: 'full',

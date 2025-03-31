@@ -4,6 +4,9 @@ import { RouterModule } from '@angular/router';
 import { routes } from '../../app.routes';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-sidenav',
@@ -11,7 +14,10 @@ import {MatButtonModule} from '@angular/material/button';
     MatListModule,
     RouterModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    CommonModule
   ],
   templateUrl: './sidenav.component.html',
   styleUrl: './sidenav.component.css'
@@ -23,6 +29,7 @@ export class SidenavComponent {
     .map(route => route.children ?? [])
     .flat()
     .filter(route => route && route.path)
-    .filter(route => !route.path?.includes(':'));
+    .filter(route => !route.path?.includes(':'))
+    .filter(route => route.path !== 'profile');
 
 }

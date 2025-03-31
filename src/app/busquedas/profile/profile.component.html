@@ -1,56 +1,60 @@
 <div class="bg-blue-100 border-2 p-5 h-full w-full">
-
-  <mat-card class="">
-    <mat-card-header class="">
-      <mat-card-title>Anner Ronaldo Escobar Cruz</mat-card-title>
-      <mat-card-subtitle>Datos obtenidos a traves de investigaciones</mat-card-subtitle>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ nombre }}</mat-card-title>
+      <mat-card-subtitle>Datos obtenidos a través de investigaciones</mat-card-subtitle>
     </mat-card-header>
     <div class="justify-items-center">
-      <img  class=" w-48 h-48 rounded-full border-4 border-blue-800 "
-        src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
-      <mat-card-content>Informacion</mat-card-content>
+      <img class="w-48 h-48 rounded-full border-4 border-blue-800" src="https://cdn.pixabay.com/photo/2016/04/15/18/05/computer-1331579_1280.png" alt="profile">
+      <mat-card-content>Información</mat-card-content>
     </div>
-
     <mat-divider></mat-divider>
-
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-      <!-- Columna 1 -->
+      <!-- Columna 1: Datos personales -->
       <div class="bg-white shadow-lg rounded-lg p-4">
         <h1 class="text-xl font-semibold mb-4">Datos personales</h1>
         <ul class="space-y-2">
-          <li><strong>Nombre:</strong> Anner Ronaldo Escobar Cruz</li>
-          <li><strong>Cui:</strong> 3423354132201</li>
-          <li><strong>Nacionalidad:</strong> Guatemalteco</li>
-          <li><strong>Fecha Nac:</strong> 05/09/1997</li>
-          <li><strong>Edad:</strong> 28 años</li>
-          <li><strong>Teléfono:</strong> 41284104</li>
-          <li><strong>Departamento:</strong> Jutiapa</li>
-          <li><strong>Dirección:</strong> Calle Principal zona 0, Aldea Sitio Viejo, Jutiapa, Jutiapa</li>
+          <li><strong>Nombre:</strong> {{ nombre }}</li>
+          <!-- Aquí puedes agregar más campos dinámicos según los resultados -->
         </ul>
       </div>
 
-      <!-- Columna 2 -->
+      <!-- Columna 2: Casos relacionados -->
       <div class="bg-white shadow-lg rounded-lg p-4">
         <h1 class="text-xl font-semibold mb-4">Casos relacionados</h1>
         <ul class="space-y-2">
-          <li class="flex items-center justify-between">
-            <span>M0030-2024-1</span>
-            <button mat-flat-button>Download</button>
-          </li>
-          <li class="flex items-center justify-between">
-            <span>M0030-2024-1</span>
-            <button mat-flat-button>Download</button>
-          </li>
-          <li class="flex items-center justify-between">
-            <span>M0030-2024-1</span>
-            <button mat-flat-button>Download</button>
+          <li *ngFor="let caso of casosRelacionados" class="flex items-center justify-between">
+            <span>{{ caso.numeroMp }}</span>
+            <button mat-flat-button (click)="descargarExpediente(caso.fileUrl)">Download</button>
           </li>
         </ul>
       </div>
     </div>
 
+    <!-- Sección de Infractores -->
+    <div class="bg-white shadow-lg rounded-lg p-4 mt-4">
+      <h1 class="text-xl font-semibold mb-4">Infractores</h1>
+      <ul class="space-y-2">
+        <li *ngFor="let infractor of infractores">
+          <strong>Nombre:</strong> {{ infractor.nombre }}<br>
+          <strong>CUI:</strong> {{ infractor.cui }}<br>
+          <strong>Fecha de Nacimiento:</strong> {{ infractor.fecha_Nac | date }}<br>
+          <strong>Dirección:</strong> {{ infractor.direccion }}
+        </li>
+      </ul>
+    </div>
+
+    <!-- Sección de Víctimas -->
+    <div class="bg-white shadow-lg rounded-lg p-4 mt-4">
+      <h1 class="text-xl font-semibold mb-4">Víctimas</h1>
+      <ul class="space-y-2">
+        <li *ngFor="let victima of victimas">
+          <strong>Nombre:</strong> {{ victima.nombre }}<br>
+          <strong>CUI:</strong> {{ victima.cui }}<br>
+          <strong>Fecha de Nacimiento:</strong> {{ victima.fecha_Nac | date }}<br>
+          <strong>Dirección:</strong> {{ victima.direccion }}
+        </li>
+      </ul>
+    </div>
   </mat-card>
-
-
-
 </div>

@@ -15,4 +15,8 @@ export class ConflictoService {
   registrarConflicto(formData: FormData): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/crear-conflicto`, formData);
   }
+
+  getConflictos(): Observable<any[]> {
+    return this.http.get<any[]>(this.baseUrl);
+  }
 }
