@@ -1,0 +1,54 @@
+
+mat-expansion-panel {
+  color: black;
+  border: none;
+}
+
+mat-expansion-panel-header {
+  padding-left: 8px;
+}
+
+a.mat-list-item {
+  padding-left: 24px;
+  color: black;
+}
+
+
+mat-expansion-panel {
+  background: transparent;
+  color: blue;
+  border: none;
+}
+
+mat-expansion-panel-header {
+  padding-left: 8px;
+}
+
+a.submenu-link {
+  padding-left: 32px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 4px;
+  margin: 2px 8px;
+  color: inherit;
+  transition: background-color 0.3s ease;
+}
+
+a.submenu-link:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+a.submenu-link.active-link {
+  background-color: var(--mat-primary);
+  color: blue;
+}
+
+.submenu-icon {
+  font-size: 16px;
+}
+
+.dark-theme a.submenu-link:hover {
+  background-color: rgba(118, 42, 42, 0.1);
+}

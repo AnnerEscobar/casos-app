@@ -12,6 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConflictoService } from '../../services/conflicto.service';
+import {MatCardModule} from '@angular/material/card';
 
 @Component({
   selector: 'app-add-case-conflicto',
@@ -29,7 +30,8 @@ import { ConflictoService } from '../../services/conflicto.service';
     MatDatepickerModule,
     CommonModule,
     FormsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatCardModule
   ],
   templateUrl: './add-case-conflicto.component.html',
   styleUrl: './add-case-conflicto.component.css'

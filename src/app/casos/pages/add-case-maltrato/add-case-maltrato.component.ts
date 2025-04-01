@@ -12,6 +12,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MaltratoService } from './../../services/maltrato.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {MatCardModule} from '@angular/material/card';
 
 @Component({
   selector: 'app-add-case-maltrato',
@@ -28,7 +29,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatButtonModule,
     MatDatepickerModule,
     CommonModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatCardModule
   ],
   templateUrl: './add-case-maltrato.component.html',
   styleUrl: './add-case-maltrato.component.css'

@@ -12,6 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AlertaService } from '../../services/alerta.service';
+import {MatCardModule} from '@angular/material/card';
 
 
 @Component({
@@ -29,7 +30,8 @@ import { AlertaService } from '../../services/alerta.service';
     MatSelectModule,
     MatSlideToggleModule,
     ReactiveFormsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatCardModule
   ],
   templateUrl: './add-case-alerta.component.html',
   styleUrl: './add-case-alerta.component.css'
@@ -129,7 +131,7 @@ export default class AddCaseAlertaComponent {
   }
 
 
-  
+
   resetFormState(formulario: FormGroup) {
     formulario.reset()
     formulario.markAsPristine();

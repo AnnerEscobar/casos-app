@@ -73,21 +73,32 @@
     </div>
 
     <!--Espacio para carga de archivo-->
+    <mat-card class="file-upload-card">
+      <mat-card-title>
+        <mat-icon class="mr-2">upload</mat-icon>
+        Cargar archivo de investigación
+      </mat-card-title>
 
-    <p class="text ml-5">Cargar archivo de investigacion</p>
-    <div class="file-upload-container p-5 mx-5 bg-gray-100 rounded-lg">
-      <label for="fileInput" class="file-upload-label">
-        <div class="flex items-center space-x-2 cursor-pointer">
-          <img src="https://img.icons8.com/ios-glyphs/30/upload.png" alt="Upload Icon" class="h-6" />
-          <span>Cargar Archivo</span>
+      <mat-card-content>
+        <button mat-stroked-button color="primary" (click)="fileInput.click()">
+          <mat-icon class="mr-2">attach_file</mat-icon>
+          Seleccionar archivo
+        </button>
+
+        <input
+          #fileInput
+          type="file"
+          hidden
+          (change)="onFileSelected($event)"
+        />
+
+        <div class="file-preview mt-4">
+          <p *ngIf="fileName">📄 Archivo seleccionado: {{ fileName }}</p>
+          <p *ngIf="!fileName" class="text-muted">No se ha seleccionado ningún archivo.</p>
         </div>
-      </label>
-      <input id="fileInput" type="file" class="file-input hidden" (change)="onFileSelected($event)" />
-      <div class="file-preview mt-3">
-        <p *ngIf="fileName">Archivo seleccionado: {{ fileName }}</p>
-        <p *ngIf="!fileName">No se ha seleccionado ningún archivo.</p>
-      </div>
-    </div>
+      </mat-card-content>
+    </mat-card>
+
 
     <section class="p-2">
       <div class="">
