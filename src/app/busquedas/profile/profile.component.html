@@ -1,11 +1,12 @@
 <div class="bg-blue-100 border-2 p-5 h-full w-full">
   <mat-card>
     <mat-card-header>
-      <mat-card-title>{{ nombre }}</mat-card-title>
-      <mat-card-subtitle>Datos obtenidos a través de investigaciones</mat-card-subtitle>
+      <mat-card-title>{{ nombreReal }}</mat-card-title>
+      <mat-card-subtitle>Rol: {{ rol }} | Datos obtenidos a través de investigaciones</mat-card-subtitle>
     </mat-card-header>
     <div class="justify-items-center">
-      <img class="w-48 h-48 rounded-full border-4 border-blue-800" src="https://cdn.pixabay.com/photo/2016/04/15/18/05/computer-1331579_1280.png" alt="profile">
+      <img class="w-48 h-48 rounded-full border-4 border-blue-800"
+        src="https://cdn.pixabay.com/photo/2016/04/15/18/05/computer-1331579_1280.png" alt="profile">
       <mat-card-content>Información</mat-card-content>
     </div>
     <mat-divider></mat-divider>
@@ -14,8 +15,10 @@
       <div class="bg-white shadow-lg rounded-lg p-4">
         <h1 class="text-xl font-semibold mb-4">Datos personales</h1>
         <ul class="space-y-2">
-          <li><strong>Nombre:</strong> {{ nombre }}</li>
-          <!-- Aquí puedes agregar más campos dinámicos según los resultados -->
+          <li><strong>Nombre:</strong> {{ nombreReal }}</li>
+          <li *ngIf="cui"><strong>CUI:</strong> {{ cui }}</li>
+          <li *ngIf="fechaNacimiento"><strong>Fecha de Nacimiento:</strong> {{ fechaNacimiento | date }}</li>
+          <li *ngIf="direccion"><strong>Dirección:</strong> {{ direccion }}</li>
         </ul>
       </div>
 
@@ -25,14 +28,15 @@
         <ul class="space-y-2">
           <li *ngFor="let caso of casosRelacionados" class="flex items-center justify-between">
             <span>{{ caso.numeroMp }}</span>
-            <button mat-flat-button (click)="descargarExpediente(caso.fileUrl)">Download</button>
+            <button mat-flat-button (click)="descargarExpediente(caso.fileUrls[0])">Download</button>
           </li>
         </ul>
       </div>
     </div>
 
     <!-- Sección de Infractores -->
-    <div class="bg-white shadow-lg rounded-lg p-4 mt-4">
+    <!-- Infractores -->
+    <div *ngIf="infractores.length > 0" class="bg-white shadow-lg rounded-lg p-4 mt-4">
       <h1 class="text-xl font-semibold mb-4">Infractores</h1>
       <ul class="space-y-2">
         <li *ngFor="let infractor of infractores">
@@ -44,8 +48,9 @@
       </ul>
     </div>
 
+
     <!-- Sección de Víctimas -->
-    <div class="bg-white shadow-lg rounded-lg p-4 mt-4">
+<!--     <div class="bg-white shadow-lg rounded-lg p-4 mt-4">
       <h1 class="text-xl font-semibold mb-4">Víctimas</h1>
       <ul class="space-y-2">
         <li *ngFor="let victima of victimas">
@@ -55,6 +60,6 @@
           <strong>Dirección:</strong> {{ victima.direccion }}
         </li>
       </ul>
-    </div>
+    </div> -->
   </mat-card>
 </div>

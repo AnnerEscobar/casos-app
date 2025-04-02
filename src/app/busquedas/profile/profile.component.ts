@@ -1,9 +1,9 @@
 import { Component, HostListener } from '@angular/core';
-import {MatCardModule} from '@angular/material/card';
-import {MatButtonModule} from '@angular/material/button';
-import {MatDividerModule} from '@angular/material/divider';
-import {MatGridListModule} from '@angular/material/grid-list';
-import {MatListModule} from '@angular/material/list';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatListModule } from '@angular/material/list';
 import { ActivatedRoute } from '@angular/router';
 import { BusquedaService } from '../search-profile/busqueda.service';
 import { CommonModule } from '@angular/common';
@@ -28,11 +28,19 @@ export default class ProfileComponent {
   infractores: any[] = [];
   victimas: any[] = [];
   isLoading: boolean = false;
+  casosRelacionados: any[] = [];
+
+  nombreReal: string = '';
+  rol: string = '';
+  fechaNacimiento: string = '';
+  cui: string = '';
+  direccion: string = '';
+
 
   constructor(
     private route: ActivatedRoute,
     private busquedaService: BusquedaService
-  ) {}
+  ) { }
 
   ngOnInit() {
     // Obtener el nombre de los query parameters
@@ -62,24 +70,50 @@ export default class ProfileComponent {
   // Método para procesar los resultados de la búsqueda
   procesarResultados(resultados: any[]) {
     this.casosRelacionados = resultados;
-
-    // Extraer infractores y víctimas
     this.infractores = [];
     this.victimas = [];
 
     resultados.forEach(caso => {
-      if (caso.infractores) {
-        this.infractores.push(...caso.infractores);
+      const lowerBuscado = this.nombre.toLowerCase();
+
+      if (caso.nombreDesaparecido?.toLowerCase().includes(lowerBuscado)) {
+        this.nombreReal = caso.nombreDesaparecido;
+        this.rol = 'Desaparecido';
+        this.fechaNacimiento = caso.fecha_Nac;
+        this.direccion = caso.direccion?.direccionDetallada ?? '';
+        this.cui = '';
       }
-      if (caso.victimas) {
-        this.victimas.push(...caso.victimas);
+
+      const infractorMatch = caso.infractores?.find((i: any) =>
+        i.nombre.toLowerCase().includes(lowerBuscado)
+      );
+      if (infractorMatch) {
+        this.nombreReal = infractorMatch.nombre;
+        this.rol = 'Infractor';
+        this.cui = infractorMatch.cui;
+        this.fechaNacimiento = infractorMatch.fecha_Nac;
+        this.direccion = infractorMatch.direccion;
       }
+
+      const victimaMatch = caso.victimas?.find((v: any) =>
+        v.nombre.toLowerCase().includes(lowerBuscado)
+      );
+      if (victimaMatch) {
+        this.nombreReal = victimaMatch.nombre;
+        this.rol = 'Víctima';
+        this.cui = victimaMatch.cui;
+        this.fechaNacimiento = victimaMatch.fecha_Nac;
+        this.direccion = victimaMatch.direccion;
+      }
+
+      if (caso.infractores) this.infractores.push(...caso.infractores);
+      if (caso.victimas) this.victimas.push(...caso.victimas);
     });
 
-    // Filtrar duplicados (opcional)
     this.infractores = this.eliminarDuplicados(this.infractores, 'cui');
     this.victimas = this.eliminarDuplicados(this.victimas, 'cui');
   }
+
 
   // Método para eliminar duplicados
   eliminarDuplicados(array: any[], key: string): any[] {
@@ -87,14 +121,6 @@ export default class ProfileComponent {
       index === self.findIndex((t) => t[key] === item[key])
     );
   }
-
-  casosRelacionados: any[] = [
-    {
-      numeroMp: '',
-      fileUrl: ''
-    },
-    // Agrega más casos relacionados si es necesario
-  ];
 
 
   descargarExpediente(fileUrl: string) {

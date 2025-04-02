@@ -56,27 +56,31 @@ export default class SearchProfileComponent {
     private route: Router
   ) { }
 
-  // Método para buscar por nombre
+
   // Método para buscar por nombre
   buscarPorNombre() {
     if (!this.nombre) {
-        alert('Por favor, ingresa un nombre.');
-        return;
+      alert('Por favor, ingresa un nombre.');
+      return;
     }
-this.tipoBusqueda = 'nombre'; // Establecer el tipo de búsqueda
-this.iniciarBusqueda();
+
+    this.tipoBusqueda = 'nombre';
+    this.iniciarBusqueda();
+
     this.busquedaService.buscarPorNombre(this.nombre).subscribe(
-        (resultados) => {
-            this.resultadosBusqueda = resultados;
-            this.isLoading = false;
-        },
-        (error) => {
-            console.error('Error al buscar por nombre:', error);
-            this.isLoading = false;
-            alert('No se encontraron resultados.');
-        }
+      (resultados) => {
+        this.resultadosBusqueda = this.procesarResultadosPorNombre(this.nombre, resultados);
+        this.isLoading = false;
+      },
+      (error) => {
+        console.error('Error al buscar por nombre:', error);
+        this.isLoading = false;
+        alert('No se encontraron resultados.');
+      }
     );
-}
+  }
+
+
 
   // Método para buscar por CUI
   buscarPorCUI() {
@@ -190,6 +194,53 @@ this.route.navigate(['/casos/profile'], {queryParams: {nombre: this.nombre}});
     // Ejemplo de redirección:
     // this.router.navigate(['/perfil', resultado._id]);
   }
+
+
+  // Método para procesar los resultados de la búsqueda por nombre
+  procesarResultadosPorNombre(nombreBuscado: string, resultados: any[]): any[] {
+    const lowerName = nombreBuscado.trim().toLowerCase();
+
+    return resultados.map(caso => {
+      let rol = '';
+      let nombreFinal = '';
+
+      // Desaparecido
+      if (caso.nombreDesaparecido?.toLowerCase().includes(lowerName)) {
+        rol = 'Desaparecido';
+        nombreFinal = caso.nombreDesaparecido;
+      }
+
+      // Infractores
+      const infractorMatch = caso.infractores?.find((i: any) =>
+        i.nombre.toLowerCase().includes(lowerName)
+      );
+      if (infractorMatch) {
+        rol = 'Infractor';
+        nombreFinal = infractorMatch.nombre;
+      }
+
+      // Víctimas
+      const victimaMatch = caso.victimas?.find((v: any) =>
+        v.nombre.toLowerCase().includes(lowerName)
+      );
+      if (victimaMatch) {
+        rol = 'Víctima';
+        nombreFinal = victimaMatch.nombre;
+      }
+
+      return {
+        rol,
+        nombre: nombreFinal,
+        tipo: caso.tipo || 'Desconocido',
+        numeroMp: caso.numeroMp,
+        numeroDeic: caso.numeroDeic,
+        estadoInvestigacion: caso.estadoInvestigacion,
+        fileUrls: caso.fileUrls ?? []
+      };
+    });
+  }
+
+
 
 
 }

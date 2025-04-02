@@ -1,9 +1,22 @@
+import { authGuard } from './auth/auth-guards/auth.guard';
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
 
   {
+    path: 'login',
+    title: 'Iniciar sesión',
+    loadComponent: () => import('./auth/pages/login/auth.component')
+  },
+  {
+    path: 'register',
+    title: 'Registro',
+    loadComponent: () => import('./auth/pages/register/register.component')
+  },
+
+  {
     path: 'casos',
+    canActivate: [authGuard],
     loadComponent: () => import('./casos/dashboard-case.component'),
     children: [
       {
@@ -43,8 +56,9 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard',
+    canActivate: [authGuard],
     loadComponent: () => import('./dashboard/dashboard-principal.component'),
-    children:[
+    children: [
       {
         path: '',
         redirectTo: 'estadisticas',
@@ -56,7 +70,7 @@ export const routes: Routes = [
 
   {
     path: '',
-    redirectTo: '/casos',
+    redirectTo: '/login',
     pathMatch: 'full'
   }
 

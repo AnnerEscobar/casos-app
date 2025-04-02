@@ -84,7 +84,8 @@
       <div *ngIf="resultadosBusqueda.length > 0; else noResults">
         <mat-card *ngFor="let resultado of resultadosBusqueda" class="flex justify-between items-center p-4">
             <div class="text-lg font-medium">
-                <p><strong>Nombre:</strong> {{ resultado.nombreDesaparecido || resultado.infractores[0]?.nombre || resultado.victimas[0]?.nombre }}</p>
+              <p><strong>Rol:</strong> {{ resultado.rol }}</p>
+              <p><strong>Nombre:</strong> {{ resultado.nombre }}</p>
                 <p><strong>Tipo de Caso:</strong> {{ resultado.tipo }}</p>
                 <p><strong>Número de Expediente MP:</strong> {{ resultado.numeroMp }}</p>
                 <p><strong>Número DEIC:</strong> {{ resultado.numeroDeic }}</p>
