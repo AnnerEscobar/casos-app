@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environment.prod';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConflictoService {
 
-  private baseUrl = 'http://localhost:3000/conflictos';
+  private baseUrl = `${environment.apiUrl}/conflictos`;
   private http = inject(HttpClient);
 
   constructor() { }
