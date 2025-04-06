@@ -107,7 +107,7 @@ export default class AddCaseAlertaComponent {
       },
       error: (error) => {
         this._snackBar.open('Error al registrar el caso', 'cerrar', { duration: 3500 });
-        console.log('Error al registrar el caso', error.message);
+        console.log('Error al registrar el caso de alerta', error.message);
         this.isLoading = false;
       },
       complete: () => {
