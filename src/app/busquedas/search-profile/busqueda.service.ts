@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environment.prod';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BusquedaService {
 
-  private baseUrl = 'http://localhost:3000/busquedas';
+  private baseUrl = environment.apiUrl + '/busquedas'; // URL base de la API
 
   constructor(private http: HttpClient) {}
 
