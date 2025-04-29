@@ -125,11 +125,20 @@ export default class ProfileComponent {
 
   descargarExpediente(fileUrl: string) {
     if (fileUrl) {
-      // Abrir la URL en una nueva pestaña
-      window.open(fileUrl, '_blank');
+      // Extraer el ID del archivo de la URL
+      const match = fileUrl.match(/[-\w]{25,}/); // patrón para IDs de Google Drive
+      const fileId = match ? match[0] : null;
+
+      if (fileId) {
+        const previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+        window.open(previewUrl, '_blank'); // Abre el visor en una nueva pestaña
+      } else {
+        alert('No se pudo extraer el ID del archivo.');
+      }
     } else {
       alert('No hay un archivo asociado a este expediente.');
     }
   }
+
 
 }
