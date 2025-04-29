@@ -171,11 +171,22 @@ export default class AddCaseAlertaComponent {
 
 
 
-  resetFormState(formulario: FormGroup) {
-    formulario.reset()
-    formulario.markAsPristine();
-    formulario.markAsUntouched();
+  resetFormState(form: FormGroup) {
+    form.reset();
+
+    Object.keys(form.controls).forEach((key) => {
+      const control = form.get(key);
+
+      if (control instanceof FormGroup) {
+        this.resetFormState(control); // Recursivo para subgrupos
+      } else {
+        control?.markAsPristine();
+        control?.markAsUntouched();
+        control?.setErrors(null);
+      }
+    });
   }
+
 
 
 }
