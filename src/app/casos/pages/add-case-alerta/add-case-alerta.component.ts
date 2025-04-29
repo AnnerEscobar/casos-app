@@ -59,9 +59,9 @@ export default class AddCaseAlertaComponent {
 
 
   myForm = this.formBuilder.group({
-    numeroDeic: ['', [Validators.required]],
-    numeroMp: ['', [Validators.required]],
-    numeroAlerta: ['', [Validators.required]],
+    numeroDeic: ['', [Validators.required, Validators.pattern(/^DEIC52-\d{4}-\d{2}-\d{2}-\d+$/)]],
+    numeroMp: ['', [Validators.required, Validators.pattern(/^M0030-\d{4}-\d+$/)]],
+    numeroAlerta: ['', [Validators.required, Validators.pattern(/^\d+-\d{4}$/)]],
     nombreDesaparecido: ['', [Validators.required]],
     fecha_Nac: [null, [Validators.required]],
     estadoInvestigacion: ['', [Validators.required]],
