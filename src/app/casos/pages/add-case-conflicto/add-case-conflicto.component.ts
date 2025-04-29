@@ -185,25 +185,21 @@ export default class AddCaseConflictoComponent implements OnInit {
     }
   }
 
-  resetFormState(formulario: FormGroup) {
-    formulario.reset({
-      numeroDeic: '',
-      numeroMp: '',
-      estadoInvestigacion: '',
+  resetFormState(form: FormGroup) {
+    form.reset();
+
+    Object.keys(form.controls).forEach((key) => {
+      const control = form.get(key);
+
+      if (control instanceof FormGroup) {
+        this.resetFormState(control); // Recursivo para subgrupos
+      } else {
+        control?.markAsPristine();
+        control?.markAsUntouched();
+        control?.setErrors(null);
+      }
     });
-    this.reiniciarFormulario(this.infractores);
-    this.reiniciarFormulario(this.victimas);
-    this.agregarInfractor();
-    this.agregarVictima();
-    formulario.markAsPristine();
-    formulario.markAsUntouched();
-
   }
 
-  reiniciarFormulario(formArray: FormArray){
-    while(formArray.length !== 0){
-      formArray.removeAt(0);
-    }
-  }
 
 }
