@@ -52,7 +52,7 @@
       </mat-form-field>
     </div>
 
-    <h1 class="text ml-5">Direccion</h1>
+    <h1 class="text ml-5">Lugar de desaparicion</h1>
     <div formGroupName="direccion" class="h-full w-full gap-4 p-5 grid grid-cols-1 md:grid-cols-3">
 
       <mat-form-field class="w-full">
@@ -72,6 +72,40 @@
 
     </div>
 
+    <h1 *ngIf="myForm.get('estadoInvestigacion')?.value === 'Remitido'" class="text ml-5">Lugar de localizacion</h1>
+    <!-- Campos de localización solo si estado es Remitido -->
+    <div *ngIf="myForm.get('estadoInvestigacion')?.value === 'Remitido'"
+      class="gap-4 p-5 grid grid-cols-1 md:grid-cols-3">
+
+      <mat-form-field class="w-full">
+        <mat-label>Dirección de la localización</mat-label>
+        <input matInput formControlName="direccionLocalizacion" placeholder="Ingrese la dirección donde fue localizado">
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Nombre de la persona con quien se encontraba</mat-label>
+        <input matInput formControlName="nombreAcompanante" placeholder="Ej. Juan Pérez">
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Número telefónico</mat-label>
+        <input matInput formControlName="telefono" placeholder="Ej. 45678901" type="tel">
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Fecha de localización</mat-label>
+        <input matInput [matDatepicker]="fechaPicker" formControlName="fechaLocalizacion">
+        <mat-datepicker-toggle matSuffix [for]="fechaPicker"></mat-datepicker-toggle>
+        <mat-datepicker #fechaPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Hora de localización</mat-label>
+        <input matInput formControlName="horaLocalizacion" type="time">
+      </mat-form-field>
+
+    </div>
+
     <!--Espacio para carga de archivo-->
     <mat-card class="file-upload-card">
       <mat-card-title>
@@ -85,12 +119,7 @@
           Seleccionar archivo
         </button>
 
-        <input
-          #fileInput
-          type="file"
-          hidden
-          (change)="onFileSelected($event)"
-        />
+        <input #fileInput type="file" hidden (change)="onFileSelected($event)" />
 
         <div class="file-preview mt-4">
           <p *ngIf="fileName">📄 Archivo seleccionado: {{ fileName }}</p>

@@ -12,7 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AlertaService } from '../../services/alerta.service';
-import {MatCardModule} from '@angular/material/card';
+import { MatCardModule } from '@angular/material/card';
 
 
 @Component({
@@ -70,8 +70,40 @@ export default class AddCaseAlertaComponent {
       municipio: ['', [Validators.required]],
       direccionDetallada: ['', [Validators.required]],
     }),
-    fileUrls: this.formBuilder.array([])
+    direccionLocalizacion: [''],
+    nombreAcompanante: [''],
+    telefono: [''],
+    horaLocalizacion: [''],
+    fechaLocalizacion: [null],
+    fileUrls: this.formBuilder.array([]),
   });
+
+  ngOnInit() {
+    this.myForm.get('estadoInvestigacion')?.valueChanges.subscribe((estado) => {
+      const mostrar = estado === 'Remitido';
+
+      const campos = [
+        'direccionLocalizacion',
+        'nombreAcompanante',
+        'telefono',
+        'horaLocalizacion',
+        'fechaLocalizacion'
+      ];
+
+      campos.forEach(campo => {
+        const control = this.myForm.get(campo);
+        if (mostrar) {
+          control?.setValidators(Validators.required);
+          control?.updateValueAndValidity();
+        } else {
+          control?.clearValidators();
+          control?.setValue('');
+          control?.updateValueAndValidity();
+        }
+      });
+    });
+  }
+
 
 
   registrarCaso() {
@@ -95,6 +127,13 @@ export default class AddCaseAlertaComponent {
     formData.append('direccion[municipio]', this.myForm.value.direccion?.municipio || '');
     formData.append('direccion[direccionDetallada]', this.myForm.value.direccion?.direccionDetallada || '');
     formData.append('file', this.selectedFile);
+    if (this.myForm.value.estadoInvestigacion === 'Remitido') {
+      formData.append('direccionLocalizacion', this.myForm.value.direccionLocalizacion || '');
+      formData.append('nombreAcompanante', this.myForm.value.nombreAcompanante || '');
+      formData.append('telefono', this.myForm.value.telefono || '');
+      formData.append('horaLocalizacion', this.myForm.value.horaLocalizacion || '');
+      formData.append('fechaLocalizacion', this.myForm.value.fechaLocalizacion || '');
+    }
 
     this.alertaService.registrarAlerta(formData).subscribe({
       next: (response) => {
