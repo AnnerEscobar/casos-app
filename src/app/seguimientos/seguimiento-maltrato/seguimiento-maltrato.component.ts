@@ -6,6 +6,6 @@ import { Component } from '@angular/core';
   templateUrl: './seguimiento-maltrato.component.html',
   styleUrl: './seguimiento-maltrato.component.css'
 })
-export class SeguimientoMaltratoComponent {
+export default class SeguimientoMaltratoComponent {
 
 }

@@ -35,6 +35,21 @@ export const routes: Routes = [
         loadComponent: () => import('./casos/pages/add-case-conflicto/add-case-conflicto.component')
       },
       {
+        path: 'seguimiento-alerta',
+        title: 'Seguimiento Alerta',
+        loadComponent: () => import('./seguimientos/seguimiento-alerta/seguimiento-alerta.component')
+      },
+      {
+        path: 'seguimiento-maltrato',
+        title: 'Seguimiento Maltrato',
+        loadComponent: () => import('./seguimientos/seguimiento-maltrato/seguimiento-maltrato.component')
+      },
+      {
+        path: 'seguimiento-conflicto',
+        title: 'Seguimiento Conflicto',
+        loadComponent: () => import('./seguimientos/seguimiento-conflicto/seguimiento-conflicto.component')
+      },
+      {
         path: 'estadisticas',
         title: 'Estadisticas generales',
         loadComponent: () => import('./dashboard/estadistics/estadistics.component')

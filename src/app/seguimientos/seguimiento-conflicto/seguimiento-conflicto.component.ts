@@ -6,6 +6,6 @@ import { Component } from '@angular/core';
   templateUrl: './seguimiento-conflicto.component.html',
   styleUrl: './seguimiento-conflicto.component.css'
 })
-export class SeguimientoConflictoComponent {
+export default class SeguimientoConflictoComponent {
 
 }
