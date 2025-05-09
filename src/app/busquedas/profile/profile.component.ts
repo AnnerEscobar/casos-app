@@ -123,22 +123,19 @@ export default class ProfileComponent {
   }
 
 
-  descargarExpediente(fileUrl: string) {
-    if (fileUrl) {
-      // Extraer el ID del archivo de la URL
-      const match = fileUrl.match(/[-\w]{25,}/); // patrón para IDs de Google Drive
-      const fileId = match ? match[0] : null;
-
-      if (fileId) {
-        const previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
-        window.open(previewUrl, '_blank'); // Abre el visor en una nueva pestaña
-      } else {
-        alert('No se pudo extraer el ID del archivo.');
-      }
-    } else {
-      alert('No hay un archivo asociado a este expediente.');
-    }
+descargarExpediente(fileUrl: string) {
+  if (fileUrl) {
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    link.download = ''; // Podés poner aquí un nombre como 'expediente.pdf'
+    link.target = '_blank'; // Opcional, pero útil si es desde un servidor externo
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else {
+    alert('No hay un archivo asociado a este expediente.');
   }
+}
 
 
 }
