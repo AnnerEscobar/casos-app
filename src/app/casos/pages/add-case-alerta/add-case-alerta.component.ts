@@ -12,7 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AlertaService } from '../../services/alerta.service';
-import {MatCardModule} from '@angular/material/card';
+import { MatCardModule } from '@angular/material/card';
 
 
 @Component({
@@ -59,9 +59,9 @@ export default class AddCaseAlertaComponent {
 
 
   myForm = this.formBuilder.group({
-    numeroDeic: ['', [Validators.required]],
-    numeroMp: ['', [Validators.required]],
-    numeroAlerta: ['', [Validators.required]],
+    numeroDeic: ['', [Validators.required, Validators.pattern(/^DEIC52-\d{4}-\d{2}-\d{2}-\d+$/)]],
+    numeroMp: ['', [Validators.required, Validators.pattern(/^M0030-\d{4}-\d+$/)]],
+    numeroAlerta: ['', [Validators.required, Validators.pattern(/^\d+-\d{4}$/)]],
     nombreDesaparecido: ['', [Validators.required]],
     fecha_Nac: [null, [Validators.required]],
     estadoInvestigacion: ['', [Validators.required]],
@@ -70,8 +70,40 @@ export default class AddCaseAlertaComponent {
       municipio: ['', [Validators.required]],
       direccionDetallada: ['', [Validators.required]],
     }),
-    fileUrls: this.formBuilder.array([])
+    direccionLocalizacion: [''],
+    nombreAcompanante: [''],
+    telefono: [''],
+    horaLocalizacion: [''],
+    fechaLocalizacion: [null],
+    fileUrls: this.formBuilder.array([]),
   });
+
+  ngOnInit() {
+    this.myForm.get('estadoInvestigacion')?.valueChanges.subscribe((estado) => {
+      const mostrar = estado === 'Remitido';
+
+      const campos = [
+        'direccionLocalizacion',
+        'nombreAcompanante',
+        'telefono',
+        'horaLocalizacion',
+        'fechaLocalizacion'
+      ];
+
+      campos.forEach(campo => {
+        const control = this.myForm.get(campo);
+        if (mostrar) {
+          control?.setValidators(Validators.required);
+          control?.updateValueAndValidity();
+        } else {
+          control?.clearValidators();
+          control?.setValue('');
+          control?.updateValueAndValidity();
+        }
+      });
+    });
+  }
+
 
 
   registrarCaso() {
@@ -95,6 +127,13 @@ export default class AddCaseAlertaComponent {
     formData.append('direccion[municipio]', this.myForm.value.direccion?.municipio || '');
     formData.append('direccion[direccionDetallada]', this.myForm.value.direccion?.direccionDetallada || '');
     formData.append('file', this.selectedFile);
+    if (this.myForm.value.estadoInvestigacion === 'Remitido') {
+      formData.append('direccionLocalizacion', this.myForm.value.direccionLocalizacion || '');
+      formData.append('nombreAcompanante', this.myForm.value.nombreAcompanante || '');
+      formData.append('telefono', this.myForm.value.telefono || '');
+      formData.append('horaLocalizacion', this.myForm.value.horaLocalizacion || '');
+      formData.append('fechaLocalizacion', this.myForm.value.fechaLocalizacion || '');
+    }
 
     this.alertaService.registrarAlerta(formData).subscribe({
       next: (response) => {
@@ -132,11 +171,22 @@ export default class AddCaseAlertaComponent {
 
 
 
-  resetFormState(formulario: FormGroup) {
-    formulario.reset()
-    formulario.markAsPristine();
-    formulario.markAsUntouched();
+  resetFormState(form: FormGroup) {
+    form.reset();
+
+    Object.keys(form.controls).forEach((key) => {
+      const control = form.get(key);
+
+      if (control instanceof FormGroup) {
+        this.resetFormState(control); // Recursivo para subgrupos
+      } else {
+        control?.markAsPristine();
+        control?.markAsUntouched();
+        control?.setErrors(null);
+      }
+    });
   }
+
 
 
 }

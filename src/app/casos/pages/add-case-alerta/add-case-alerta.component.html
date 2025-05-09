@@ -8,19 +8,40 @@
 
     <!--Numeros de caso-->
     <div class="gap-4 p-5 grid grid-cols-1 md:grid-cols-3">
+
+
       <mat-form-field class="w-full">
         <mat-label>Numero de Caso (DEIC)</mat-label>
         <input matInput placeholder="DEIC52-2025-01-02-01" formControlName="numeroDeic">
+        <mat-error *ngIf="myForm.get('numeroDeic')?.hasError('required')">
+          El número DEIC es obligatorio.
+        </mat-error>
+        <mat-error *ngIf="myForm.get('numeroDeic')?.hasError('pattern')">
+          Formato inválido. Use DEIC51-AAAA-MM-DD-XXX
+        </mat-error>
       </mat-form-field>
+
 
       <mat-form-field class="w-full">
         <mat-label>Numero de Caso (MP)</mat-label>
         <input matInput placeholder="M0030-2025-100" formControlName="numeroMp">
+        <mat-error *ngIf="myForm.get('numeroMp')?.hasError('required')">
+          El número de caso MP es obligatorio.
+        </mat-error>
+        <mat-error *ngIf="myForm.get('numeroMp')?.hasError('pattern')">
+          Formato inválido. Use M0030-AAAA-XXX
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field class="w-full">
         <mat-label>Numero de Alerta</mat-label>
         <input matInput placeholder="2664-2025" formControlName="numeroAlerta">
+        <mat-error *ngIf="myForm.get('numeroAlerta')?.hasError('required')">
+          El número de Alerta es obligatorio.
+        </mat-error>
+        <mat-error *ngIf="myForm.get('numeroAlerta')?.hasError('pattern')">
+          Formato inválido. Use AAAA-XXX
+        </mat-error>
       </mat-form-field>
     </div>
 
@@ -32,6 +53,9 @@
       <mat-form-field class="">
         <mat-label>Nombre</mat-label>
         <input matInput placeholder="Escriba el nombre completo" formControlName="nombreDesaparecido">
+        <mat-error *ngIf="myForm.get('nombreDesaparecido')?.hasError('required')">
+          El nombre es obligatorio.
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field>
@@ -40,6 +64,9 @@
         <mat-hint>MM/DD/YYYY</mat-hint>
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="myForm.get('fecha_Nac')?.hasError('required')">
+          La fecha es obligatoria.
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field class="">
@@ -49,25 +76,86 @@
           <mat-option [value]="estado.value">{{estado.viewValue}}</mat-option>
           }
         </mat-select>
+        <mat-error *ngIf="myForm.get('estadoInvestigacion')?.hasError('required')">
+          Estado de investigacion obligatorio.
+        </mat-error>
       </mat-form-field>
     </div>
 
-    <h1 class="text ml-5">Direccion</h1>
+    <h1 class="text ml-5">Lugar de desaparicion</h1>
     <div formGroupName="direccion" class="h-full w-full gap-4 p-5 grid grid-cols-1 md:grid-cols-3">
 
       <mat-form-field class="w-full">
         <mat-label>Departamento</mat-label>
         <input matInput formControlName="departamento" placeholder="Ingrese el departamento">
+        <mat-error *ngIf="myForm.get('direccion.departamento')?.hasError('required')">
+          El departamento es obligatorio.
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field class="w-full">
         <mat-label>Municipio</mat-label>
         <input matInput formControlName="municipio" placeholder="Ingrese el municipio">
+        <mat-error *ngIf="myForm.get('direccion.municipio')?.hasError('required')">
+          El municipio es obligatorio.
+        </mat-error>
       </mat-form-field>
 
       <mat-form-field class="w-full">
         <mat-label>Direccion del hecho o desaparicion</mat-label>
         <input matInput formControlName="direccionDetallada" placeholder="Ingrese la direccion completa">
+        <mat-error *ngIf="myForm.get('direccion.direccionDetallada')?.hasError('required')">
+          La direccion es obligatoria.
+        </mat-error>
+      </mat-form-field>
+
+    </div>
+
+    <h1 *ngIf="myForm.get('estadoInvestigacion')?.value === 'Remitido'" class="text ml-5">Lugar de localizacion</h1>
+    <!-- Campos de localización solo si estado es Remitido -->
+    <div *ngIf="myForm.get('estadoInvestigacion')?.value === 'Remitido'"
+      class="gap-4 p-5 grid grid-cols-1 md:grid-cols-3">
+
+      <mat-form-field class="w-full">
+        <mat-label>Dirección de la localización</mat-label>
+        <input matInput formControlName="direccionLocalizacion" placeholder="Ingrese la dirección donde fue localizado">
+        <mat-error *ngIf="myForm.get('direccionLocalizacion')?.hasError('required')">
+          La direccion es obligatoria.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Nombre de la persona con quien se encontraba</mat-label>
+        <input matInput formControlName="nombreAcompanante" placeholder="Ej. Juan Pérez">
+        <mat-error *ngIf="myForm.get('nombreAcompanante')?.hasError('required')">
+          Agregue un nombre o que estaba solo/a
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Número telefónico</mat-label>
+        <input matInput formControlName="telefono" placeholder="Ej. 45678901" type="tel">
+        <mat-error *ngIf="myForm.get('telefono')?.hasError('required')">
+          El número telefónico es obligatorio.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Fecha de localización</mat-label>
+        <input matInput [matDatepicker]="fechaPicker" formControlName="fechaLocalizacion">
+        <mat-datepicker-toggle matSuffix [for]="fechaPicker"></mat-datepicker-toggle>
+        <mat-datepicker #fechaPicker></mat-datepicker>
+        <mat-error *ngIf="myForm.get('fechaLocalizacion')?.hasError('required')">
+          La fecha es obligatoria.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w-full">
+        <mat-label>Hora de localización</mat-label>
+        <input matInput formControlName="horaLocalizacion" type="time">
+        <mat-error *ngIf="myForm.get('horaLocalizacion')?.hasError('required')">
+          La hora es obligatoria.
+        </mat-error>
       </mat-form-field>
 
     </div>
@@ -85,12 +173,7 @@
           Seleccionar archivo
         </button>
 
-        <input
-          #fileInput
-          type="file"
-          hidden
-          (change)="onFileSelected($event)"
-        />
+        <input #fileInput type="file" hidden (change)="onFileSelected($event)" />
 
         <div class="file-preview mt-4">
           <p *ngIf="fileName">📄 Archivo seleccionado: {{ fileName }}</p>

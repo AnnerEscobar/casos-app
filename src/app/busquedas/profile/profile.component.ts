@@ -123,13 +123,19 @@ export default class ProfileComponent {
   }
 
 
-  descargarExpediente(fileUrl: string) {
-    if (fileUrl) {
-      // Abrir la URL en una nueva pestaña
-      window.open(fileUrl, '_blank');
-    } else {
-      alert('No hay un archivo asociado a este expediente.');
-    }
+descargarExpediente(fileUrl: string) {
+  if (fileUrl) {
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    link.download = ''; // Podés poner aquí un nombre como 'expediente.pdf'
+    link.target = '_blank'; // Opcional, pero útil si es desde un servidor externo
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else {
+    alert('No hay un archivo asociado a este expediente.');
   }
+}
+
 
 }
