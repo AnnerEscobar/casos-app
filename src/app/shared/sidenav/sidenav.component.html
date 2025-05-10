@@ -1,6 +1,7 @@
 <div id="menu" class=" min-h-screen z-10 text-slate-300 md:w-full left-0 h-screen scrolb" style="color: #F2EFE7;">
   <div id="logo" class="my-2 p-5">
-    <h1 class="text-lg md:text-2xl font-bold text-black">Niñez y Adolescencia<span class="text-blue-500"> V1</span>.</h1>
+    <h1 class="text-lg md:text-2xl font-bold text-black">Niñez y Adolescencia<span class="text-blue-500"> V1</span>.
+    </h1>
     <p class="text-slate-500 text-sm">Sistema de Administracion de casos</p>
   </div>
 
@@ -8,15 +9,33 @@
 
     <mat-nav-list>
       @for (item of menuItems; track $index) {
-        <mat-expansion-panel class="mat-elevation-z0" [expanded]="false">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              <mat-icon class="mr-2">{{ item.icon }}</mat-icon>
-              {{ item.title }}
-            </mat-panel-title>
-          </mat-expansion-panel-header>
+      <mat-expansion-panel class="mat-elevation-z0" [expanded]="false">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon class="mr-2">{{ item.icon }}</mat-icon>
+            {{ item.title }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
 
-          <ng-container *ngFor="let sub of item.children">
+        <ng-container *ngFor="let sub of item.children">
+          <a
+            mat-list-item
+            [routerLink]="sub.path"
+            routerLinkActive="active-link"
+            class="submenu-link flex items-center justify-between"
+          >
+            <mat-icon class="submenu-icon mr-2">chevron_right</mat-icon>
+            <span class="flex items-center">
+              {{ sub.title }}
+              <span *ngIf="sub.badge" class="ml-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5 inline-block">
+                {{ sub.badge }}
+              </span>
+            </span>
+          </a>
+        </ng-container>
+
+
+        <!--  <ng-container *ngFor="let sub of item.children">
             <a
               mat-list-item
               [routerLink]="sub.path"
@@ -26,8 +45,8 @@
               <mat-icon class="submenu-icon">chevron_right</mat-icon>
               {{ sub.title }}
             </a>
-          </ng-container>
-        </mat-expansion-panel>
+          </ng-container> -->
+      </mat-expansion-panel>
       }
     </mat-nav-list>
   </div>

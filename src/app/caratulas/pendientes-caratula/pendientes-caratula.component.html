@@ -1,0 +1,34 @@
+<mat-card>
+  <h2>Carátulas Pendientes</h2>
+
+  <mat-table [dataSource]="pendientes">
+    <!-- Tipo de Caso -->
+    <ng-container matColumnDef="tipoCaso">
+      <mat-header-cell *matHeaderCellDef> Tipo </mat-header-cell>
+      <mat-cell *matCellDef="let item"> {{ item.tipoCaso }} </mat-cell>
+    </ng-container>
+
+    <!-- Número DEIC -->
+    <ng-container matColumnDef="numeroDeic">
+      <mat-header-cell *matHeaderCellDef> DEIC </mat-header-cell>
+      <mat-cell *matCellDef="let item"> {{ item.numeroDeic }} </mat-cell>
+    </ng-container>
+
+    <!-- Nombre -->
+    <ng-container matColumnDef="nombre">
+      <mat-header-cell *matHeaderCellDef> Nombre </mat-header-cell>
+      <mat-cell *matCellDef="let item"> {{ item.nombre }} </mat-cell>
+    </ng-container>
+
+    <!-- Acción -->
+    <ng-container matColumnDef="accion">
+      <mat-header-cell *matHeaderCellDef> Acción </mat-header-cell>
+      <mat-cell *matCellDef="let item">
+        <button mat-button color="primary" (click)="usarCaratula(item)">Usar</button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="['tipoCaso', 'numeroDeic', 'nombre', 'accion']"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: ['tipoCaso', 'numeroDeic', 'nombre', 'accion']"></mat-row>
+  </mat-table>
+</mat-card>

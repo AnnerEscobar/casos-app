@@ -41,6 +41,15 @@ export default class AddCaseConflictoComponent implements OnInit {
   ngOnInit(): void {
     this.agregarInfractor();
     this.agregarVictima();
+    const datos = history.state;
+
+    if (datos && datos.numeroDeic) {
+      this.myForm.patchValue({
+        numeroDeic: datos.numeroDeic,
+        numeroMp: datos.numeroMp
+      });
+    }
+
   }
 
 

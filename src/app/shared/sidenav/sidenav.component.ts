@@ -63,7 +63,7 @@ export class SidenavComponent {
         title: 'Estadísticas',
         icon: 'bar_chart',
         children:[
-          { title: 'Estadísticas Generales', path: 'estadisticas' }
+          { title: 'Estadísticas', path: 'estadisticas' }
         ]
       },
       {
@@ -71,6 +71,14 @@ export class SidenavComponent {
         icon: 'search',
         children:[
           { title: 'Busquedas', path: 'Busquedas' }
+        ]
+      },
+      {
+        title: 'Generar Caratulas',
+        icon: 'autorenew',
+        children:[
+          { title: 'Generar Caratula', path: 'caratulas' },
+          { title: 'Pendienetes', path: 'pendientes', badge: 4 }
         ]
       }
     ];

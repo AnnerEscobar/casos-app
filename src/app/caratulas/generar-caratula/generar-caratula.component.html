@@ -1,0 +1,53 @@
+<mat-card>
+  <h2>Generar Carátula</h2>
+
+  <form [formGroup]="caratulaForm" (ngSubmit)="generarCaratula()">
+    <mat-form-field class="w-full">
+      <mat-label>Tipo de caso</mat-label>
+      <mat-select formControlName="tipoCaso">
+        <mat-option value="Maltrato">Maltrato</mat-option>
+        <mat-option value="Alerta">Alerta Alba-Keneth</mat-option>
+        <mat-option value="Conflicto">Conflicto</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label>Número de caso interno (DEIC)</mat-label>
+      <input matInput formControlName="numeroDeic">
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label>Número expediente MP</mat-label>
+      <input matInput formControlName="numeroMp">
+    </mat-form-field>
+
+    <mat-form-field class="w-full" *ngIf="caratulaForm.value.tipoCaso === 'Alerta'">
+      <mat-label>Número de Alerta</mat-label>
+      <input matInput formControlName="numeroAlerta">
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="nombre">
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label>Lugar de los hechos/desaparición</mat-label>
+      <textarea matInput formControlName="lugar"></textarea>
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label>Observaciones</mat-label>
+      <textarea matInput formControlName="observaciones"></textarea>
+    </mat-form-field>
+
+    <mat-form-field class="w-full">
+      <mat-label>Investigador</mat-label>
+      <input matInput formControlName="investigador">
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="!caratulaForm.valid">
+      Generar Carátula
+    </button>
+  </form>
+</mat-card>

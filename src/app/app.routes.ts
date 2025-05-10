@@ -51,13 +51,23 @@ export const routes: Routes = [
       },
       {
         path: 'estadisticas',
-        title: 'Estadisticas generales',
+        title: 'Estadisticas',
         loadComponent: () => import('./dashboard/estadistics/estadistics.component')
       },
       {
         path: 'Busquedas',
         title: 'Busquedas',
         loadComponent: () => import('./busquedas/search-profile/search-profile.component')
+      },
+      {
+        path: 'caratulas',
+        title: 'Generar Caratula',
+        loadComponent: () => import('./caratulas/generar-caratula/generar-caratula.component')
+      },
+      {
+        path: 'pendientes',
+        title: 'Pendientes',
+        loadComponent: () => import('./caratulas/pendientes-caratula/pendientes-caratula.component')
       },
       {
         path: 'profile',
@@ -82,6 +92,7 @@ export const routes: Routes = [
 
     ]
   },
+
 
   {
     path: '',

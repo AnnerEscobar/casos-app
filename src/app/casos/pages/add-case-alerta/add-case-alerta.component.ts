@@ -102,6 +102,24 @@ export default class AddCaseAlertaComponent {
         }
       });
     });
+
+    //precargar datos de la caratula
+    const datos = history.state;
+
+    if (datos && datos.numeroDeic) {
+      this.myForm.patchValue({
+        numeroDeic: datos.numeroDeic,
+        numeroMp: datos.numeroMp,
+        numeroAlerta: datos.numeroAlerta,
+        nombreDesaparecido: datos.nombre,
+        fecha_Nac: datos.fecha_Nac,
+        direccion: {
+          departamento: datos.departamento || '',
+          municipio: datos.municipio || '',
+          direccionDetallada: datos.lugar || ''
+        }
+      });
+    }
   }
 
 
