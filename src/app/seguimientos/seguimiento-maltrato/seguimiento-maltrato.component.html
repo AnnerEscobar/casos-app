@@ -1,1 +1,38 @@
-<p>seguimiento-maltrato works!</p>
+<mat-card>
+  <h2>Seguimiento - Caso de Maltrato</h2>
+
+  <form [formGroup]="seguimientoForm" (ngSubmit)="enviarSeguimiento()">
+
+    <mat-form-field class="w-full">
+      <mat-label>Número DEIC</mat-label>
+      <input matInput formControlName="numeroDeic">
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="button" (click)="buscarCaso()">Buscar Caso</button>
+
+    <div *ngIf="casoEncontrado">
+      <p><strong>Nombre de la víctima:</strong> {{ casoEncontrado.nombre }}</p>
+      <p><strong>Edad:</strong> {{ casoEncontrado.edad }}</p>
+      <p><strong>Investigador:</strong> {{ casoEncontrado.investigadorName }}</p>
+      <p><strong>Estado actual:</strong> {{ casoEncontrado.estadoInvestigacion }}</p>
+
+      <mat-form-field class="w-full" appearance="fill">
+        <mat-label>Nuevo estado</mat-label>
+        <mat-select formControlName="nuevoEstado">
+          <mat-option value="Informado">Informado</mat-option>
+          <mat-option value="Desestimado">Desestimado</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- NO usar mat-form-field con type="file" -->
+      <div class="w-full">
+        <label>Archivo de seguimiento:</label>
+        <input type="file" (change)="onFileChange($event)" accept=".pdf,.doc,.docx" multiple>
+      </div>
+
+      <button mat-raised-button color="accent" type="submit" [disabled]="!seguimientoForm.valid || !files.length">
+        Enviar seguimiento
+      </button>
+    </div>
+  </form>
+</mat-card>
