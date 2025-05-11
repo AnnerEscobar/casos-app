@@ -1,4 +1,4 @@
-<div class="grid gap-5 w-full h-full grid-rows-[auto_auto_1fr] grid-cols-1 p-5">
+<div class="grid gap-5 w-full h-full grid-rows-[auto_auto_1fr] grid-cols-1">
   <div class="w-full h-36 p-4 gap-5 grid grid-cols-2 md:grid-cols-6">
     @for (tag of exps; track $index) {
       <mat-card class="w-44 h-full">
@@ -10,9 +10,9 @@
     }
   </div>
 
- <!-- Gráfica de barras -->
+
  <div class="border-2 w-full h-96 p-4 my-4">
-  <div id="barChart">
+  <div id="barChart" style="padding-top: 100px;" >
     <apx-chart
       #barChart
       [series]="barChartOptions.series"
@@ -23,11 +23,11 @@
   </div>
 </div>
 
-Gráfica de donut
- <div class="border-2 w-full h-96 p-4 my-4">
-  <div id="donutChart">
+<div class="border-2 w-full h-96 p-4 my-4 flex flex-col justify-center">
+  <h6 class="font-bold pb-4 text-left">Estadística de alertas</h6>
+  <div id="donutChart" class="w-full flex justify-center">
     <apx-chart
-    #donutChart
+      #donutChart
       [series]="donutChartOptions.series"
       [chart]="donutChartOptions.chart"
       [labels]="donutChartOptions.labels"
@@ -35,4 +35,6 @@ Gráfica de donut
     ></apx-chart>
   </div>
 </div>
+
+
 </div>

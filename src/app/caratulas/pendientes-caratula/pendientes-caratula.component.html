@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card class="m-8 p-6">
   <h2>Carátulas Pendientes</h2>
 
   <mat-table [dataSource]="pendientes">
@@ -32,7 +32,8 @@
     <mat-row *matRowDef="let row; columns: ['tipoCaso', 'numeroDeic', 'nombre', 'accion']"></mat-row>
   </mat-table>
 
-  <mat-paginator [length]="totalItems"
+  <mat-paginator class="bottom-0"
+               [length]="totalItems"
                [pageSize]="pageSize"
                [pageSizeOptions]="[5, 10, 20]"
                (page)="onPageChange($event)">

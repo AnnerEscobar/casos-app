@@ -56,9 +56,9 @@ export default class EstadisticsComponent {
     { tag: 'Alertas Inactivas', amount: 0 },
   ];
 
-// Opciones para la gráfica de barras
-public barChartOptions: ChartOptions;
-public donutChartOptions: DonutChartOptions;
+  // Opciones para la gráfica de barras
+  public barChartOptions: ChartOptions;
+  public donutChartOptions: DonutChartOptions;
 
   constructor(
     private alertaService: AlertaService,
@@ -83,6 +83,8 @@ public donutChartOptions: DonutChartOptions;
         text: 'Casos Registrados por Tipo',
       },
     };
+
+
 
     this.donutChartOptions = {
       series: [],
@@ -144,21 +146,21 @@ public donutChartOptions: DonutChartOptions;
     console.log('Datos procesados - Maltratos:', maltratos);
     console.log('Datos procesados - Conflictos:', conflictos);
 
-     // Calcular métricas para alertas
-     const alertasActivas = alertas.filter((alerta) => alerta.estadoInvestigacion === 'Informado').length;
-     const alertasRemitidas = alertas.filter((alerta) => alerta.estadoInvestigacion === 'Remitido').length;
-     const alertasConcluidas = alertas.filter((alerta) => alerta.estadoInvestigacion === 'Concluido').length;
+    // Calcular métricas para alertas
+    const alertasActivas = alertas.filter((alerta) => alerta.estadoInvestigacion === 'Informado').length;
+    const alertasRemitidas = alertas.filter((alerta) => alerta.estadoInvestigacion === 'Remitido').length;
+    const alertasConcluidas = alertas.filter((alerta) => alerta.estadoInvestigacion === 'Concluido').length;
 
-     // Actualizar las tarjetas
-     this.exps[0].amount = alertas.length; // Alerta Alba-Kenet
-     this.exps[1].amount = maltratos.length; // Casos de Maltrato
-     this.exps[2].amount = conflictos.length; // Casos de Conflicto
-     this.exps[3].amount = alertasRemitidas; // Remitidos
-     this.exps[4].amount = alertasActivas; // Alertas Activas
-     this.exps[5].amount = alertasConcluidas + alertasRemitidas; // Alertas Inactivas
+    // Actualizar las tarjetas
+    this.exps[0].amount = alertas.length; // Alerta Alba-Kenet
+    this.exps[1].amount = maltratos.length; // Casos de Maltrato
+    this.exps[2].amount = conflictos.length; // Casos de Conflicto
+    this.exps[3].amount = alertasRemitidas; // Remitidos
+    this.exps[4].amount = alertasActivas; // Alertas Activas
+    this.exps[5].amount = alertasConcluidas + alertasRemitidas; // Alertas Inactivas
 
-     console.log('Métricas calculadas:', this.exps); // Verifica las métricas calculadas
-     this.actualizarGraficas(alertas, maltratos, conflictos);
+    console.log('Métricas calculadas:', this.exps); // Verifica las métricas calculadas
+    this.actualizarGraficas(alertas, maltratos, conflictos);
   }
 
 

@@ -75,7 +75,7 @@ export const routes: Routes = [
         loadComponent: () => import('./busquedas/profile/profile.component')
       },
       {
-        path: '', redirectTo: 'add-case-alerta', pathMatch: 'full'
+        path: '', redirectTo: 'estadisticas', pathMatch: 'full'
       }
     ]
   },

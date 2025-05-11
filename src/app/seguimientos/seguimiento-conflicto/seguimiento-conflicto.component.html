@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card class="p-4 m-6">
   <h2>Seguimiento - Caso de Conflicto</h2>
 
   <form [formGroup]="seguimientoForm" (ngSubmit)="enviarSeguimiento()">
@@ -8,7 +8,9 @@
       <input matInput formControlName="numeroDeic">
     </mat-form-field>
 
-    <button mat-raised-button color="primary" type="button" (click)="buscarCaso()">Buscar Caso</button>
+    <div class="w-full flex justify-center mb-4">
+      <button mat-raised-button color="primary" type="button" (click)="buscarCaso()" class="">Buscar Caso</button>
+    </div>
 
     <div *ngIf="casoEncontrado">
       <p><strong>Nombre de la víctima:</strong> {{ casoEncontrado.nombre }}</p>
@@ -16,7 +18,7 @@
       <p><strong>Investigador:</strong> {{ casoEncontrado.investigadorName }}</p>
       <p><strong>Estado actual:</strong> {{ casoEncontrado.estadoInvestigacion }}</p>
 
-      <mat-form-field class="w-full" appearance="fill">
+      <mat-form-field class="w-full mt-4" appearance="fill">
         <mat-label>Nuevo estado</mat-label>
         <mat-select formControlName="nuevoEstado">
           <mat-option value="Informado">Informado</mat-option>
@@ -25,14 +27,17 @@
       </mat-form-field>
 
       <!-- NO usar mat-form-field con type="file" -->
-      <div class="w-full">
+      <div class="w-full m-4 p-2">
         <label>Archivo de seguimiento:</label>
         <input type="file" (change)="onFileChange($event)" accept=".pdf,.doc,.docx" multiple>
       </div>
 
-      <button mat-raised-button color="accent" type="submit" [disabled]="!seguimientoForm.valid || !files.length">
-        Enviar seguimiento
-      </button>
+      <div class="w-full flex justify-center mb-4">
+        <button mat-raised-button color="accent" type="submit" [disabled]="!seguimientoForm.valid">
+          Enviar seguimiento
+        </button>
+      </div>
+
     </div>
   </form>
 </mat-card>

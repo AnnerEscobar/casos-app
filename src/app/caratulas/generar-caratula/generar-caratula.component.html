@@ -1,8 +1,8 @@
-<mat-card>
+<mat-card class="p-6 m-8">
   <h2>Generar Carátula</h2>
 
   <form [formGroup]="caratulaForm" (ngSubmit)="generarCaratula()">
-    <mat-form-field class="w-full">
+    <mat-form-field class="w-full m-2">
       <mat-label>Tipo de caso</mat-label>
       <mat-select formControlName="tipoCaso">
         <mat-option value="Maltrato">Maltrato</mat-option>
@@ -11,43 +11,47 @@
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field class="w-full">
-      <mat-label>Número de caso interno (DEIC)</mat-label>
-      <input matInput formControlName="numeroDeic">
-    </mat-form-field>
+    <div class="flex col-2">
+      <mat-form-field class="w-full m-2">
+        <mat-label>Número de caso interno (DEIC)</mat-label>
+        <input matInput formControlName="numeroDeic">
+      </mat-form-field>
 
-    <mat-form-field class="w-full">
-      <mat-label>Número expediente MP</mat-label>
-      <input matInput formControlName="numeroMp">
-    </mat-form-field>
+      <mat-form-field class="w-full m-2">
+        <mat-label>Número expediente MP</mat-label>
+        <input matInput formControlName="numeroMp">
+      </mat-form-field>
 
-    <mat-form-field class="w-full" *ngIf="caratulaForm.value.tipoCaso === 'Alerta'">
-      <mat-label>Número de Alerta</mat-label>
-      <input matInput formControlName="numeroAlerta">
-    </mat-form-field>
+      <mat-form-field class="w-full m-2" *ngIf="caratulaForm.value.tipoCaso === 'Alerta'">
+        <mat-label>Número de Alerta</mat-label>
+        <input matInput formControlName="numeroAlerta">
+      </mat-form-field>
+    </div>
 
-    <mat-form-field class="w-full">
+    <mat-form-field class="w-full m-2">
       <mat-label>Nombre</mat-label>
       <input matInput formControlName="nombre">
     </mat-form-field>
 
-    <mat-form-field class="w-full">
+    <mat-form-field class="w-full m-2">
       <mat-label>Lugar de los hechos/desaparición</mat-label>
       <textarea matInput formControlName="lugar"></textarea>
     </mat-form-field>
 
-    <mat-form-field class="w-full">
+    <mat-form-field class="w-full m-2">
       <mat-label>Observaciones</mat-label>
       <textarea matInput formControlName="observaciones"></textarea>
     </mat-form-field>
 
-    <mat-form-field class="w-full">
+    <mat-form-field class="w-full m-2">
       <mat-label>Investigador</mat-label>
       <input matInput formControlName="investigador">
     </mat-form-field>
 
-    <button mat-raised-button color="primary">
-      Generar Carátula
-    </button>
+    <div class="w-full flex justify-center mb-4">
+      <button mat-raised-button color="primary">
+        Generar Carátula
+      </button>
+    </div>
   </form>
 </mat-card>

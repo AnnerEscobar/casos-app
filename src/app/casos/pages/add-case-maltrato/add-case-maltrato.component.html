@@ -82,24 +82,24 @@
      </mat-form-field>
 
      <button
-     mat-stroked-button
+     mat-raised-button color="primary"
        type="button"
        (click)="eliminarInfractor(i)"
        class="col-span-full text-red-500 underline text-sm mt-2"
        [disabled]="infractores.length === 1"
      >
-       Eliminar este infractor
+       Eliminar este sindicado
      </button>
    </div>
 
    <div class="text-center">
      <button
-     mat-flat-button
+     mat-raised-button color="primary"
        type="button"
        (click)="agregarInfractor()"
        class=""
      >
-       Añadir Infractor
+       Añadir Sindicado
      </button>
    </div>
  </div>
@@ -154,7 +154,7 @@
      </mat-form-field>
 
      <button
-     mat-stroked-button
+     mat-raised-button color="primary"
        type="button"
        (click)="eliminarVictima(i)"
        class="col-span-full text-red-500 underline text-sm mt-2"
@@ -166,7 +166,7 @@
 
    <div class="text-center">
      <button
-     mat-flat-button
+     mat-raised-button color="primary"
        type="button"
        (click)="agregarVictima()"
            >
@@ -206,7 +206,7 @@
   <section class="p-2">
     <div class="">
       <button
-      mat-flat-button
+      mat-raised-button color="primary"
       class="w-full"
       type="submit"
       [disabled]="myForm.invalid"

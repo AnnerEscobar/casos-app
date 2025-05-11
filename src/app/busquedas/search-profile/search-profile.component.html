@@ -1,68 +1,79 @@
-<div class="flex justify-center w-full mb-0">
-  <mat-accordion class="w-4/5">
+<div class="flex justify-center m-10 p2">
+  <mat-accordion class="w-full sm:w-3/4 md:w-2/4 pt-10">
     <!-- Busqueda por nombre -->
     <mat-expansion-panel hideToggle>
-      <mat-expansion-panel-header>
+      <mat-expansion-panel-header  class="!min-h-[92px] !items-start !flex-col !py-2 !whitespace-normal">
         <mat-panel-title> Busqueda por nombre </mat-panel-title>
         <mat-panel-description> Ingresa un nombre para realizar tu busqueda </mat-panel-description>
       </mat-expansion-panel-header>
-      <mat-form-field class="w-4/5">
-        <mat-label>Ingresa un nombre</mat-label>
-        <input matInput placeholder="Nombre" [(ngModel)]="nombre">
-      </mat-form-field>
-      <button mat-flat-button class="mt-6" (click)="buscarPorNombre()">Buscar</button>
+
+      <div class="flex flex-col items-center w-full p-4 space-y-4">
+        <mat-form-field class="w-full">
+          <mat-label>Ingresa un nombre</mat-label>
+          <input matInput placeholder="Nombre" [(ngModel)]="nombre">
+        </mat-form-field>
+        <button mat-raised-button color="primary" class="mt-6" (click)="buscarPorNombre()">Buscar</button>
+      </div>
     </mat-expansion-panel>
 
     <!-- Busqueda por CUI -->
-    <mat-expansion-panel hideToggle>
-      <mat-expansion-panel-header>
-        <mat-panel-title> Busqueda por CUI</mat-panel-title>
-        <mat-panel-description> Realiza tu busqueda ingresando un numero de DPI </mat-panel-description>
+    <mat-expansion-panel hideToggle class="h-auto">
+      <mat-expansion-panel-header class="!min-h-[92px] !items-start !flex-col !py-2 !whitespace-normal">
+        <mat-panel-title> Por numero CUI</mat-panel-title>
+        <mat-panel-description > Realiza tu busqueda ingresando un numero de DPI </mat-panel-description>
       </mat-expansion-panel-header>
-      <mat-form-field class="w-4/5">
+      <div class="flex flex-col items-center w-full p-4 space-y-4 ">
+      <mat-form-field class="w-full">
         <mat-label>Ingresa el numero de CUI</mat-label>
         <input matInput placeholder="Numero de CUI" [(ngModel)]="cui">
       </mat-form-field>
-      <button mat-flat-button (click)="buscarPorCUI()">Buscar</button>
+      <button mat-raised-button color="primary" (click)="buscarPorCUI()">Buscar</button>
+      </div>
     </mat-expansion-panel>
 
     <!-- Busqueda por expediente MP -->
     <mat-expansion-panel hideToggle>
-      <mat-expansion-panel-header>
-        <mat-panel-title> Busqueda por expediente MP</mat-panel-title>
+      <mat-expansion-panel-header class="!min-h-[92px] !items-start !flex-col !py-2 !whitespace-normal">
+        <mat-panel-title> Por expediente MP</mat-panel-title>
         <mat-panel-description> Realiza una busqueda ingresando el numero de caso MP </mat-panel-description>
       </mat-expansion-panel-header>
-      <mat-form-field class="w-4/5">
+      <div class="flex flex-col items-center w-full p-4 space-y-4">
+      <mat-form-field class="w-full">
         <mat-label>Ingresa el número de expediente MP</mat-label>
         <input matInput placeholder="Número de expediente MP" [(ngModel)]="numeroMp">
       </mat-form-field>
-      <button mat-flat-button (click)="buscarPorExpedienteMP()">Buscar</button>
+      <button mat-raised-button color="primary" (click)="buscarPorExpedienteMP()">Buscar</button>
+      </div>
     </mat-expansion-panel>
 
     <!-- Busqueda por expediente DEIC -->
     <mat-expansion-panel hideToggle>
-      <mat-expansion-panel-header>
-        <mat-panel-title> Busqueda por expediente DEIC</mat-panel-title>
+      <mat-expansion-panel-header class="!min-h-[92px] !items-start !flex-col !py-2 !whitespace-normal">
+        <mat-panel-title> Por expediente DEIC</mat-panel-title>
         <mat-panel-description> Realiza una busqueda ingresando el numero de caso DEIC </mat-panel-description>
       </mat-expansion-panel-header>
-      <mat-form-field class="w-4/5">
+      <div class="flex flex-col items-center w-full p-4 space-y-4">
+      <mat-form-field class="w-full">
         <mat-label>Ingresa el número DEIC</mat-label>
         <input matInput placeholder="Número DEIC" [(ngModel)]="numeroDeic">
       </mat-form-field>
-      <button mat-flat-button (click)="buscarPorNumeroDeic()">Buscar</button>
+      <button mat-raised-button color="primary" (click)="buscarPorNumeroDeic()">Buscar</button>
+      </div>
     </mat-expansion-panel>
 
     <!-- Busqueda por Alerta Alba-Keneth -->
     <mat-expansion-panel hideToggle>
-      <mat-expansion-panel-header>
-        <mat-panel-title> Busqueda por Alerta Alba-Keneth</mat-panel-title>
+      <mat-expansion-panel-header class="!min-h-[92px] !items-start !flex-col !py-2 !whitespace-normal">
+        <mat-panel-title> Por Alerta Alba-Keneth</mat-panel-title>
         <mat-panel-description> Realiza una busqueda ingresando el numero de alerta </mat-panel-description>
       </mat-expansion-panel-header>
-      <mat-form-field class="w-4/5">
+      <div class="flex flex-col items-center w-full p-4 space-y-4">
+      <mat-form-field class="w-full">
         <mat-label>Ingresa el número de alerta</mat-label>
         <input matInput placeholder="Número de alerta" [(ngModel)]="numeroAlerta">
       </mat-form-field>
-      <button mat-flat-button (click)="buscarPorAlertaAlbaKeneth()">Buscar</button>
+      <button mat-raised-button color="primary" (click)="buscarPorAlertaAlbaKeneth()">Buscar</button>
+      </div>
     </mat-expansion-panel>
 
     <!-- Busqueda por rango de fechas -->
@@ -83,24 +94,25 @@
     <div *ngIf="!isLoading">
       <div *ngIf="resultadosBusqueda.length > 0; else noResults">
         <mat-card *ngFor="let resultado of resultadosBusqueda" class="flex justify-between items-center p-4">
-            <div class="text-lg font-medium">
-              <p><strong>Rol:</strong> {{ resultado.rol }}</p>
-              <p><strong>Nombre:</strong> {{ resultado.nombre }}</p>
-                <p><strong>Tipo de Caso:</strong> {{ resultado.tipo }}</p>
-                <p><strong>Número de Expediente MP:</strong> {{ resultado.numeroMp }}</p>
-                <p><strong>Número DEIC:</strong> {{ resultado.numeroDeic }}</p>
-                <p><strong>Estado de Investigación:</strong> {{ resultado.estadoInvestigacion }}</p>
-            </div>
-            <!-- Mostrar "Ver perfil" si la búsqueda es por nombre -->
-            <button *ngIf="tipoBusqueda === 'nombre'" mat-flat-button color="primary" (click)="verPerfil()">
-                Ver perfil
-            </button>
-            <!-- Mostrar "Descargar" para otros tipos de búsqueda -->
-            <button *ngIf="tipoBusqueda !== 'nombre'" mat-flat-button color="accent" (click)="descargarArchivo(resultado.fileUrls)">
-                Descargar
-            </button>
+          <div class="text-lg font-medium">
+            <p><strong>Rol:</strong> {{ resultado.rol }}</p>
+            <p><strong>Nombre:</strong> {{ resultado.nombre }}</p>
+            <p><strong>Tipo de Caso:</strong> {{ resultado.tipo }}</p>
+            <p><strong>Número de Expediente MP:</strong> {{ resultado.numeroMp }}</p>
+            <p><strong>Número DEIC:</strong> {{ resultado.numeroDeic }}</p>
+            <p><strong>Estado de Investigación:</strong> {{ resultado.estadoInvestigacion }}</p>
+          </div>
+          <!-- Mostrar "Ver perfil" si la búsqueda es por nombre -->
+          <button *ngIf="tipoBusqueda === 'nombre'" mat-flat-button color="primary" (click)="verPerfil()">
+            Ver perfil
+          </button>
+          <!-- Mostrar "Descargar" para otros tipos de búsqueda -->
+          <button *ngIf="tipoBusqueda !== 'nombre'" mat-raised-button color="primary"
+            (click)="descargarArchivo(resultado.fileUrls)">
+            Descargar
+          </button>
         </mat-card>
-    </div>
+      </div>
 
       <!-- Mensaje si no hay resultados -->
       <ng-template #noResults>
