@@ -20,7 +20,7 @@ import { CommonModule } from '@angular/common';
 })
 export default class DashboardCaseComponent {
   events: string[] = [];
-  opened: boolean = true;
+  opened: boolean = false;
 
   constructor(){
     console.log(this.events)
