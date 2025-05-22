@@ -18,12 +18,8 @@
         </mat-expansion-panel-header>
 
         <ng-container *ngFor="let sub of item.children">
-          <a
-            mat-list-item
-            [routerLink]="sub.path"
-            routerLinkActive="active-link"
-            class="submenu-link flex items-center justify-between"
-          >
+          <a mat-list-item [routerLink]="sub.path" routerLinkActive="active-link"
+            class="submenu-link flex items-center justify-between">
             <mat-icon class="submenu-icon mr-2">chevron_right</mat-icon>
             <span class="flex items-center">
               {{ sub.title }}
@@ -34,18 +30,6 @@
           </a>
         </ng-container>
 
-
-        <!--  <ng-container *ngFor="let sub of item.children">
-            <a
-              mat-list-item
-              [routerLink]="sub.path"
-              routerLinkActive="active-link"
-              class="submenu-link"
-            >
-              <mat-icon class="submenu-icon">chevron_right</mat-icon>
-              {{ sub.title }}
-            </a>
-          </ng-container> -->
       </mat-expansion-panel>
       }
     </mat-nav-list>

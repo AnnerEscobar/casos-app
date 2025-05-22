@@ -1,10 +1,19 @@
+<div class="stats-container">
+
+  <!-- spinner-overlay -->
+  <div class="overlay-stats" *ngIf="isLoading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+
+
 <div class="grid gap-5 w-full h-full grid-rows-[auto_auto_1fr] grid-cols-1">
   <div class="w-full h-36 p-4 gap-5 grid grid-cols-2 md:grid-cols-6">
     @for (tag of exps; track $index) {
       <mat-card class="w-44 h-full">
         <mat-card-header class="justify-center text-center">
           <mat-card-subtitle>{{ tag.tag }}</mat-card-subtitle>
-          <mat-card-title>{{ tag.amount || 'Nao' }}</mat-card-title>
+          <mat-card-title>{{ tag.amount || 0 }}</mat-card-title>
         </mat-card-header>
       </mat-card>
     }
@@ -37,4 +46,5 @@
 </div>
 
 
+</div>
 </div>
