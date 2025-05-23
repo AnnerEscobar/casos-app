@@ -64,11 +64,12 @@ export default class PendientesCaratulaComponent {
   usarCaratula(caratula: CaratulaPendiente) {
     this.caratulaService.deleteCaratula(caratula.numeroDeic).subscribe({
       next: () => {
+
         // Navega según el tipo de caso
         const route =
           caratula.tipoCaso === 'Alerta' ? '/casos/add-case-alerta' :
-          caratula.tipoCaso === 'Maltrato' ? '/casos/add-case-maltrato' :
-          '/casos/add-case-conflicto';
+            caratula.tipoCaso === 'Maltrato' ? '/casos/add-case-maltrato' :
+              '/casos/add-case-conflicto';
 
         this.router.navigate([route], { state: caratula });
       },

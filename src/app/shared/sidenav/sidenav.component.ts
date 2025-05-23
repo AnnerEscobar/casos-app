@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { CaratulaService } from '../../caratulas/caratula.service';
 import { MatMenuModule } from '@angular/material/menu';
+import { SharedService } from '../shared.service';
 
 
 @Component({
@@ -29,15 +30,20 @@ import { MatMenuModule } from '@angular/material/menu';
 })
 export class SidenavComponent {
 
+  user = {email: '', role: ''};
+  loading = false;
+  error = '';
   pendientesCount: number = 0;
 
   constructor(
     private caratulaService: CaratulaService,
-    private router: Router
+    private router: Router,
+    private shared: SharedService
   ) { }
 
   ngOnInit() {
     this.getContadorPendientes();
+    this.loadUser();
   }
 
   getContadorPendientes() {
@@ -114,10 +120,32 @@ export class SidenavComponent {
     }
   ];
 
-
   closeSession(){
     localStorage.removeItem('access_token');
     this.router.navigate(['/login']);
   }
+
+
+    loadUser(): void {
+    this.loading = true;
+    this.error = '';
+    this.shared.getUserData().subscribe({
+      next: (data: any) => {
+        this.user = {
+          email: data.email,
+          role: data.role
+        };
+        this.loading = false;
+      },
+      error: err => {
+        console.error(err);
+        this.error = 'No se pudo cargar la información del usuario';
+        this.loading = false;
+      }
+    });
+  }
+
+
+
 
 }
