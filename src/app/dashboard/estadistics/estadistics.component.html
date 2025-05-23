@@ -6,45 +6,58 @@
   </div>
 
 
-
-<div class="grid gap-5 w-full h-full grid-rows-[auto_auto_1fr] grid-cols-1">
-  <div class="w-full h-36 p-4 gap-5 grid grid-cols-2 md:grid-cols-6">
-    @for (tag of exps; track $index) {
+  <div class="grid gap-5 w-full h-full grid-rows-[auto_auto_1fr] grid-cols-1">
+    <div class="w-full h-36 p-4 gap-5 grid grid-cols-2 md:grid-cols-6">
+      @for (tag of exps; track $index) {
       <mat-card class="w-44 h-full">
         <mat-card-header class="justify-center text-center">
           <mat-card-subtitle>{{ tag.tag }}</mat-card-subtitle>
           <mat-card-title>{{ tag.amount || 0 }}</mat-card-title>
         </mat-card-header>
       </mat-card>
-    }
-  </div>
+      }
+    </div>
 
+<!-- Contenedor padre: columna en móvil, fila en md+ -->
+<div class="flex flex-col md:flex-row w-full border-2 p-4 my-4 gap-4 pt-[100px]">
 
- <div class="border-2 w-full h-96 p-4 my-4">
-  <div id="barChart" style="padding-top: 100px;" >
+  <!-- Gráfico de barras -->
+<div class="w-full max-w-[400px] md:max-w-[700px] mx-auto p-2">
+  <!-- esta altura la defines tú; puede ser h-80 o h-[350px] -->
+  <div class="w-full h-[350px]">
     <apx-chart
       #barChart
+      class="w-full h-full"
       [series]="barChartOptions.series"
       [chart]="barChartOptions.chart"
       [xaxis]="barChartOptions.xaxis"
-      [title]="barChartOptions.title"
-    ></apx-chart>
+      [yaxis]="barChartOptions.yaxis"
+      [title]="barChartOptions.title">
+    </apx-chart>
   </div>
 </div>
 
-<div class="border-2 w-full h-96 p-4 my-4 flex flex-col justify-center">
-  <h6 class="font-bold pb-4 text-left">Estadística de alertas</h6>
-  <div id="donutChart" class="w-full flex justify-center">
+
+
+
+  <!-- Gráfico de donas -->
+  <div
+    id="donutChart"
+    class="w-full bg-gray-50 flex flex-col items-center justify-center h-80"
+  >
+    <h6 class="font-bold pb-4 text-center">Estadística de alertas</h6>
     <apx-chart
       #donutChart
+      class="w-2/3 md:w-full h-2/3 md:h-full"
       [series]="donutChartOptions.series"
       [chart]="donutChartOptions.chart"
       [labels]="donutChartOptions.labels"
       [responsive]="donutChartOptions.responsive"
     ></apx-chart>
   </div>
+
 </div>
 
 
-</div>
+  </div>
 </div>

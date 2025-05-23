@@ -8,6 +8,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { CaratulaService } from '../../caratulas/caratula.service';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-sidenav',
@@ -19,7 +20,8 @@ import { CaratulaService } from '../../caratulas/caratula.service';
     MatSidenavModule,
     MatToolbarModule,
     CommonModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatMenuModule
   ],
   templateUrl: './sidenav.component.html',
   styleUrl: './sidenav.component.css'
@@ -107,5 +109,11 @@ export class SidenavComponent {
       ]
     }
   ];
+
+
+  onSettings() {
+    // Lógica para navegar a la página de configuraciones
+    console.log('Abrir configuraciones');
+  }
 
 }

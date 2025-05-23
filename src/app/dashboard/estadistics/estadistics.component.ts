@@ -24,7 +24,10 @@ export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
   xaxis: ApexXAxis;
+  yaxis?: any;
   title: ApexTitleSubtitle;
+  plotOptions?: any;
+  responsive?: ApexResponsive[];
 };
 
 export type DonutChartOptions = {
@@ -69,23 +72,38 @@ export default class EstadisticsComponent {
     private maltratoService: MaltratoService,
     private conflictoService: ConflictoService
   ) {
+
     this.barChartOptions = {
       series: [
-        {
-          name: 'Casos',
-          data: [],
-        },
+        { name: 'Casos', data: [] }
       ],
       chart: {
         type: 'bar',
         height: 350,
+        width: 400,        // ← ancho desktop
+        toolbar: { show: false },
+        redrawOnParentResize: true
       },
+         plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%',
+            borderRadius: 5,
+            borderRadiusApplication: 'end'
+          },
+        },
       xaxis: {
         categories: ['Alertas', 'Maltratos', 'Conflictos'],
+        labels: { rotate: 0 }
+      },
+      yaxis: {
+        min: 0,
+        tickAmount: 5
       },
       title: {
-        text: 'Casos Registrados por Tipo',
+        text: 'Casos Registrados por Tipo'
       },
+
     };
 
 
@@ -97,6 +115,7 @@ export default class EstadisticsComponent {
         height: 350,
       },
       labels: ['Activas', 'Inactivas', 'Remitidas'],
+
       responsive: [
         {
           breakpoint: 480,
@@ -107,6 +126,7 @@ export default class EstadisticsComponent {
             legend: {
               position: 'bottom',
             },
+
           },
         },
       ],
@@ -114,14 +134,15 @@ export default class EstadisticsComponent {
 
   }
 
+
   ngOnInit(): void {
     this.cargarDatos();
   }
 
-cargarDatos(): void {
+  cargarDatos(): void {
     this.isLoading = true;
     forkJoin({
-      alertas:  this.alertaService.getAlertas(),
+      alertas: this.alertaService.getAlertas(),
       maltratos: this.maltratoService.getMaltratos(),
       conflictos: this.conflictoService.getConflictos()
     }).pipe(
