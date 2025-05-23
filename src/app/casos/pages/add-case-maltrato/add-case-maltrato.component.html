@@ -1,223 +1,147 @@
 <div class="form-container" [ngClass]="{ 'loading': isLoading }">
 
-<h1 class="text-3xl ml-7">Registro de caso --Maltrato--</h1>
-<form [formGroup]="myForm" (ngSubmit)="registrarCaso()" class="example-forme w-full p-2">
+  <h1 class="text-3xl ml-7">Registro de caso --Maltrato--</h1>
+  <form [formGroup]="myForm" (ngSubmit)="registrarCaso()" class="example-forme w-full p-2">
 
-  <p class="text ml-5">Identificadores del caso</p>
+    <p class="text ml-5">Identificadores del caso</p>
 
-  <div class="gap-4 p-5 grid grid-cols-1 md:grid-cols-3">
-    <mat-form-field class="w-full">
-      <mat-label>Numero de Caso (DEIC)</mat-label>
-      <input
-      matInput
-      placeholder="DEIC52-2025-01-02-01"
-      formControlName="numeroDeic">
-    </mat-form-field>
+    <div class="gap-4 p-5 grid grid-cols-1 md:grid-cols-3">
+      <mat-form-field class="w-full">
+        <mat-label>Numero de Caso (DEIC)</mat-label>
+        <input matInput placeholder="DEIC52-2025-01-02-01" formControlName="numeroDeic">
+      </mat-form-field>
 
-    <mat-form-field class="w-full">
-      <mat-label>Numero de Caso (MP)</mat-label>
-      <input
-      matInput
-      placeholder="M0030-2025-100"
-      formControlName="numeroMp">
-    </mat-form-field>
+      <mat-form-field class="w-full">
+        <mat-label>Numero de Caso (MP)</mat-label>
+        <input matInput placeholder="M0030-2025-100" formControlName="numeroMp">
+      </mat-form-field>
 
-    <mat-form-field class="">
-      <mat-label>Estado de la Investigacion</mat-label>
-      <mat-select
-      formControlName="estadoInvestigacion">
-        @for (estado of estados; track estado) {
-        <mat-option
+      <mat-form-field class="">
+        <mat-label>Estado de la Investigacion</mat-label>
+        <mat-select formControlName="estadoInvestigacion">
+          @for (estado of estados; track estado) {
+          <mat-option [value]="estado.value">{{estado.viewValue}}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
 
-        [value]="estado.value">{{estado.viewValue}}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+    <!-- Datos del Infractor -->
+    <p class="text ml-5">Datos de los Infractores</p>
+    <div class="infractores-container p-5">
+      <div *ngFor="let infractor of infractores.controls; let i = index" [formGroup]="infractor"
+        class="gap-4 p-5 mb-5 grid grid-cols-1 md:grid-cols-2 border border-gray-300 rounded-lg">
+        <mat-form-field class="w-full">
+          <mat-label>Nombre del Infractor</mat-label>
+          <input matInput placeholder="Nombre completo" formControlName="nombre" />
+        </mat-form-field>
+
+        <mat-form-field class="w-full">
+          <mat-label>CUI</mat-label>
+          <input matInput placeholder="Número de CUI" formControlName="cui" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Fecha de Nacimiento</mat-label>
+          <input matInput [matDatepicker]="pickerInfractor" formControlName="fecha_Nac" />
+          <mat-datepicker-toggle matSuffix [for]="pickerInfractor"></mat-datepicker-toggle>
+          <mat-datepicker #pickerInfractor></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field class="w-full">
+          <mat-label>Dirección</mat-label>
+          <input matInput placeholder="Dirección de residencia" formControlName="direccion" />
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="button" (click)="eliminarInfractor(i)"
+          class="col-span-full text-red-500 underline text-sm mt-2" [disabled]="infractores.length === 1">
+          Eliminar este sindicado
+        </button>
+      </div>
+
+      <div class="text-center">
+        <button mat-raised-button color="primary" type="button" (click)="agregarInfractor()" class="">
+          Añadir Sindicado
+        </button>
+      </div>
+    </div>
+
+    <!-- Datos de las Víctimas (sin cambios) -->
+
+
+    <!-- Sección para datos de víctimas -->
+    <p class="text ml-5">Datos de las Víctimas</p>
+    <div class="victimas-container p-5">
+      <div *ngFor="let victima of victimas.controls; let i = index" [formGroup]="victima"
+        class="gap-4 p-5 mb-5 grid grid-cols-1 md:grid-cols-2 border border-gray-300 rounded-lg">
+        <mat-form-field class="w-full">
+          <mat-label>Nombre de la Víctima</mat-label>
+          <input matInput placeholder="Nombre completo" formControlName="nombre" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Fecha de Nacimiento</mat-label>
+          <input matInput [matDatepicker]="pickerInfractor" formControlName="fecha_Nac" />
+          <mat-datepicker-toggle matSuffix [for]="pickerInfractor"></mat-datepicker-toggle>
+          <mat-datepicker #pickerInfractor></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field class="w-full">
+          <mat-label>Direccion</mat-label>
+          <input matInput placeholder="Direccion de residencia" formControlName="direccion" />
+        </mat-form-field>
+
+        <mat-form-field class="w-full">
+          <mat-label>Cui</mat-label>
+          <input matInput placeholder="Numero de cui" formControlName="cui" />
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="button" (click)="eliminarVictima(i)"
+          class="col-span-full text-red-500 underline text-sm mt-2" [disabled]="victimas.length === 1">
+          Eliminar esta víctima
+        </button>
+      </div>
+
+      <div class="text-center">
+        <button mat-raised-button color="primary" type="button" (click)="agregarVictima()">
+          Añadir Víctima
+        </button>
+      </div>
+    </div>
+
+
+    <mat-card class="file-upload-card">
+      <mat-card-title>
+        <mat-icon class="mr-2">upload</mat-icon>
+        Cargar archivo de investigación
+      </mat-card-title>
+
+      <mat-card-content>
+        <button mat-stroked-button color="primary" (click)="fileInput.click()">
+          <mat-icon class="mr-2">attach_file</mat-icon>
+          Seleccionar archivo
+        </button>
+
+        <input #fileInput type="file" hidden (change)="onFileSelected($event)" />
+
+        <div class="file-preview mt-4">
+          <p *ngIf="fileName">📄 Archivo seleccionado: {{ fileName }}</p>
+          <p *ngIf="!fileName" class="text-muted">No se ha seleccionado ningún archivo.</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+
+    <section class="p-2">
+      <div class="">
+        <button mat-raised-button color="primary" class="w-full" type="submit" [disabled]="myForm.invalid">Registrar
+          Caso</button>
+      </div>
+    </section>
+
+  </form>
+
+  <div class="overlay" *ngIf="isLoading">
+    <mat-spinner diameter="50"></mat-spinner>
   </div>
-
- <!-- Datos del Infractor -->
- <p class="text ml-5">Datos de los Infractores</p>
- <div class="infractores-container p-5">
-   <div
-     *ngFor="let infractor of infractores.controls; let i = index"
-     [formGroup]="infractor"
-     class="gap-4 p-5 mb-5 grid grid-cols-1 md:grid-cols-2 border border-gray-300 rounded-lg"
-   >
-     <mat-form-field class="w-full">
-       <mat-label>Nombre del Infractor</mat-label>
-       <input
-         matInput
-         placeholder="Nombre completo"
-         formControlName="nombre"
-       />
-     </mat-form-field>
-
-     <mat-form-field class="w-full">
-       <mat-label>CUI</mat-label>
-       <input
-         matInput
-         placeholder="Número de CUI"
-         formControlName="cui"
-       />
-     </mat-form-field>
-
-     <mat-form-field>
-       <mat-label>Fecha de Nacimiento</mat-label>
-       <input
-         matInput
-         [matDatepicker]="pickerInfractor"
-         formControlName="fecha_Nac"
-       />
-       <mat-datepicker-toggle matSuffix [for]="pickerInfractor"></mat-datepicker-toggle>
-       <mat-datepicker #pickerInfractor></mat-datepicker>
-     </mat-form-field>
-
-     <mat-form-field class="w-full">
-       <mat-label>Dirección</mat-label>
-       <input
-         matInput
-         placeholder="Dirección de residencia"
-         formControlName="direccion"
-       />
-     </mat-form-field>
-
-     <button
-     mat-raised-button color="primary"
-       type="button"
-       (click)="eliminarInfractor(i)"
-       class="col-span-full text-red-500 underline text-sm mt-2"
-       [disabled]="infractores.length === 1"
-     >
-       Eliminar este sindicado
-     </button>
-   </div>
-
-   <div class="text-center">
-     <button
-     mat-raised-button color="primary"
-       type="button"
-       (click)="agregarInfractor()"
-       class=""
-     >
-       Añadir Sindicado
-     </button>
-   </div>
- </div>
-
- <!-- Datos de las Víctimas (sin cambios) -->
-
-
- <!-- Sección para datos de víctimas -->
- <p class="text ml-5">Datos de las Víctimas</p>
- <div class="victimas-container p-5">
-   <div
-     *ngFor="let victima of victimas.controls; let i = index"
-     [formGroup]="victima"
-     class="gap-4 p-5 mb-5 grid grid-cols-1 md:grid-cols-2 border border-gray-300 rounded-lg"
-   >
-     <mat-form-field class="w-full">
-       <mat-label>Nombre de la Víctima</mat-label>
-       <input
-         matInput
-         placeholder="Nombre completo"
-         formControlName="nombre"
-       />
-     </mat-form-field>
-
-     <mat-form-field>
-      <mat-label>Fecha de Nacimiento</mat-label>
-      <input
-        matInput
-        [matDatepicker]="pickerInfractor"
-        formControlName="fecha_Nac"
-      />
-      <mat-datepicker-toggle matSuffix [for]="pickerInfractor"></mat-datepicker-toggle>
-      <mat-datepicker #pickerInfractor></mat-datepicker>
-    </mat-form-field>
-
-     <mat-form-field class="w-full">
-       <mat-label>Direccion</mat-label>
-       <input
-         matInput
-         placeholder="Direccion de residencia"
-         formControlName="direccion"
-       />
-     </mat-form-field>
-
-     <mat-form-field class="w-full">
-       <mat-label>Cui</mat-label>
-       <input
-         matInput
-         placeholder="Numero de cui"
-         formControlName="cui"
-       />
-     </mat-form-field>
-
-     <button
-     mat-raised-button color="primary"
-       type="button"
-       (click)="eliminarVictima(i)"
-       class="col-span-full text-red-500 underline text-sm mt-2"
-        [disabled]="victimas.length === 1"
-     >
-       Eliminar esta víctima
-     </button>
-   </div>
-
-   <div class="text-center">
-     <button
-     mat-raised-button color="primary"
-       type="button"
-       (click)="agregarVictima()"
-           >
-       Añadir Víctima
-     </button>
-   </div>
- </div>
-
-
- <mat-card class="file-upload-card">
-  <mat-card-title>
-    <mat-icon class="mr-2">upload</mat-icon>
-    Cargar archivo de investigación
-  </mat-card-title>
-
-  <mat-card-content>
-    <button mat-stroked-button color="primary" (click)="fileInput.click()">
-      <mat-icon class="mr-2">attach_file</mat-icon>
-      Seleccionar archivo
-    </button>
-
-    <input
-      #fileInput
-      type="file"
-      hidden
-      (change)="onFileSelected($event)"
-    />
-
-    <div class="file-preview mt-4">
-      <p *ngIf="fileName">📄 Archivo seleccionado: {{ fileName }}</p>
-      <p *ngIf="!fileName" class="text-muted">No se ha seleccionado ningún archivo.</p>
-    </div>
-  </mat-card-content>
-</mat-card>
-
-
-  <section class="p-2">
-    <div class="">
-      <button
-      mat-raised-button color="primary"
-      class="w-full"
-      type="submit"
-      [disabled]="myForm.invalid"
-      >Registrar Caso</button>
-    </div>
-  </section>
-
-</form>
-
-<div class="overlay" *ngIf="isLoading">
-  <mat-spinner diameter="50"></mat-spinner>
-</div>
-
 </div>

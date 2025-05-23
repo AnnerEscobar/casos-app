@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
-import { RouterModule } from '@angular/router';
-import { routes } from '../../app.routes';
+import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -9,6 +8,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { CaratulaService } from '../../caratulas/caratula.service';
+import { MatMenuModule } from '@angular/material/menu';
+import { SharedService } from '../shared.service';
+
 
 @Component({
   selector: 'app-sidenav',
@@ -20,19 +22,28 @@ import { CaratulaService } from '../../caratulas/caratula.service';
     MatSidenavModule,
     MatToolbarModule,
     CommonModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatMenuModule
   ],
   templateUrl: './sidenav.component.html',
   styleUrl: './sidenav.component.css'
 })
 export class SidenavComponent {
 
+  user = {email: '', role: ''};
+  loading = false;
+  error = '';
   pendientesCount: number = 0;
 
-  constructor(private caratulaService: CaratulaService) { }
+  constructor(
+    private caratulaService: CaratulaService,
+    private router: Router,
+    private shared: SharedService
+  ) { }
 
   ngOnInit() {
     this.getContadorPendientes();
+    this.loadUser();
   }
 
   getContadorPendientes() {
@@ -59,15 +70,6 @@ export class SidenavComponent {
       error: (err) => console.error('Error al obtener contador de carátulas pendientes', err)
     });
   }
-
-
-
-  /*   public menuItems = routes
-      .map(route => route.children ?? [])
-      .flat()
-      .filter(route => route && route.path)
-      .filter(route => !route.path?.includes(':'))
-      .filter(route => route.path !== 'profile'); */
 
   public menuItems = [
     {
@@ -117,6 +119,31 @@ export class SidenavComponent {
       ]
     }
   ];
+
+  closeSession(){
+    localStorage.removeItem('access_token');
+    this.router.navigate(['/login']);
+  }
+
+
+    loadUser(): void {
+    this.loading = true;
+    this.error = '';
+    this.shared.getUserData().subscribe({
+      next: (data: any) => {
+        this.user = {
+          email: data.email,
+          role: data.role
+        };
+        this.loading = false;
+      },
+      error: err => {
+        console.error(err);
+        this.error = 'No se pudo cargar la información del usuario';
+        this.loading = false;
+      }
+    });
+  }
 
 
 

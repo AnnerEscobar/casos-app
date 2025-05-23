@@ -4,7 +4,7 @@ import { Component, ViewChild } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MaltratoService } from '../../casos/services/maltrato.service';
-import * as ApexCharts from 'apexcharts';
+
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -15,13 +15,19 @@ import {
   ChartComponent,
 } from 'ng-apexcharts';
 import { NgApexchartsModule } from 'ng-apexcharts';
+import { delay, finalize, forkJoin } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 // Definir tipos para las opciones de las gráficas
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
   xaxis: ApexXAxis;
+  yaxis?: any;
   title: ApexTitleSubtitle;
+  plotOptions?: any;
+  responsive?: ApexResponsive[];
 };
 
 export type DonutChartOptions = {
@@ -33,13 +39,14 @@ export type DonutChartOptions = {
 
 @Component({
   selector: 'app-estadistics',
-  imports: [MatCardModule, MatGridListModule, NgApexchartsModule],
+  imports: [MatCardModule, MatGridListModule, NgApexchartsModule, CommonModule, MatProgressSpinnerModule],
 
   templateUrl: './estadistics.component.html',
   styleUrl: './estadistics.component.css',
 })
 export default class EstadisticsComponent {
 
+  isLoading = false;
   @ViewChild('barChart') barChart!: ChartComponent;
   @ViewChild('donutChart') donutChart!: ChartComponent;
 
@@ -65,23 +72,38 @@ export default class EstadisticsComponent {
     private maltratoService: MaltratoService,
     private conflictoService: ConflictoService
   ) {
+
     this.barChartOptions = {
       series: [
-        {
-          name: 'Casos',
-          data: [],
-        },
+        { name: 'Casos', data: [] }
       ],
       chart: {
         type: 'bar',
         height: 350,
+        width: 400,        // ← ancho desktop
+        toolbar: { show: false },
+        redrawOnParentResize: true
       },
+         plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%',
+            borderRadius: 5,
+            borderRadiusApplication: 'end'
+          },
+        },
       xaxis: {
         categories: ['Alertas', 'Maltratos', 'Conflictos'],
+        labels: { rotate: 0 }
+      },
+      yaxis: {
+        min: 0,
+        tickAmount: 5
       },
       title: {
-        text: 'Casos Registrados por Tipo',
+        text: 'Casos Registrados por Tipo'
       },
+
     };
 
 
@@ -93,6 +115,7 @@ export default class EstadisticsComponent {
         height: 350,
       },
       labels: ['Activas', 'Inactivas', 'Remitidas'],
+
       responsive: [
         {
           breakpoint: 480,
@@ -103,6 +126,7 @@ export default class EstadisticsComponent {
             legend: {
               position: 'bottom',
             },
+
           },
         },
       ],
@@ -110,41 +134,27 @@ export default class EstadisticsComponent {
 
   }
 
+
   ngOnInit(): void {
     this.cargarDatos();
   }
 
   cargarDatos(): void {
-    this.alertaService.getAlertas().subscribe(
-      (alertas) => {
-        console.log('Datos recibidos del backend:', alertas); // Verifica los datos
-        this.maltratoService.getMaltratos().subscribe(
-          (maltratos) => {
-            console.log('Datos recibidos backend', maltratos)
-            this.conflictoService.getConflictos().subscribe(
-              (conflictos) => {
-                this.calcularMetricas(alertas, maltratos, conflictos);
-              },
-              (error) => {
-                console.error('Error al obtener conflictos:', error); // Manejo de errores
-              }
-            );
-          },
-          (error) => {
-            console.error('Error al obtener maltratos:', error); // Manejo de errores
-          }
-        );
-      },
-      (error) => {
-        console.error('Error al obtener alertas:', error); // Manejo de errores
-      }
-    );
+    this.isLoading = true;
+    forkJoin({
+      alertas: this.alertaService.getAlertas(),
+      maltratos: this.maltratoService.getMaltratos(),
+      conflictos: this.conflictoService.getConflictos()
+    }).pipe(
+      delay(500), // Simular un retraso de 1 segundo
+      finalize(() => this.isLoading = false)   // se apaga el spinner aquí
+    ).subscribe(({ alertas, maltratos, conflictos }) => {
+      this.calcularMetricas(alertas, maltratos, conflictos);
+    });
   }
 
+
   calcularMetricas(alertas: any[], maltratos: any[], conflictos: any[]): void {
-    console.log('Datos procesados - Alertas:', alertas);
-    console.log('Datos procesados - Maltratos:', maltratos);
-    console.log('Datos procesados - Conflictos:', conflictos);
 
     // Calcular métricas para alertas
     const alertasActivas = alertas.filter((alerta) => alerta.estadoInvestigacion === 'Informado').length;
@@ -158,8 +168,6 @@ export default class EstadisticsComponent {
     this.exps[3].amount = alertasRemitidas; // Remitidos
     this.exps[4].amount = alertasActivas; // Alertas Activas
     this.exps[5].amount = alertasConcluidas + alertasRemitidas; // Alertas Inactivas
-
-    console.log('Métricas calculadas:', this.exps); // Verifica las métricas calculadas
     this.actualizarGraficas(alertas, maltratos, conflictos);
   }
 

@@ -2,11 +2,12 @@
 /* Overlay con el spinner */
 .form-container.loading .overlay {
   position: absolute;
+  border-radius: 1%;
+  inset:0;
   top: 0;
-  left: 0;
+  left: 0px;
   width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.2); /* Fondo semitransparente */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,8 +15,13 @@
 }
 
 mat-spinner {
-  display: block;
-  margin: 0 auto;
+  height: auto;
+  /* Ajusta el tamaño del spinner según tus necesidades */
+}
+
+.form-container {
+  position: relative;
+  /* ...tus demás reglas... */
 }
 
 
