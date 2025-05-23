@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { CaratulaService } from '../../caratulas/caratula.service';
 import { MatMenuModule } from '@angular/material/menu';
+
 
 @Component({
   selector: 'app-sidenav',
@@ -30,7 +31,10 @@ export class SidenavComponent {
 
   pendientesCount: number = 0;
 
-  constructor(private caratulaService: CaratulaService) { }
+  constructor(
+    private caratulaService: CaratulaService,
+    private router: Router
+  ) { }
 
   ngOnInit() {
     this.getContadorPendientes();
@@ -111,9 +115,9 @@ export class SidenavComponent {
   ];
 
 
-  onSettings() {
-    // Lógica para navegar a la página de configuraciones
-    console.log('Abrir configuraciones');
+  closeSession(){
+    localStorage.removeItem('access_token');
+    this.router.navigate(['/login']);
   }
 
 }

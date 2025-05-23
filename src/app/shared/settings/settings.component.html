@@ -1,0 +1,46 @@
+<!-- settings.component.html -->
+<div
+  class="min-h-screen p-4 bg-gray-50
+         flex items-center justify-center"
+>
+  <mat-card class="w-full max-w-lg p-6 bg-white space-y-6">
+    <h2 class="text-2xl font-semibold text-black">Configuraciones</h2>
+    <mat-divider></mat-divider>
+
+    <!-- Toggle Modo Oscuro / Claro -->
+    <div class="flex items-center justify-between">
+      <span>Modo Oscuro</span>
+      <mat-slide-toggle></mat-slide-toggle>
+    </div>
+
+    <!-- Toggle Notificaciones -->
+    <div class="flex items-center justify-between">
+      <span>Notificaciones</span>
+      <mat-slide-toggle></mat-slide-toggle>
+    </div>
+
+    <!-- Selector de Idioma -->
+    <div class="flex items-center justify-between">
+      <span>Idioma</span>
+      <mat-form-field appearance="outline" class="w-1/2">
+        <mat-select>
+          <mat-option value="es">Español</mat-option>
+          <mat-option value="en">Inglés</mat-option>
+          <!-- Agrega más idiomas si lo deseas -->
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Botón Guardar -->
+    <div class="flex justify-between">
+      <button mat-raised-button color="primary">
+        Guardar Cambios
+      </button>
+       <button
+       (click)="goBack()"
+       mat-raised-button color="primary">
+        Regresar
+      </button>
+    </div>
+  </mat-card>
+</div>

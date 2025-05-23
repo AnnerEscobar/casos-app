@@ -92,7 +92,14 @@ export const routes: Routes = [
 
     ]
   },
-
+  {
+    path: 'settings',
+    loadComponent: () => import('./shared/settings/settings.component'),
+  },
+  {
+    path: 'change-password',
+    loadComponent: () => import('./shared/change-password/change-password.component')
+  },
 
   {
     path: '',

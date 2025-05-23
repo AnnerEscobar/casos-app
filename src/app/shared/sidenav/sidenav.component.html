@@ -61,7 +61,7 @@
     <mat-menu #settingsMenu="matMenu" class="!bg-white">
       <button
         mat-menu-item
-        (click)="onSettings()"
+        routerLink="/settings"
         class="flex items-center space-x-2 px-4 py-2 hover:bg-gray-50"
       >
         <mat-icon class="text-gray-600">settings</mat-icon>
@@ -69,7 +69,7 @@
       </button>
            <button
         mat-menu-item
-        (click)="onSettings()"
+        routerLink="/change-password"
         class="flex items-center space-x-2 px-4 py-2 hover:bg-gray-50"
       >
         <mat-icon class="text-gray-600">password</mat-icon>
@@ -77,7 +77,7 @@
       </button>
                <button
         mat-menu-item
-        (click)="onSettings()"
+        (click)="closeSession()"
         class="flex items-center space-x-2 px-4 py-2 hover:bg-gray-50"
       >
         <mat-icon class="text-gray-600">close_sesion</mat-icon>
