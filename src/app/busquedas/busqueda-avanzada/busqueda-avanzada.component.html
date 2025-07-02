@@ -41,6 +41,11 @@
 
   </div>
 
+  <div class="overlay-stats" *ngIf="isLoading">
+  <mat-spinner diameter="50"></mat-spinner>
+</div>
+
+
 
 <div class="m-2 p-4 border-2 rounded-md">
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">

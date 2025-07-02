@@ -12,7 +12,8 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
-import {MatIconModule} from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-busqueda-avanzada',
@@ -28,7 +29,8 @@ import {MatIconModule} from '@angular/material/icon';
     MatTableModule,
     MatPaginatorModule,
     CommonModule,
-    MatIconModule
+    MatIconModule,
+    MatProgressSpinnerModule
 
   ],
   templateUrl: './busqueda-avanzada.component.html',
@@ -37,8 +39,9 @@ import {MatIconModule} from '@angular/material/icon';
 export default class BusquedaAvanzadaComponent implements AfterViewInit {
 
   displayedColumns: string[] = ['tipo', 'nombre', 'numeroDeic', 'estadoInvestigacion', 'numeroMp', 'acciones'];
-
   dataSource = new MatTableDataSource<any>([]);
+  isLoading = false;
+
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -76,16 +79,22 @@ export default class BusquedaAvanzadaComponent implements AfterViewInit {
 
   buscarCasos() {
     const filtros = this.filtroForm.value;
-    this.BusquedaAvanzadaService.buscarCasosFiltrados(filtros).subscribe(
-      (resultados) => {
-        this.resultados = resultados;
-        this.dataSource.data = resultados;
-        console.log('Resultados de la búsqueda:', this.resultados);
-      },
-      (error) => {
-        console.error('Error en la búsqueda:', error);
-      }
-    );
+    this.isLoading = true;
+
+    setTimeout(() => {
+      this.BusquedaAvanzadaService.buscarCasosFiltrados(filtros).subscribe(
+        (resultados) => {
+          this.resultados = resultados;
+          this.dataSource.data = resultados;
+          this.isLoading = false;
+        },
+        (error) => {
+          this.isLoading = false;
+          // Aquí podrías mostrar un mensaje de error
+          console.error('Error al buscar casos:', error);
+        }
+      );
+    }, 400); // 400ms de retraso
   }
 
 
@@ -101,11 +110,11 @@ export default class BusquedaAvanzadaComponent implements AfterViewInit {
   }
 
 
-obtenerGoogleDriveId(fileUrl: string | string[]): string {
-  const url = Array.isArray(fileUrl) ? fileUrl[0] : fileUrl;
-  const match = url.match(/id=([^&]+)/);
-  return match ? match[1] : '';
-}
+  obtenerGoogleDriveId(fileUrl: string | string[]): string {
+    const url = Array.isArray(fileUrl) ? fileUrl[0] : fileUrl;
+    const match = url.match(/id=([^&]+)/);
+    return match ? match[1] : '';
+  }
 
 
 

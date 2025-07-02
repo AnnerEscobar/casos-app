@@ -139,7 +139,6 @@ export class SidenavComponent {
         this.loading = false;
       },
       error: err => {
-        console.error(err);
         this.error = 'No se pudo cargar la información del usuario';
         this.loading = false;
       }
