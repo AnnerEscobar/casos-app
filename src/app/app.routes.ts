@@ -60,6 +60,11 @@ export const routes: Routes = [
         loadComponent: () => import('./busquedas/search-profile/search-profile.component')
       },
       {
+        path: 'busqueda-avanzada',
+        title: 'Busqueda Avanzada',
+        loadComponent: () => import('./busquedas/busqueda-avanzada/busqueda-avanzada.component')
+      },
+      {
         path: 'caratulas',
         title: 'Generar Caratula',
         loadComponent: () => import('./caratulas/generar-caratula/generar-caratula.component')

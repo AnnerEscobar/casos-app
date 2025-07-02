@@ -107,7 +107,8 @@ export class SidenavComponent {
       title: 'Búsquedas',
       icon: 'search',
       children: [
-        { title: 'Busquedas', path: 'Busquedas' }
+        { title: 'Busquedas', path: 'Busquedas' },
+        { title: 'Busqueda Avanzada', path: 'busqueda-avanzada' }
       ]
     },
     {

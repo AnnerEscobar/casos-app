@@ -18,6 +18,7 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 import { delay, finalize, forkJoin } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { DashboardService } from './dashboard.service';
 
 // Definir tipos para las opciones de las gráficas
 export type ChartOptions = {
@@ -49,9 +50,14 @@ export default class EstadisticsComponent {
   isLoading = false;
   @ViewChild('barChart') barChart!: ChartComponent;
   @ViewChild('donutChart') donutChart!: ChartComponent;
+  @ViewChild('barChartMensual') barChartMensual!: ChartComponent;
+
 
   public barChartData: any;
   public donutChartData: any;
+  public barChartMensualOptions: ChartOptions = {} as ChartOptions;
+
+
 
 
   exps = [
@@ -70,7 +76,8 @@ export default class EstadisticsComponent {
   constructor(
     private alertaService: AlertaService,
     private maltratoService: MaltratoService,
-    private conflictoService: ConflictoService
+    private conflictoService: ConflictoService,
+    private dashboardSerivice: DashboardService, // Asegúrate de importar el servicio correcto
   ) {
 
     this.barChartOptions = {
@@ -84,14 +91,14 @@ export default class EstadisticsComponent {
         toolbar: { show: false },
         redrawOnParentResize: true
       },
-         plotOptions: {
-          bar: {
-            horizontal: false,
-            columnWidth: '55%',
-            borderRadius: 5,
-            borderRadiusApplication: 'end'
-          },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: '55%',
+          borderRadius: 5,
+          borderRadiusApplication: 'end'
         },
+      },
       xaxis: {
         categories: ['Alertas', 'Maltratos', 'Conflictos'],
         labels: { rotate: 0 }
@@ -132,11 +139,46 @@ export default class EstadisticsComponent {
       ],
     };
 
+    this.barChartMensualOptions = {
+      series: [],
+      chart: {
+        type: 'bar',
+        height: 350,
+        width: 400,
+        toolbar: { show: false },
+        redrawOnParentResize: true,
+      },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: '55%',
+          borderRadius: 5,
+          borderRadiusApplication: 'end',
+        },
+      },
+      xaxis: {
+        categories: [],
+        labels: { rotate: 0 },
+      },
+      yaxis: {
+        min: 0,
+        tickAmount: 5,
+      },
+      title: {
+        text: 'Casos por mes (2025)',
+      },
+    };
+
+
   }
 
 
   ngOnInit(): void {
     this.cargarDatos();
+    // Agrega esta llamada
+    this.dashboardSerivice.getEstadisticasMensuales().subscribe(data => {
+      this.actualizarGraficaPorMes(data);
+    });
   }
 
   cargarDatos(): void {
@@ -203,6 +245,45 @@ export default class EstadisticsComponent {
       this.donutChart.updateSeries([alertasActivas, alertasInactivas, alertasRemitidas]);
     }
   }
+
+
+
+  actualizarGraficaPorMes(data: { mes: string; tipo: 'Alerta' | 'Maltrato' | 'Conflicto'; total: number }[]): void {
+    const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+    const series: Record<'Alerta' | 'Maltrato' | 'Conflicto', number[]> = {
+      Alerta: new Array(12).fill(0),
+      Maltrato: new Array(12).fill(0),
+      Conflicto: new Array(12).fill(0),
+    };
+
+    data.forEach(d => {
+      const mesIndex = meses.indexOf(d.mes);
+      if (mesIndex !== -1 && series[d.tipo]) {
+        series[d.tipo][mesIndex] = d.total;
+      }
+    });
+
+    this.barChartMensualOptions = {
+      ...this.barChartMensualOptions,
+      series: [
+        { name: 'Alerta', data: series.Alerta },
+        { name: 'Maltrato', data: series.Maltrato },
+        { name: 'Conflicto', data: series.Conflicto },
+      ],
+      xaxis: {
+        categories: meses,
+      },
+    };
+
+   if (this.barChartMensual) {
+  this.barChartMensual.updateOptions(this.barChartMensualOptions);
+}
+
+  }
+
+
+
 
 
 

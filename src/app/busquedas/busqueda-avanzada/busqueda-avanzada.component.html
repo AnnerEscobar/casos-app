@@ -1,0 +1,109 @@
+<form [formGroup]="filtroForm" (ngSubmit)="buscarCasos()" class="flex gap-4">
+  <!-- Tipo de caso -->
+  <mat-form-field appearance="fill" class="margen flex-1">
+    <mat-label>Tipo de caso</mat-label>
+    <mat-select formControlName="tipoCaso" (selectionChange)="onTipoCasoChange()">
+      <mat-option value="Alerta Alba-Keneth">Alerta Alba-Keneth</mat-option>
+      <mat-option value="Maltrato">Maltrato</mat-option>
+      <mat-option value="Conflicto">Conflicto</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Estado de investigación (condicional) -->
+  <mat-form-field appearance="fill" *ngIf="estados.length > 0" class="margen flex-1">
+    <mat-label>Estado</mat-label>
+    <mat-select formControlName="estado">
+      <mat-option *ngFor="let estado of estados" [value]="estado">{{ estado }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Rango de fechas -->
+  <mat-form-field appearance="fill" class="margen flex-1">
+    <mat-label>Desde</mat-label>
+    <input matInput [matDatepicker]="picker1" formControlName="fechaInicio">
+    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+    <mat-datepicker #picker1></mat-datepicker>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="margen flex-1">
+    <mat-label>Hasta</mat-label>
+    <input matInput [matDatepicker]="picker2" formControlName="fechaFin">
+    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+    <mat-datepicker #picker2></mat-datepicker>
+  </mat-form-field>
+
+</form>
+
+  <div class="">
+    <button class="m-2" mat-raised-button color="primary" type="submit" (click)="buscarCasos()">Buscar</button>
+    <button class="m-2" mat-raised-button color="primary" type="button" (click)="resetearFiltros()">Limpiar
+      filtros</button>
+
+  </div>
+
+
+<div class="m-2 p-4 border-2 rounded-md">
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+  <!-- Tipo -->
+  <ng-container matColumnDef="tipo">
+    <th mat-header-cell *matHeaderCellDef> Tipo </th>
+    <td mat-cell *matCellDef="let row"> {{ row.tipo }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="nombre">
+    <th mat-header-cell *matHeaderCellDef> Nombre </th>
+    <td mat-cell *matCellDef="let row"> {{ row.nombreDesaparecido }} </td>
+  </ng-container>
+
+  <!-- Número DEIC -->
+  <ng-container matColumnDef="numeroDeic">
+    <th mat-header-cell *matHeaderCellDef> N° DEIC </th>
+    <td mat-cell *matCellDef="let row"> {{ row.numeroDeic }} </td>
+  </ng-container>
+
+  <!-- Estado -->
+  <ng-container matColumnDef="estadoInvestigacion">
+    <th mat-header-cell *matHeaderCellDef> Estado </th>
+    <td mat-cell *matCellDef="let row"> {{ row.estadoInvestigacion }} </td>
+  </ng-container>
+
+  <!-- Fecha -->
+  <ng-container matColumnDef="numeroMp">
+    <th mat-header-cell *matHeaderCellDef> Numero MP</th>
+    <td mat-cell *matCellDef="let row"> {{ row.numeroMp}} </td>
+  </ng-container>
+
+  <!-- Acciones -->
+  <ng-container matColumnDef="acciones">
+    <th mat-header-cell *matHeaderCellDef> Acciones </th>
+    <td mat-cell *matCellDef="let row">
+      <ng-container *ngIf="row.fileUrls?.length > 0">
+        <ng-container *ngIf="obtenerGoogleDriveId(row.fileUrls[0]) as fileId">
+
+          <!-- Ver -->
+          <a [href]="'https://drive.google.com/file/d/' + obtenerGoogleDriveId(row.fileUrls) + '/view'" target="_blank">
+            <button mat-icon-button color="primary" aria-label="Ver documento">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </a>
+
+          <a [href]="'https://drive.google.com/uc?export=download&id=' + obtenerGoogleDriveId(row.fileUrls)" download>
+            <button mat-icon-button color="accent" aria-label="Descargar documento">
+              <mat-icon>download</mat-icon>
+            </button>
+          </a>
+
+        </ng-container>
+      </ng-container>
+    </td>
+  </ng-container>
+
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+
+<mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]"></mat-paginator>
+
+</div>
