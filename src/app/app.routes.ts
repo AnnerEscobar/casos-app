@@ -103,7 +103,7 @@ export const routes: Routes = [
   },
   {
     path: 'change-password',
-    loadComponent: () => import('./shared/change-password/change-password.component')
+    loadComponent: () => import('./auth/pages/change-password/change-password.component')
   },
 
   {

@@ -6,45 +6,67 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MaltratoService } from '../../casos/services/maltrato.service';
 
 import {
-  ApexAxisChartSeries,
-  ApexChart,
-  ApexXAxis,
-  ApexTitleSubtitle,
-  ApexNonAxisChartSeries,
-  ApexResponsive,
-  ChartComponent,
+  ApexAxisChartSeries, ApexNonAxisChartSeries,
+  ApexChart, ApexXAxis, ApexYAxis, ApexTitleSubtitle,
+  ApexDataLabels, ApexPlotOptions, ApexGrid, ApexTooltip,
+  ApexLegend, ApexStroke, ApexResponsive,
 } from 'ng-apexcharts';
-import { NgApexchartsModule } from 'ng-apexcharts';
+
+import { NgApexchartsModule, ChartComponent } from 'ng-apexcharts';
 import { delay, finalize, forkJoin } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DashboardService } from './dashboard.service';
+import { MatIconModule } from '@angular/material/icon';
+import { ApexOptions} from 'ng-apexcharts';
+
 
 // Definir tipos para las opciones de las gráficas
-export type ChartOptions = {
+type BarChartOptionsStrict = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
   xaxis: ApexXAxis;
-  yaxis?: any;
+  yaxis: ApexYAxis;
   title: ApexTitleSubtitle;
-  plotOptions?: any;
-  responsive?: ApexResponsive[];
+  colors?: string[];
+  plotOptions?: ApexPlotOptions;
+  dataLabels?: ApexDataLabels;
+  grid?: ApexGrid;
+  tooltip?: ApexTooltip;
+  legend?: ApexLegend;
 };
 
-export type DonutChartOptions = {
+type DonutChartOptionsStrict = {
   series: ApexNonAxisChartSeries;
   chart: ApexChart;
+  labels: string[];
+  colors: string[];
+  stroke?: ApexStroke;
+  dataLabels?: ApexDataLabels;
+  plotOptions?: ApexPlotOptions;
+  legend?: ApexLegend;
+  tooltip?: ApexTooltip;
   responsive: ApexResponsive[];
-  labels: any;
+};
+
+const COLORS = {
+  alerta: '#1976D2', // azul
+  maltrato: '#D81B60', // rosa
+  conflicto: '#7E57C2', // violeta
+  activa: '#1976D2', // azul
+  inactiva: '#9E9E9E', // gris
+  remitida: '#FFB300', // ámbar
+  grid: '#ECEFF4'
 };
 
 @Component({
   selector: 'app-estadistics',
-  imports: [MatCardModule, MatGridListModule, NgApexchartsModule, CommonModule, MatProgressSpinnerModule],
+  imports: [MatCardModule, MatGridListModule, NgApexchartsModule, CommonModule, MatProgressSpinnerModule, MatIconModule],
 
   templateUrl: './estadistics.component.html',
   styleUrl: './estadistics.component.css',
 })
+
 export default class EstadisticsComponent {
 
   isLoading = false;
@@ -53,25 +75,48 @@ export default class EstadisticsComponent {
   @ViewChild('barChartMensual') barChartMensual!: ChartComponent;
 
 
-  public barChartData: any;
-  public donutChartData: any;
-  public barChartMensualOptions: ChartOptions = {} as ChartOptions;
+public barChartOptions: BarChartOptionsStrict;
+public donutChartOptions: DonutChartOptionsStrict;
+public barChartMensualOptions: BarChartOptionsStrict;
 
 
 
 
-  exps = [
-    { tag: 'Alerta Alba-Kenet', amount: 0 },
-    { tag: 'Casos de Maltrato', amount: 0 },
-    { tag: 'Casos de Conflicto', amount: 0 },
-    { tag: 'Remitidos', amount: 0 },
-    { tag: 'Alertas Activas', amount: 0 },
-    { tag: 'Alertas Inactivas', amount: 0 },
-  ];
+
+
+  // Tarjetas: ahora con key + icon para poder dar estilos por tipo
+  exps: Array<{
+    key: 'alerta' | 'maltrato' | 'conflicto' | 'remitidas' | 'activas' | 'inactivas';
+    tag: string;
+    amount: number;
+    icon: string;
+    delta?: number; // opcional, por si luego muestras variación
+  }> = [
+      { key: 'alerta', tag: 'Alerta Alba-Kenet', amount: 0, icon: 'notifications_active' },
+      { key: 'maltrato', tag: 'Casos de Maltrato', amount: 0, icon: 'volunteer_activism' },
+      { key: 'conflicto', tag: 'Casos de Conflicto', amount: 0, icon: 'gavel' },
+      { key: 'remitidas', tag: 'Remitidos', amount: 0, icon: 'outgoing_mail' },
+      { key: 'activas', tag: 'Alertas Activas', amount: 0, icon: 'task_alt' },
+      { key: 'inactivas', tag: 'Alertas Inactivas', amount: 0, icon: 'remove_circle' },
+    ];
+
+  onKpiClick(item: (typeof this.exps)[number]) {
+    // Opcional: aquí podrías disparar filtros/scroll a la tabla
+    // console.log('KPI click', item.key);
+  }
+
+
+  /*   exps = [
+      { tag: 'Alerta Alba-Kenet', amount: 0 },
+      { tag: 'Casos de Maltrato', amount: 0 },
+      { tag: 'Casos de Conflicto', amount: 0 },
+      { tag: 'Remitidos', amount: 0 },
+      { tag: 'Alertas Activas', amount: 0 },
+      { tag: 'Alertas Inactivas', amount: 0 },
+    ]; */
 
   // Opciones para la gráfica de barras
-  public barChartOptions: ChartOptions;
-  public donutChartOptions: DonutChartOptions;
+
 
   constructor(
     private alertaService: AlertaService,
@@ -81,93 +126,80 @@ export default class EstadisticsComponent {
   ) {
 
     this.barChartOptions = {
-      series: [
-        { name: 'Casos', data: [] }
-      ],
-      chart: {
-        type: 'bar',
-        height: 350,
-        width: 400,        // ← ancho desktop
-        toolbar: { show: false },
-        redrawOnParentResize: true
-      },
+      series: [{ name: 'Casos', data: [] }],
+      chart: { type: 'bar', height: 350, toolbar: { show: false }, redrawOnParentResize: true },
+
+      // colores por barra en el orden de xaxis.categories
+      colors: [COLORS.alerta, COLORS.maltrato, COLORS.conflicto],
       plotOptions: {
         bar: {
+          distributed: true,
           horizontal: false,
-          columnWidth: '55%',
-          borderRadius: 5,
-          borderRadiusApplication: 'end'
-        },
-      },
-      xaxis: {
-        categories: ['Alertas', 'Maltratos', 'Conflictos'],
-        labels: { rotate: 0 }
-      },
-      yaxis: {
-        min: 0,
-        tickAmount: 5
-      },
-      title: {
-        text: 'Casos Registrados por Tipo'
-      },
-
-    };
-
-
-
-    this.donutChartOptions = {
-      series: [],
-      chart: {
-        type: 'donut',
-        height: 350,
-      },
-      labels: ['Activas', 'Inactivas', 'Remitidas'],
-
-      responsive: [
-        {
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 200,
-            },
-            legend: {
-              position: 'bottom',
-            },
-
-          },
-        },
-      ],
-    };
-
-    this.barChartMensualOptions = {
-      series: [],
-      chart: {
-        type: 'bar',
-        height: 350,
-        width: 400,
-        toolbar: { show: false },
-        redrawOnParentResize: true,
-      },
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          columnWidth: '55%',
-          borderRadius: 5,
+          columnWidth: '45%',
+          borderRadius: 6,
           borderRadiusApplication: 'end',
-        },
+          dataLabels: { position: 'top' }
+        }
       },
-      xaxis: {
-        categories: [],
-        labels: { rotate: 0 },
+      dataLabels: {
+        enabled: true,
+        formatter: (val: number) => `${val}`,
+        offsetY: -14,
+        style: { fontSize: '12px' }
       },
-      yaxis: {
-        min: 0,
-        tickAmount: 5,
-      },
-      title: {
-        text: 'Casos por mes (2025)',
-      },
+      xaxis: { categories: ['Alertas', 'Maltratos', 'Conflictos'], labels: { rotate: 0 } },
+      yaxis: { min: 0, tickAmount: 5, labels: { formatter: (v: number) => `${v}` } },
+      grid: { borderColor: COLORS.grid, strokeDashArray: 2 },
+      title: { text: 'Casos Registrados por Tipo' },
+      tooltip: { y: { formatter: (v: number) => `${v} casos` } }
     };
+
+
+
+this.donutChartOptions = {
+  series: [],
+  chart: { type: 'donut', height: 350, redrawOnParentResize: true, parentHeightOffset: 0 },
+  labels: ['Activas', 'Inactivas', 'Remitidas'],
+  colors: [COLORS.activa, COLORS.inactiva, COLORS.remitida],
+  stroke: { colors: ['#fff'] },
+  dataLabels: { enabled: true, formatter: (v: number) => `${v.toFixed(1)}%` },
+  plotOptions: {
+    pie: {
+      offsetX: 0,
+      donut: { size: '66%', labels: { show: true, total: { show: true, label: 'Total' } } }
+    }
+  },
+  legend: { position: 'bottom', horizontalAlign: 'center' },
+  responsive: [
+    { breakpoint: 1280, options: { chart: { height: 340 }, plotOptions: { pie: { donut: { size: '62%' } } } } },
+    { breakpoint: 992,  options: { chart: { height: 320 }, plotOptions: { pie: { donut: { size: '58%' } } } } },
+    { breakpoint: 768,  options: { chart: { height: 300 }, plotOptions: { pie: { donut: { size: '54%' } } } } }
+  ]
+};
+
+
+
+  this.barChartMensualOptions = {
+  series: [],
+  chart: { type: 'bar', height: 350, toolbar: { show: false }, redrawOnParentResize: true },
+  colors: [COLORS.alerta, COLORS.maltrato, COLORS.conflicto],
+  plotOptions: {
+    bar: {
+      horizontal: false,
+      columnWidth: '45%',
+      borderRadius: 6,
+      borderRadiusApplication: 'end'
+    }
+  },
+  dataLabels: { enabled: false },
+  xaxis: { categories: [], labels: { rotate: 0 } },
+  yaxis: { min: 0, tickAmount: 5 },
+  legend: { position: 'top', horizontalAlign: 'right' },
+  grid: { borderColor: COLORS.grid, strokeDashArray: 2 },
+  title: { text: 'Casos por mes (2025)' },
+  tooltip: { y: { formatter: (v: number) => `${v} casos` } }
+};
+
 
 
   }
@@ -276,9 +308,9 @@ export default class EstadisticsComponent {
       },
     };
 
-   if (this.barChartMensual) {
-  this.barChartMensual.updateOptions(this.barChartMensualOptions);
-}
+    if (this.barChartMensual) {
+      this.barChartMensual.updateOptions(this.barChartMensualOptions);
+    }
 
   }
 

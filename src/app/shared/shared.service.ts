@@ -8,14 +8,16 @@ import { environment } from '../../environment.prod';
 })
 export class SharedService {
 
-constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) { }
 
-private baseUrl = `${environment.apiUrl}/users`;
+  private baseUrl = `${environment.apiUrl}/users`;
 
-getUserData(){
-  return this.http.get<any>(`${this.baseUrl}/getUserData`);
+  getUserData() {
+    return this.http.get<any>(`${this.baseUrl}/getUserData`);
 
-}
+  }
+
+ 
 
 
 }

@@ -7,6 +7,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
+import { SharedService } from '../../../shared/shared.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from '../../auth-service/auth.service';
 
 @Component({
   selector: 'app-change-password',
@@ -33,6 +36,8 @@ export default class ChangePasswordComponent {
   constructor(
     private fb: FormBuilder,
     private router: Router,
+    private authService: AuthService, // Asegúrate de importar tu servicio SharedService
+    private snackBar: MatSnackBar // Asegúrate de importar ToastrService si lo usas para notificaciones
   ) {
     this.passwordForm = this.fb.group(
       {
@@ -52,13 +57,28 @@ export default class ChangePasswordComponent {
       : null;
   }
 
-  onSubmit(): void {
-    if (this.passwordForm.valid) {
-      const { currentPassword, newPassword } = this.passwordForm.value;
-      // TODO: llamar a tu servicio de usuario para cambiar contraseña
-      console.log({ currentPassword, newPassword });
-      this.router.navigate(['/login']);
-    }
+onSubmit(): void {
+  if (this.passwordForm.valid) {
+    const { currentPassword, newPassword } = this.passwordForm.value;
+
+    this.authService.changePassword({ currentPassword, newPassword }).subscribe({
+      next: () => {
+        this.snackBar.open('Contraseña actualizada con éxito', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['snackbar-success']
+        });
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        const msg = err.error?.message || 'Error al cambiar contraseña';
+        this.snackBar.open(msg, 'Cerrar', {
+          duration: 4000,
+          panelClass: ['snackbar-error']
+        });
+      }
+    });
   }
+}
+
 
 }
