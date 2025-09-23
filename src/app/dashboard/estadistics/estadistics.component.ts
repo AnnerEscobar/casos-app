@@ -47,6 +47,7 @@ type DonutChartOptionsStrict = {
   legend?: ApexLegend;
   tooltip?: ApexTooltip;
   responsive: ApexResponsive[];
+  title: ApexTitleSubtitle;
 };
 
 const COLORS = {
@@ -155,6 +156,7 @@ public barChartMensualOptions: BarChartOptionsStrict;
 this.donutChartOptions = {
   series: [],
   chart: { type: 'donut', height: 350, redrawOnParentResize: true, parentHeightOffset: 0 },
+  title: { text: 'Casos Registrados por Tipo' },
   labels: ['Activas', 'Inactivas', 'Remitidas'],
   colors: [COLORS.activa, COLORS.inactiva, COLORS.remitida],
   stroke: { colors: ['#fff'] },
