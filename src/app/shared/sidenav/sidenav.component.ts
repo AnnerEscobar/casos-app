@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostBinding, Input } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,6 +10,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { CaratulaService } from '../../caratulas/caratula.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { SharedService } from '../shared.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 
 @Component({
@@ -23,17 +24,19 @@ import { SharedService } from '../shared.service';
     MatToolbarModule,
     CommonModule,
     MatExpansionModule,
-    MatMenuModule
+    MatMenuModule,
+    MatTooltipModule
   ],
   templateUrl: './sidenav.component.html',
   styleUrl: './sidenav.component.css'
 })
 export class SidenavComponent {
 
-  user = {email: '', role: ''};
+  user = { email: '', role: '' };
   loading = false;
   error = '';
   pendientesCount: number = 0;
+  @Input() collapsed = false;   // <<--- NUEVO
 
   constructor(
     private caratulaService: CaratulaService,
@@ -121,13 +124,14 @@ export class SidenavComponent {
     }
   ];
 
-  closeSession(){
+  closeSession() {
     localStorage.removeItem('access_token');
     this.router.navigate(['/login']);
   }
 
 
-    loadUser(): void {
+
+  loadUser(): void {
     this.loading = true;
     this.error = '';
     this.shared.getUserData().subscribe({
@@ -144,8 +148,5 @@ export class SidenavComponent {
       }
     });
   }
-
-
-
 
 }

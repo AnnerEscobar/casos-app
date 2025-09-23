@@ -80,10 +80,6 @@ public donutChartOptions: DonutChartOptionsStrict;
 public barChartMensualOptions: BarChartOptionsStrict;
 
 
-
-
-
-
   // Tarjetas: ahora con key + icon para poder dar estilos por tipo
   exps: Array<{
     key: 'alerta' | 'maltrato' | 'conflicto' | 'remitidas' | 'activas' | 'inactivas';
@@ -312,7 +308,15 @@ this.donutChartOptions = {
       this.barChartMensual.updateOptions(this.barChartMensualOptions);
     }
 
+
+
+
   }
+
+
+
+
+
 
 
 

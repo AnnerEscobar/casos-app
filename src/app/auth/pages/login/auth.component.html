@@ -1,4 +1,4 @@
-<div class="flex justify-center items-center min-h-screen">
+<!-- <div class="flex justify-center items-center min-h-screen">
   <mat-card class="p-8 rounded-xl shadow-lg w-full max-w-lg ">
     <h2 class="text-2xl font-semibold text-center mb-6">Iniciar Sesión</h2>
 
@@ -21,10 +21,85 @@
 
       <button mat-flat-button class="w-full" [disabled]="!loginForm.valid">Iniciar Sesión</button>
     </form>
-<!--
     <p class="mt-6 text-center text-sm">
       ¿No tienes cuenta?
       <a routerLink="/register" class="text-blue-600 hover:underline" style="cursor: pointer;">Regístrate</a>
-    </p> -->
+    </p>
+  </mat-card>
+</div>
+ -->
+<div class="min-h-screen flex items-center justify-center
+         bg-gradient-to-br from-rose-50 via-fuchsia-50 to-indigo-50
+         dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
+
+  <mat-card
+    class="w-full max-w-md p-8 rounded-2xl shadow-2xl ring-1 ring-black/5 bg-white/80 dark:bg-slate-900/70 backdrop-blur-md">
+
+    <!-- Header -->
+    <div class="flex flex-col items-center gap-2 mb-6">
+      <div class="h-12 w-12 rounded-2xl grid place-items-center bg-rose-100 text-rose-600 shadow">
+        <mat-icon>lock</mat-icon>
+      </div>
+      <h1 class="text-2xl font-semibold tracking-tight">Iniciar Sesión</h1>
+      <p class="text-sm text-slate-500 text-center">
+        Accede al panel de casos
+      </p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-5">
+
+      <!-- Email -->
+      <!-- EMAIL estilo “fill” con icono a la izquierda -->
+      <mat-form-field appearance="fill" class="w-full mat-input-pill mat-input-mail">
+        <mat-label>Correo electrónico</mat-label>
+        <mat-icon matPrefix>mail</mat-icon>
+        <input matInput formControlName="email" type="email" placeholder="correo@sgic.com" autocomplete="username" />
+
+        <mat-error *ngIf="(email.touched || submitted) && email.hasError('required')">
+          El correo es obligatorio
+        </mat-error>
+        <mat-error *ngIf="(email.touched || submitted) && email.hasError('email')">
+          Correo inválido
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Password -->
+      <mat-form-field appearance="fill" class="w-full mat-input-pill">
+        <mat-icon matPrefix>lock</mat-icon>
+        <mat-label>Contraseña</mat-label>
+
+        <input matInput [type]="hide ? 'password' : 'text'" formControlName="password"
+          placeholder="Ingresa tu contraseña" />
+
+        <button mat-icon-button matSuffix type="button" (click)="hide = !hide"
+          [attr.aria-label]="hide ? 'Mostrar contraseña' : 'Ocultar contraseña'" [attr.aria-pressed]="!hide">
+          <mat-icon>{{ hide ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
+
+        <mat-error *ngIf="(password.touched || submitted) && password.hasError('required')">
+          La contraseña es obligatoria
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Submit -->
+      <button mat-flat-button color="primary" class="w-full h-12 rounded-xl font-medium"
+        [disabled]="loginForm.invalid || loading">
+        <ng-container *ngIf="!loading; else loadingTpl">Iniciar Sesión</ng-container>
+      </button>
+      <ng-template #loadingTpl>
+        <span class="inline-flex items-center gap-2">
+          <mat-spinner diameter="20"></mat-spinner>
+          Entrando…
+        </span>
+      </ng-template>
+    </form>
+
+    <!-- Enlace opcional -->
+    <!--
+    <p class="mt-6 text-center text-sm">
+      ¿No tienes cuenta?
+      <a routerLink="/register" class="text-rose-600 hover:underline">Regístrate</a>
+    </p>
+    -->
   </mat-card>
 </div>

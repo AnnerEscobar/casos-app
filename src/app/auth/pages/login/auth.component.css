@@ -1,4 +1,4 @@
-.login-container {
+/* .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -22,4 +22,91 @@
   margin-right: 60px;
   font-size: 20px;
   line-height: 1;
+} */
+
+
+/* Fondo de la vista ya lo pone Tailwind con el gradiente en el HTML */
+
+/* Card “glass” (suave, redondeada) */
+:host ::ng-deep .mat-mdc-card {
+  border-radius: 1rem;
 }
+
+/* Inputs redondeados y compactos */
+:host ::ng-deep .mat-mdc-form-field {
+  --mat-form-field-container-height: 52px;    /* un poco más alto */
+}
+:host ::ng-deep .mdc-notched-outline > * {
+  border-radius: 12px;
+}
+:host ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  margin-top: 4px;
+}
+
+/* Spinner dentro del botón sin desalinearse */
+:host ::ng-deep .mat-mdc-progress-spinner {
+  --mdc-circular-progress-active-indicator-width: 3px;
+}
+
+/* Pequeños ajustes a los íconos prefix/suffix */
+:host ::ng-deep .mat-mdc-form-field-icon-prefix,
+:host ::ng-deep .mat-mdc-form-field-icon-suffix {
+  color: rgb(100 116 139); /* slate-500 */
+}
+
+
+/* para el password*/
+/* “Píldora” + fondo suave para appearance="fill" */
+:host ::ng-deep .mat-input-pill .mat-mdc-text-field-wrapper.mdc-text-field--filled {
+  border-radius: 12px;                 /* esquinas redondeadas */
+  background: #fff;                 /* gris suave como el ejemplo */
+  transition: box-shadow .2s ease, background-color .2s ease;
+}
+
+/* Altura cómoda y padding interno uniforme */
+:host ::ng-deep .mat-input-pill .mat-mdc-form-field-flex {
+  height: 52px;                         /* 56 si lo quieres más alto */
+}
+:host ::ng-deep .mat-input-pill .mat-mdc-input-element {
+  padding: 0 0.5rem !important;         /* quita espacios raros */
+}
+
+/* Ícono de ojo: color discreto y sin separación extra */
+:host ::ng-deep .mat-input-pill .mat-mdc-form-field-icon-suffix {
+  color: #4b5563;                        /* slate-600 */
+}
+:host ::ng-deep .mat-input-pill .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button {
+  padding: 0 6px;                        /* más pegado al borde */
+}
+
+/* Línea inferior (ripple): tenue; puedes ocultarla si no la quieres */
+:host ::ng-deep .mat-input-pill .mdc-line-ripple::before,
+:host ::ng-deep .mat-input-pill .mdc-line-ripple::after {
+  border-bottom-width: 2px;
+  opacity: .3;                           /* tenue como en el ejemplo */
+}
+
+/* En foco: sombra sutil */
+:host ::ng-deep .mat-input-pill.mdc-text-field--focused,
+:host ::ng-deep .mat-input-pill .mdc-text-field--focused {
+  box-shadow: 0 0 0 3px rgba(218, 218, 238, 0.15); /* halo suave */
+}
+
+
+/* Misma “píldora” del password ya aplicada por .mat-input-pill */
+
+/* Correcciones para prefix del icono mail (sin hueco) */
+:host ::ng-deep .mat-input-mail .mat-mdc-form-field-icon-prefix {
+  padding-inline-start: 8px;   /* pegado al borde */
+  padding-inline-end: 4px;     /* mínimo espacio antes del texto */
+}
+:host ::ng-deep .mat-input-mail .mat-mdc-form-field-icon-prefix .mat-icon {
+  margin: 0 !important;        /* sin margen extra */
+  color: #4b5563;              /* slate-600 */
+}
+:host ::ng-deep .mat-input-mail .mat-mdc-input-element {
+  padding-left: 0 !important;  /* quita padding que agrega el prefix */
+}
+
+/* (Opcional) ocultar por completo la línea inferior si buscas “solo pastilla” */
+/* :host ::ng-deep .mat-input-pill .mdc-line-ripple { display: none; } */
