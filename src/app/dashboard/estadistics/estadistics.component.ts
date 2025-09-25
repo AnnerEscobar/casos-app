@@ -226,7 +226,7 @@ this.donutChartOptions = {
   }
 
 
-  calcularMetricas(alertas: any[], maltratos: any[], conflictos: any[]): void {
+ /*  calcularMetricas(alertas: any[], maltratos: any[], conflictos: any[]): void {
 
     // Calcular métricas para alertas
     const alertasActivas = alertas.filter((alerta) => alerta.estadoInvestigacion === 'Informado').length;
@@ -241,7 +241,28 @@ this.donutChartOptions = {
     this.exps[4].amount = alertasActivas; // Alertas Activas
     this.exps[5].amount = alertasConcluidas + alertasRemitidas; // Alertas Inactivas
     this.actualizarGraficas(alertas, maltratos, conflictos);
-  }
+  } */
+
+    calcularMetricas(alertas: any[], maltratos: any[], conflictos: any[]): void {
+  const alertasActivas   = alertas.filter(a => a.estadoInvestigacion === 'Informado').length;
+  const alertasRemitidas = alertas.filter(a => a.estadoInvestigacion === 'Remitido').length;
+  const alertasConcluidas= alertas.filter(a => a.estadoInvestigacion === 'Concluido').length;
+
+  const nextMap: Record<string, number> = {
+    alerta:     alertas.length,
+    maltrato:   maltratos.length,
+    conflicto:  conflictos.length,
+    remitidas:  alertasRemitidas,
+    activas:    alertasActivas,
+    inactivas:  alertasConcluidas + alertasRemitidas,
+  };
+
+  // ⚠️ Reemplazamos el array para forzar CD en móvil
+  this.exps = this.exps.map(e => ({ ...e, amount: nextMap[e.key] ?? 0 }));
+
+  this.actualizarGraficas(alertas, maltratos, conflictos);
+}
+
 
 
   actualizarGraficas(alertas: any[], maltratos: any[], conflictos: any[]): void {
