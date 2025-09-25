@@ -14,7 +14,7 @@
       role="button"
       tabindex="0"
       (click)="onKpiClick(item)"
-      [attr.aria-label]="item.tag + ' ' + (item.amount)"
+      [attr.aria-label]="item.tag + ' ' + (item.amount || 'NaData')"
     >
       <div class="kpi-top">
         <div class="kpi-icon">
@@ -30,7 +30,7 @@
         }
       </div>
 
-      <div class="kpi-value">{{ item.amount || 0 }}</div>
+      <div class="kpi-value">{{ item.amount || 'NaData'}}</div>
       <div class="kpi-label">{{ item.tag }}</div>
       <div class="kpi-updated">Actualizado hoy</div>
     </mat-card>
