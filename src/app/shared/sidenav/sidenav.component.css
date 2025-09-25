@@ -45,6 +45,12 @@ a.submenu-link {
 
 }
 
+@media (max-width: 768px) {
+  a.submenu-link {
+   text-size-adjust: 25%
+  }
+}
+
 a.submenu-link:hover {
   background-color: rgba(0, 0, 0, 0.05);
 }
