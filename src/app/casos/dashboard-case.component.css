@@ -1,0 +1,10 @@
+#sidenav{
+  width: 350px;
+}
+
+
+@media (max-width: 768px) {
+  #sidenav {
+    width: 150px;
+  }
+}

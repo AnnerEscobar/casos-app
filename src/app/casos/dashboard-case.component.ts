@@ -17,7 +17,10 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
     MatIconModule,
     CommonModule
   ],
-  templateUrl: './dashboard-case.component.html'
+  templateUrl: './dashboard-case.component.html',
+  styleUrls: ['./dashboard-case.component.css']
+
+
 })
 export default class DashboardCaseComponent {
     events: string[] = [];
