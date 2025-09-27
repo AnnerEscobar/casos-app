@@ -10,9 +10,8 @@
   export class AuthService {
 
     private apiUrl = `${environment.apiUrl}/auth`;
-
-
     private loggedIn = new BehaviorSubject<boolean>(this.hasToken());
+
 
     constructor(private http: HttpClient, private router: Router) {}
 
@@ -66,6 +65,7 @@
       return localStorage.getItem('access_token');
     }
 
+    // Verificar si el token ha expirado
     isTokenExpired(token: string): boolean {
       if (!token) return true;
 
@@ -76,6 +76,7 @@
       return exp < now;
     }
 
+    //metodo para verificar si el usuario está autenticado
     isAuthenticated(): boolean {
       const token = localStorage.getItem('access_token');
       return token !== null && !this.isTokenExpired(token);
