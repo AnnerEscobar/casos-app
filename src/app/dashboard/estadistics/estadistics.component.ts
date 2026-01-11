@@ -104,9 +104,9 @@ export default class EstadisticsComponent {
   public barChartMensualOptions: BarChartOptionsStrict;
 
 
- // timeOptions = [
-   // { value: '2025', viewValue: '2025' },
-    //{ value: '2025', viewValue: '2024' },
+  // timeOptions = [
+  // { value: '2025', viewValue: '2025' },
+  //{ value: '2025', viewValue: '2024' },
   //]
 
   // Tarjetas: ahora con key + icon para poder dar estilos por tipo
@@ -249,13 +249,20 @@ export default class EstadisticsComponent {
 
       // 1) Construir lista de años disponibles del histórico
       const allYears = new Set<number>();
-      [...alertas, ...maltratos, ...conflictos].forEach(i => allYears.add(this.getYear(i)));
+      [...alertas, ...maltratos, ...conflictos].forEach(i => {
+        const y = this.getYear(i);
+        if (y !== null) allYears.add(y); // <-- ignora sin fecha
+      });
       const ordenados = Array.from(allYears).sort((a, b) => b - a);
       this.yearsDisponibles = ['all', ...ordenados];
 
+
       // 2) Aplicar filtro por año
-      const filtra = <T>(arr: T[]) =>
-        this.selectedYear === 'all' ? arr : arr.filter(i => this.getYear(i) === this.selectedYear);
+      const filtra = <T>(arr: T[]) => {
+        if (this.selectedYear === 'all') return arr; // General: incluye todo (con y sin fecha)
+        return arr.filter(i => this.getYear(i) === this.selectedYear); // Año: solo válidos
+      };
+
 
       const alertasY = filtra(alertas);
       const maltrY = filtra(maltratos);
@@ -414,11 +421,15 @@ export default class EstadisticsComponent {
 
 
   // Ajusta los nombres de fecha que usas en tus docs si son otros
-  private getYear(v: any): number {
-    const raw = v?.fecha || v?.fechaRegistro || v?.createdAt;
+  // Devuelve el año o null si no hay fecha válida
+  private getYear(v: any): number | null {
+    const raw = v?.fecha ?? v?.fechaRegistro ?? v?.createdAt;
+    if (!raw) return null;
+
     const d = new Date(raw);
-    return isNaN(+d) ? this.currentYear : d.getFullYear();
+    return isNaN(d.getTime()) ? null : d.getFullYear();
   }
+
 
   get tituloPeriodo(): string {
     return this.selectedYear === 'all' ? 'General' : `Año ${this.selectedYear}`;
