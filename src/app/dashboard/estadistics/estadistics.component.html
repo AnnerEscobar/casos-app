@@ -1,123 +1,115 @@
-<div class="stats-container overflow-x-hidden">
+<div>
+  <mat-form-field appearance="outline" style="width: 100%;">
+    <mat-label>Año</mat-label>
 
+    <!-- Enlazamos al estado y disparamos onYearChange -->
+<mat-select [(ngModel)]="selectedYear"
+            name="year"
+            (selectionChange)="onYearChange($event.value)">
+  <mat-option [value]="'all'">General</mat-option>
+
+  @for (y of yearsDisponibles; track y) {
+    @if (y !== 'all') {
+      <mat-option [value]="y">{{ y }}</mat-option>
+    }
+  }
+</mat-select>
+
+  </mat-form-field>
+</div>
+
+<div class="stats-container overflow-x-hidden">
   <!-- spinner-overlay -->
   <div class="overlay-stats" *ngIf="isLoading">
     <mat-spinner diameter="50"></mat-spinner>
   </div>
 
-<!-- KPIs -->
-<div class="kpi-wrap">
-  @for (item of exps; track item.key) {
-    <mat-card
-      class="kpi-card"
-      [ngClass]="'kpi--' + item.key"
-      role="button"
-      tabindex="0"
-      (click)="onKpiClick(item)"
-      [attr.aria-label]="item.tag + ' ' + (item.amount || 'NaData')"
-    >
+  <!-- KPIs -->
+  <div class="kpi-wrap">
+    @for (item of exps; track item.key) {
+      <mat-card
+        class="kpi-card"
+        [ngClass]="'kpi--' + item.key"
+        role="button"
+        tabindex="0"
+        (click)="onKpiClick(item)"
+        [attr.aria-label]="item.tag + ' ' + (item.amount || 0 )"
+      >
+
       <div class="kpi-top">
-        <div class="kpi-icon">
-          <mat-icon>{{ item.icon }}</mat-icon>
+          <div class="kpi-icon">
+            <mat-icon>{{ item.icon }}</mat-icon>
+          </div>
+
+          @if (item.delta !== undefined) {
+            <div class="kpi-delta" [class.down]="item.delta < 0">
+              <mat-icon>{{ item.delta >= 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
+              {{ (item.delta || 0) | percent : '1.0-0' }}
+            </div>
+          }
         </div>
 
-        <!-- Delta opcional (si en el futuro calculas % vs mes) -->
-        @if (item.delta !== undefined) {
-          <div class="kpi-delta" [class.down]="item.delta < 0">
-            <mat-icon>{{ item.delta >= 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
-            {{ (item.delta || 0) | percent : '1.0-0' }}
-          </div>
-        }
-      </div>
-
-      <div class="kpi-value">{{ item.amount || 'NaData'}}</div>
-      <div class="kpi-label">{{ item.tag }}</div>
-      <div class="kpi-updated">Actualizado hoy</div>
-    </mat-card>
-  }
-</div>
-
-<!--   <div class="grid gap-5 w-full h-full grid-rows-[auto_auto_1fr] grid-cols-1">
-    <div class="w-full h-36 p-4 gap-5 grid grid-cols-2 md:grid-cols-6">
-      @for (tag of exps; track $index) {
-      <mat-card class="w-44 h-full">
-        <mat-card-header class="justify-center text-center">
-          <mat-card-subtitle>{{ tag.tag }}</mat-card-subtitle>
-          <mat-card-title>{{ tag.amount || 0 }}</mat-card-title>
-        </mat-card-header>
+        <div class="kpi-value">{{ item.amount || 0 }}</div>
+        <div class="kpi-label">{{ item.tag }}</div>
+        <div class="kpi-updated">Actualizado {{ tituloPeriodo }}</div>
       </mat-card>
-      }
-    </div> -->
+    }
+  </div>
 
-<!-- Contenedor padre: columna en móvil, fila en md+ -->
-<div class="flex flex-col md:flex-row w-full border-2 p-4 my-4 gap-2 pt-[25px] grid grid-cols-1 md:grid-cols-2 gap-3">
   <!-- Gráfico de barras -->
-<!-- <div class="w-full max-w-[400px] md:max-w-[700px] mx-auto p-2 border-red-500"> -->
-  <!-- esta altura la defines tú; puede ser h-80 o h-[350px] -->
-  <div class="w-full h-[350px] border-red-500">
-   <apx-chart
-  #barChart
-  class="w-full h-full"
-  [series]="barChartOptions.series"
-  [chart]="barChartOptions.chart"
-  [xaxis]="barChartOptions.xaxis"
-  [yaxis]="barChartOptions.yaxis"
-  [title]="barChartOptions.title"
-  [colors]="barChartOptions.colors!"
-  [plotOptions]="barChartOptions.plotOptions!"
-  [dataLabels]="barChartOptions.dataLabels!"
-  [grid]="barChartOptions.grid!"
-  [tooltip]="barChartOptions.tooltip!">
-</apx-chart>
-  <!-- </div> -->
-</div>
+  <div class="flex flex-col md:flex-row w-full border-2 p-4 my-4 gap-2 pt-[25px] grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div class="w-full h-[350px]">
+      <apx-chart
+        #barChart
+        class="w-full h-full"
+        [series]="barChartOptions.series"
+        [chart]="barChartOptions.chart"
+        [xaxis]="barChartOptions.xaxis"
+        [yaxis]="barChartOptions.yaxis"
+        [title]="barChartOptions.title"
+        [colors]="barChartOptions.colors!"
+        [plotOptions]="barChartOptions.plotOptions!"
+        [dataLabels]="barChartOptions.dataLabels!"
+        [grid]="barChartOptions.grid!"
+        [tooltip]="barChartOptions.tooltip!">
+      </apx-chart>
+    </div>
 
-
-  <!-- Gráfico de donas -->
-<!-- Donut -->
-<!-- <div class=" max-w-[400px] md:max-w-[700px] mx-auto p-2 border-2 border-blue-500"> -->
-  <div class="h-[350px] border-blue-500">
-    <h6 style="text-align: center; font-weight: bold;">Estadistica de Alertas</h6>
-    <apx-chart
-      #donutChart
-      class="w-full h-full"
-      [series]="donutChartOptions.series"
-      [chart]="donutChartOptions.chart"
-      [labels]="donutChartOptions.labels!"
-      [colors]="donutChartOptions.colors!"
-      [stroke]="donutChartOptions.stroke!"
-      [dataLabels]="donutChartOptions.dataLabels!"
-      [plotOptions]="donutChartOptions.plotOptions!"
-      [legend]="donutChartOptions.legend!"
-      [responsive]="donutChartOptions.responsive!">
-    </apx-chart>
-  </div>
-<!-- </div> -->
-</div>
-
-
-
-
-<div class="flex flex-col md:flex-row w-full border-2 p-4 my-4 gap-2 pt-[25px]">
-<div class="w-full max-w-[400px] md:max-w-[700px] mx-auto p-2 border-2">
-<apx-chart
-  #barChartMensual
-  [series]="barChartMensualOptions.series"
-  [chart]="barChartMensualOptions.chart"
-  [xaxis]="barChartMensualOptions.xaxis"
-  [yaxis]="barChartMensualOptions.yaxis"
-  [title]="barChartMensualOptions.title"
-  [colors]="barChartMensualOptions.colors!"
-  [plotOptions]="barChartMensualOptions.plotOptions!"
-  [dataLabels]="barChartMensualOptions.dataLabels!"
-  [grid]="barChartMensualOptions.grid!"
-  [legend]="barChartMensualOptions.legend!"
-  [tooltip]="barChartMensualOptions.tooltip!">
-</apx-chart>
-
-</div>
-
-</div>
-
+    <!-- Donut -->
+    <div class="h-[350px]">
+      <h6 style="text-align: center; font-weight: bold;">Estadística de Alertas</h6>
+      <apx-chart
+        #donutChart
+        class="w-full h-full"
+        [series]="donutChartOptions.series"
+        [chart]="donutChartOptions.chart"
+        [labels]="donutChartOptions.labels!"
+        [colors]="donutChartOptions.colors!"
+        [stroke]="donutChartOptions.stroke!"
+        [dataLabels]="donutChartOptions.dataLabels!"
+        [plotOptions]="donutChartOptions.plotOptions!"
+        [legend]="donutChartOptions.legend!"
+        [responsive]="donutChartOptions.responsive!">
+      </apx-chart>
+    </div>
   </div>
 
+  <div class="flex flex-col md:flex-row w-full border-2 p-4 my-4 gap-2 pt-[25px]">
+    <div class="w-full max-w-[400px] md:max-w-[700px] mx-auto p-2 border-2">
+      <apx-chart
+        #barChartMensual
+        [series]="barChartMensualOptions.series"
+        [chart]="barChartMensualOptions.chart"
+        [xaxis]="barChartMensualOptions.xaxis"
+        [yaxis]="barChartMensualOptions.yaxis"
+        [title]="barChartMensualOptions.title"
+        [colors]="barChartMensualOptions.colors!"
+        [plotOptions]="barChartMensualOptions.plotOptions!"
+        [dataLabels]="barChartMensualOptions.dataLabels!"
+        [grid]="barChartMensualOptions.grid!"
+        [legend]="barChartMensualOptions.legend!"
+        [tooltip]="barChartMensualOptions.tooltip!">
+      </apx-chart>
+    </div>
+  </div>
+</div>

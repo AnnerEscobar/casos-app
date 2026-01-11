@@ -18,7 +18,14 @@ import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DashboardService } from './dashboard.service';
 import { MatIconModule } from '@angular/material/icon';
-import { ApexOptions} from 'ng-apexcharts';
+import { ApexOptions } from 'ng-apexcharts';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { FormsModule } from "@angular/forms";
+import { MatFormFieldModule } from '@angular/material/form-field';
+
+
+type YearOption = number | 'all';
 
 
 // Definir tipos para las opciones de las gráficas
@@ -62,7 +69,16 @@ const COLORS = {
 
 @Component({
   selector: 'app-estadistics',
-  imports: [MatCardModule, MatGridListModule, NgApexchartsModule, CommonModule, MatProgressSpinnerModule, MatIconModule],
+  imports: [MatCardModule,
+    MatGridListModule,
+    NgApexchartsModule,
+    CommonModule,
+    MatProgressSpinnerModule,
+    MatIconModule,
+    MatSelectModule,
+    MatOptionModule,
+    FormsModule,
+    MatFormFieldModule],
 
   templateUrl: './estadistics.component.html',
   styleUrl: './estadistics.component.css',
@@ -75,11 +91,23 @@ export default class EstadisticsComponent {
   @ViewChild('donutChart') donutChart!: ChartComponent;
   @ViewChild('barChartMensual') barChartMensual!: ChartComponent;
 
+  //years = Array.from({ length: 6 }, (_, i) => this.currentYear - i);
+  //selectedYear = this.currentYear;
+  currentYear = new Date().getFullYear();
+  selectedYear: YearOption = 'all';
+  yearsDisponibles: YearOption[] = ['all']; // se llena tras la primera carga
 
-public barChartOptions: BarChartOptionsStrict;
-public donutChartOptions: DonutChartOptionsStrict;
-public barChartMensualOptions: BarChartOptionsStrict;
 
+
+  public barChartOptions: BarChartOptionsStrict;
+  public donutChartOptions: DonutChartOptionsStrict;
+  public barChartMensualOptions: BarChartOptionsStrict;
+
+
+ // timeOptions = [
+   // { value: '2025', viewValue: '2025' },
+    //{ value: '2025', viewValue: '2024' },
+  //]
 
   // Tarjetas: ahora con key + icon para poder dar estilos por tipo
   exps: Array<{
@@ -153,50 +181,50 @@ public barChartMensualOptions: BarChartOptionsStrict;
 
 
 
-this.donutChartOptions = {
-  series: [],
-  chart: { type: 'donut', height: 350, redrawOnParentResize: true, parentHeightOffset: 0 },
-  title: { text: 'Casos Registrados por Tipo' },
-  labels: ['Activas', 'Inactivas', 'Remitidas'],
-  colors: [COLORS.activa, COLORS.inactiva, COLORS.remitida],
-  stroke: { colors: ['#fff'] },
-  dataLabels: { enabled: true, formatter: (v: number) => `${v.toFixed(1)}%` },
-  plotOptions: {
-    pie: {
-      offsetX: 0,
-      donut: { size: '66%', labels: { show: true, total: { show: true, label: 'Total' } } }
-    }
-  },
-  legend: { position: 'bottom', horizontalAlign: 'center' },
-  responsive: [
-    { breakpoint: 1280, options: { chart: { height: 340 }, plotOptions: { pie: { donut: { size: '62%' } } } } },
-    { breakpoint: 992,  options: { chart: { height: 320 }, plotOptions: { pie: { donut: { size: '58%' } } } } },
-    { breakpoint: 768,  options: { chart: { height: 300 }, plotOptions: { pie: { donut: { size: '54%' } } } } }
-  ]
-};
+    this.donutChartOptions = {
+      series: [],
+      chart: { type: 'donut', height: 350, redrawOnParentResize: true, parentHeightOffset: 0 },
+      title: { text: 'Casos Registrados por Tipo' },
+      labels: ['Activas', 'Inactivas', 'Remitidas'],
+      colors: [COLORS.activa, COLORS.inactiva, COLORS.remitida],
+      stroke: { colors: ['#fff'] },
+      dataLabels: { enabled: true, formatter: (v: number) => `${v.toFixed(1)}%` },
+      plotOptions: {
+        pie: {
+          offsetX: 0,
+          donut: { size: '66%', labels: { show: true, total: { show: true, label: 'Total' } } }
+        }
+      },
+      legend: { position: 'bottom', horizontalAlign: 'center' },
+      responsive: [
+        { breakpoint: 1280, options: { chart: { height: 340 }, plotOptions: { pie: { donut: { size: '62%' } } } } },
+        { breakpoint: 992, options: { chart: { height: 320 }, plotOptions: { pie: { donut: { size: '58%' } } } } },
+        { breakpoint: 768, options: { chart: { height: 300 }, plotOptions: { pie: { donut: { size: '54%' } } } } }
+      ]
+    };
 
 
 
-  this.barChartMensualOptions = {
-  series: [],
-  chart: { type: 'bar', height: 350, toolbar: { show: false }, redrawOnParentResize: true },
-  colors: [COLORS.alerta, COLORS.maltrato, COLORS.conflicto],
-  plotOptions: {
-    bar: {
-      horizontal: false,
-      columnWidth: '45%',
-      borderRadius: 6,
-      borderRadiusApplication: 'end'
-    }
-  },
-  dataLabels: { enabled: false },
-  xaxis: { categories: [], labels: { rotate: 0 } },
-  yaxis: { min: 0, tickAmount: 5 },
-  legend: { position: 'top', horizontalAlign: 'right' },
-  grid: { borderColor: COLORS.grid, strokeDashArray: 2 },
-  title: { text: 'Casos por mes (2025)' },
-  tooltip: { y: { formatter: (v: number) => `${v} casos` } }
-};
+    this.barChartMensualOptions = {
+      series: [],
+      chart: { type: 'bar', height: 350, toolbar: { show: false }, redrawOnParentResize: true },
+      colors: [COLORS.alerta, COLORS.maltrato, COLORS.conflicto],
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: '45%',
+          borderRadius: 6,
+          borderRadiusApplication: 'end'
+        }
+      },
+      dataLabels: { enabled: false },
+      xaxis: { categories: [], labels: { rotate: 0 } },
+      yaxis: { min: 0, tickAmount: 5 },
+      legend: { position: 'top', horizontalAlign: 'right' },
+      grid: { borderColor: COLORS.grid, strokeDashArray: 2 },
+      title: { text: 'Casos por mes (2025)' },
+      tooltip: { y: { formatter: (v: number) => `${v} casos` } }
+    };
 
 
 
@@ -206,62 +234,88 @@ this.donutChartOptions = {
   ngOnInit(): void {
     this.cargarDatos();
     // Agrega esta llamada
-    this.dashboardSerivice.getEstadisticasMensuales().subscribe(data => {
-      this.actualizarGraficaPorMes(data);
-    });
   }
 
   cargarDatos(): void {
     this.isLoading = true;
+
     forkJoin({
       alertas: this.alertaService.getAlertas(),
       maltratos: this.maltratoService.getMaltratos(),
       conflictos: this.conflictoService.getConflictos()
     }).pipe(
-      delay(500), // Simular un retraso de 1 segundo
-      finalize(() => this.isLoading = false)   // se apaga el spinner aquí
+      finalize(() => this.isLoading = false)
     ).subscribe(({ alertas, maltratos, conflictos }) => {
-      this.calcularMetricas(alertas, maltratos, conflictos);
+
+      // 1) Construir lista de años disponibles del histórico
+      const allYears = new Set<number>();
+      [...alertas, ...maltratos, ...conflictos].forEach(i => allYears.add(this.getYear(i)));
+      const ordenados = Array.from(allYears).sort((a, b) => b - a);
+      this.yearsDisponibles = ['all', ...ordenados];
+
+      // 2) Aplicar filtro por año
+      const filtra = <T>(arr: T[]) =>
+        this.selectedYear === 'all' ? arr : arr.filter(i => this.getYear(i) === this.selectedYear);
+
+      const alertasY = filtra(alertas);
+      const maltrY = filtra(maltratos);
+      const conflictY = filtra(conflictos);
+
+      // 3) Recalcular cards y charts con el subconjunto
+      this.calcularMetricas(alertasY, maltrY, conflictY);
+
+      // 4) Actualizar gráfica mensual derivada del subconjunto
+      this.cargarEstadisticasMensualesDesdeColecciones(alertasY, maltrY, conflictY);
+
+      // 5) Actualizar títulos con el período
+      this.barChartOptions = { ...this.barChartOptions, title: { text: `Casos Registrados por Tipo — ${this.tituloPeriodo}` } };
+      this.donutChartOptions = { ...this.donutChartOptions, title: { text: `Distribución de Alertas — ${this.tituloPeriodo}` } };
+      this.barChartMensualOptions = { ...this.barChartMensualOptions, title: { text: `Casos por mes — ${this.tituloPeriodo}` } };
+
+      if (this.barChart) this.barChart.updateOptions(this.barChartOptions);
+      if (this.donutChart) this.donutChart.updateOptions(this.donutChartOptions);
+      if (this.barChartMensual) this.barChartMensual.updateOptions(this.barChartMensualOptions);
     });
   }
 
 
- /*  calcularMetricas(alertas: any[], maltratos: any[], conflictos: any[]): void {
 
-    // Calcular métricas para alertas
-    const alertasActivas = alertas.filter((alerta) => alerta.estadoInvestigacion === 'Informado').length;
-    const alertasRemitidas = alertas.filter((alerta) => alerta.estadoInvestigacion === 'Remitido').length;
-    const alertasConcluidas = alertas.filter((alerta) => alerta.estadoInvestigacion === 'Concluido').length;
+  /*  calcularMetricas(alertas: any[], maltratos: any[], conflictos: any[]): void {
 
-    // Actualizar las tarjetas
-    this.exps[0].amount = alertas.length; // Alerta Alba-Kenet
-    this.exps[1].amount = maltratos.length; // Casos de Maltrato
-    this.exps[2].amount = conflictos.length; // Casos de Conflicto
-    this.exps[3].amount = alertasRemitidas; // Remitidos
-    this.exps[4].amount = alertasActivas; // Alertas Activas
-    this.exps[5].amount = alertasConcluidas + alertasRemitidas; // Alertas Inactivas
+     // Calcular métricas para alertas
+     const alertasActivas = alertas.filter((alerta) => alerta.estadoInvestigacion === 'Informado').length;
+     const alertasRemitidas = alertas.filter((alerta) => alerta.estadoInvestigacion === 'Remitido').length;
+     const alertasConcluidas = alertas.filter((alerta) => alerta.estadoInvestigacion === 'Concluido').length;
+
+     // Actualizar las tarjetas
+     this.exps[0].amount = alertas.length; // Alerta Alba-Kenet
+     this.exps[1].amount = maltratos.length; // Casos de Maltrato
+     this.exps[2].amount = conflictos.length; // Casos de Conflicto
+     this.exps[3].amount = alertasRemitidas; // Remitidos
+     this.exps[4].amount = alertasActivas; // Alertas Activas
+     this.exps[5].amount = alertasConcluidas + alertasRemitidas; // Alertas Inactivas
+     this.actualizarGraficas(alertas, maltratos, conflictos);
+   } */
+
+  calcularMetricas(alertas: any[], maltratos: any[], conflictos: any[]): void {
+    const alertasActivas = alertas.filter(a => a.estadoInvestigacion === 'Informado').length;
+    const alertasRemitidas = alertas.filter(a => a.estadoInvestigacion === 'Remitido').length;
+    const alertasConcluidas = alertas.filter(a => a.estadoInvestigacion === 'Concluido').length;
+
+    const nextMap: Record<string, number> = {
+      alerta: alertas.length,
+      maltrato: maltratos.length,
+      conflicto: conflictos.length,
+      remitidas: alertasRemitidas,
+      activas: alertasActivas,
+      inactivas: alertasConcluidas + alertasRemitidas,
+    };
+
+    // ⚠️ Reemplazamos el array para forzar CD en móvil
+    this.exps = this.exps.map(e => ({ ...e, amount: nextMap[e.key] ?? 0 }));
+
     this.actualizarGraficas(alertas, maltratos, conflictos);
-  } */
-
-    calcularMetricas(alertas: any[], maltratos: any[], conflictos: any[]): void {
-  const alertasActivas   = alertas.filter(a => a.estadoInvestigacion === 'Informado').length;
-  const alertasRemitidas = alertas.filter(a => a.estadoInvestigacion === 'Remitido').length;
-  const alertasConcluidas= alertas.filter(a => a.estadoInvestigacion === 'Concluido').length;
-
-  const nextMap: Record<string, number> = {
-    alerta:     alertas.length,
-    maltrato:   maltratos.length,
-    conflicto:  conflictos.length,
-    remitidas:  alertasRemitidas,
-    activas:    alertasActivas,
-    inactivas:  alertasConcluidas + alertasRemitidas,
-  };
-
-  // ⚠️ Reemplazamos el array para forzar CD en móvil
-  this.exps = this.exps.map(e => ({ ...e, amount: nextMap[e.key] ?? 0 }));
-
-  this.actualizarGraficas(alertas, maltratos, conflictos);
-}
+  }
 
 
 
@@ -297,6 +351,32 @@ this.donutChartOptions = {
     }
   }
 
+  private cargarEstadisticasMensualesDesdeColecciones(alertas: any[], maltratos: any[], conflictos: any[]) {
+    const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const series = { Alerta: new Array(12).fill(0), Maltrato: new Array(12).fill(0), Conflicto: new Array(12).fill(0) };
+
+    const getMonth = (v: any) => {
+      const d = new Date(v?.fecha || v?.fechaRegistro || v?.createdAt);
+      return isNaN(+d) ? -1 : d.getMonth();
+    };
+
+    alertas.forEach(a => { const m = getMonth(a); if (m >= 0) series.Alerta[m]++; });
+    maltratos.forEach(m => { const i = getMonth(m); if (i >= 0) series.Maltrato[i]++; });
+    conflictos.forEach(c => { const j = getMonth(c); if (j >= 0) series.Conflicto[j]++; });
+
+    this.barChartMensualOptions = {
+      ...this.barChartMensualOptions,
+      series: [
+        { name: 'Alerta', data: series.Alerta },
+        { name: 'Maltrato', data: series.Maltrato },
+        { name: 'Conflicto', data: series.Conflicto },
+      ],
+      xaxis: { categories: meses },
+    };
+    if (this.barChartMensual) this.barChartMensual.updateOptions(this.barChartMensualOptions);
+  }
+
+
 
 
   actualizarGraficaPorMes(data: { mes: string; tipo: 'Alerta' | 'Maltrato' | 'Conflicto'; total: number }[]): void {
@@ -330,11 +410,25 @@ this.donutChartOptions = {
     if (this.barChartMensual) {
       this.barChartMensual.updateOptions(this.barChartMensualOptions);
     }
-
-
-
-
   }
+
+
+  // Ajusta los nombres de fecha que usas en tus docs si son otros
+  private getYear(v: any): number {
+    const raw = v?.fecha || v?.fechaRegistro || v?.createdAt;
+    const d = new Date(raw);
+    return isNaN(+d) ? this.currentYear : d.getFullYear();
+  }
+
+  get tituloPeriodo(): string {
+    return this.selectedYear === 'all' ? 'General' : `Año ${this.selectedYear}`;
+  }
+
+  onYearChange(y: YearOption) {
+    this.selectedYear = y;
+    this.cargarDatos(); // recarga datasets filtrados
+  }
+
 
 
 
