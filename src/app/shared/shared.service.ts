@@ -12,12 +12,11 @@ export class SharedService {
 
   private baseUrl = `${environment.apiUrl}/users`;
 
-  getUserData() {
-    return this.http.get<any>(`${this.baseUrl}/getUserData`);
+ getUserData() {
+  return this.http.get<any>(`${this.baseUrl}/getUserData`);
+}
 
-  }
 
- 
 
 
 }
