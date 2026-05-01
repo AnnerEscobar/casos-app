@@ -1,4 +1,4 @@
-<div id="menu" class="flex flex-col h-screen overflow-y-auto z-10 text-slate-300 md:w-full sm:2/4" >
+<!--<div id="menu" class="flex flex-col h-screen overflow-y-auto z-10 text-slate-300 md:w-full sm:2/4" >
 
 
   <div id="logo" class="my-2 p-5">
@@ -91,4 +91,85 @@
 
 </div>
 
+ -->
 
+ <div class="sidenav" [class.collapsed]="collapsed">
+
+  <!-- Header / Logo -->
+  <div class="sidenav-header">
+    <div class="logo-text" *ngIf="!collapsed">
+      <h1>Niñez y Adolescencia<span class="accent"> V2</span>.</h1>
+      <p>Sistema de Administracion de casos</p>
+    </div>
+    <button class="toggle-btn" (click)="toggleCollapsed()" [matTooltip]="collapsed ? 'Expandir' : 'Colapsar'">
+      <mat-icon>{{ collapsed ? 'menu' : 'menu_open' }}</mat-icon>
+    </button>
+  </div>
+
+  <!-- Nav -->
+  <div class="sidenav-nav">
+    <mat-nav-list>
+      <mat-accordion>
+      @for (item of menuItems; track $index) {
+
+        <!-- Colapsado: solo icono con tooltip -->
+        <div *ngIf="collapsed" class="icon-only-item"
+          [matTooltip]="item.title" matTooltipPosition="right">
+          <mat-icon>{{ item.icon }}</mat-icon>
+        </div>
+
+        <!-- Expandido: panel completo -->
+        <mat-expansion-panel *ngIf="!collapsed" class="mat-elevation-z0" [expanded]="false">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon class="panel-icon">{{ item.icon }}</mat-icon>
+              <span>{{ item.title }}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <ng-container *ngFor="let sub of item.children">
+            <a mat-list-item [routerLink]="sub.path" routerLinkActive="active-link" class="submenu-link">
+              <mat-icon class="submenu-icon">chevron_right</mat-icon>
+              <span class="submenu-text">
+                {{ sub.title }}
+                <span *ngIf="sub.badge" class="badge">{{ sub.badge }}</span>
+              </span>
+            </a>
+          </ng-container>
+        </mat-expansion-panel>
+      }
+      </mat-accordion>
+    </mat-nav-list>
+  </div>
+
+  <!-- Footer usuario -->
+  <div class="sidenav-footer">
+    <img
+      src="https://img.freepik.com/psd-gratis/ilustracion-3d-avatar-o-perfil-humano_23-2150671122.jpg?semt=ais_hybrid"
+      alt="Avatar" class="avatar"
+    />
+    <div class="user-info" *ngIf="!collapsed">
+      <span *ngIf="error" class="user-error">{{ error }}</span>
+      <ng-container *ngIf="!error">
+        <div class="user-email">{{ user.email }}</div>
+        <div class="user-role">{{ user.role }}</div>
+      </ng-container>
+    </div>
+    <button *ngIf="!collapsed" mat-icon-button [matMenuTriggerFor]="settingsMenu" class="menu-btn">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+
+    <mat-menu #settingsMenu="matMenu">
+      <button mat-menu-item routerLink="/settings">
+        <mat-icon>settings</mat-icon><span>Configuraciones</span>
+      </button>
+      <button mat-menu-item routerLink="/change-password">
+        <mat-icon>password</mat-icon><span>Cambiar contraseña</span>
+      </button>
+      <button mat-menu-item (click)="closeSession()">
+        <mat-icon>logout</mat-icon><span>Cerrar Sesión</span>
+      </button>
+    </mat-menu>
+  </div>
+
+</div>

@@ -1,17 +1,23 @@
-<mat-drawer-container class="example-container h-full bg-blue-800" >
+<mat-drawer-container class="layout-container">
 
-  <mat-drawer id="sidenav" #sidenav mode="side" [(opened)]="opened" (opened)="events.push('opened!')" (closed)="events.push('closed!') " >
-    <app-sidenav></app-sidenav>
+  <mat-drawer #sidenav
+    [mode]="isHandset ? 'over' : 'side'"
+    [opened]="opened"
+    [style.width]="collapsed && !isHandset ? '64px' : '280px'">
+
+    <app-sidenav [collapsed]="collapsed"></app-sidenav>
+
   </mat-drawer>
 
-  <mat-drawer-content>
-    <p><button mat-button (click)="sidenav.toggle()">
-      <mat-icon>menu</mat-icon>
-    </button></p>
-    <router-outlet />
-
+  <mat-drawer-content class="drawer-content">
+    <div class="toolbar">
+      <button mat-icon-button (click)="onToggle(sidenav)" class="toggle-btn">
+        <mat-icon>menu</mat-icon>
+      </button>
+    </div>
+    <div class="page-content">
+      <router-outlet />
+    </div>
   </mat-drawer-content>
 
-
 </mat-drawer-container>
-

@@ -9,51 +9,29 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-dashboard-case',
-  imports: [
-    RouterModule,
-    SidenavComponent,
-    MatSidenavModule,
-    MatButtonModule,
-    MatIconModule,
-    CommonModule
-  ],
+  imports: [RouterModule, SidenavComponent, MatSidenavModule, MatButtonModule, MatIconModule, CommonModule],
   templateUrl: './dashboard-case.component.html',
   styleUrls: ['./dashboard-case.component.css']
-
-
 })
 export default class DashboardCaseComponent {
-    events: string[] = [];
-    opened: boolean = false;
 
-    constructor(){
-      console.log(this.events)
-    }
-
-
-
-
- /*  opened = true;
+  opened = true;
   collapsed = false;
   isHandset = false;
 
   constructor(private bp: BreakpointObserver) {
-    this.bp.observe([Breakpoints.Small, Breakpoints.Handset]).subscribe(r => {
+    this.bp.observe([Breakpoints.Small, Breakpoints.XSmall, Breakpoints.Handset]).subscribe(r => {
       this.isHandset = r.matches;
-      if (this.isHandset) {
-
-        this.opened = false;
-        this.collapsed = false;
-      } else {
-
-        this.opened = true;
-      }
+      this.opened = !r.matches;
+      this.collapsed = false;
     });
   }
 
   onToggle(drawer: any) {
-    if (this.isHandset) drawer.toggle();
-    else this.collapsed = !this.collapsed;
-  } */
-
+    if (this.isHandset) {
+      drawer.toggle();
+    } else {
+      this.collapsed = !this.collapsed;
+    }
+  }
 }
