@@ -12,3 +12,25 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* ── Snackbar personalizado ────────────────────────────────────────────── */
+.snack-success .mdc-snackbar__surface {
+  background: #1b5e20 !important;
+  border-left: 5px solid #69f0ae;
+}
+.snack-success .mdc-snackbar__label,
+.snack-success .mat-mdc-button { color: #fff !important; }
+
+.snack-error .mdc-snackbar__surface {
+  background: #b71c1c !important;
+  border-left: 5px solid #ff8a80;
+}
+.snack-error .mdc-snackbar__label,
+.snack-error .mat-mdc-button { color: #fff !important; }
+
+.snack-warning .mdc-snackbar__surface {
+  background: #e65100 !important;
+  border-left: 5px solid #ffd180;
+}
+.snack-warning .mdc-snackbar__label,
+.snack-warning .mat-mdc-button { color: #fff !important; }

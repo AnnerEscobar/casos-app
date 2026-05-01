@@ -1,0 +1,60 @@
+<div class="pendientes-container">
+
+  <div class="page-header">
+    <h2 class="page-titulo">Pendientes de registro</h2>
+    <p class="page-subtitulo">Informes generados listos para registrar como caso en el sistema.</p>
+  </div>
+
+  <!-- Cargando -->
+  <div *ngIf="cargando" class="cargando">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <!-- Sin pendientes -->
+  <div *ngIf="!cargando && pendientes.length === 0" class="empty-state">
+    <mat-icon>inbox</mat-icon>
+    <p>No hay informes pendientes de registro.</p>
+  </div>
+
+  <!-- Lista de pendientes -->
+  <div *ngIf="!cargando && pendientes.length > 0" class="lista-pendientes">
+    <div *ngFor="let informe of pendientes" class="informe-card">
+
+      <div class="card-header">
+        <div class="card-tipo" [class]="'tipo-' + informe.tipoInforme">
+          {{ tipoLabel(informe.tipoInforme) }}
+        </div>
+        <div class="card-fecha">{{ informe.createdAt | date:'dd/MM/yyyy' }}</div>
+      </div>
+
+      <div class="card-body">
+        <div class="card-deic">{{ informe.numeroDeic }}</div>
+        <div class="card-mp">MP: {{ informe.numeroMp }}</div>
+
+        <!-- Progreso de secciones -->
+        <div class="progreso-container">
+          <div class="progreso-label">
+            Secciones completadas: {{ informe.seccionesCompletadas?.length || 0 }}/7
+          </div>
+          <div class="progreso-bar">
+            <div class="progreso-fill" [style.width]="progresoSecciones(informe) + '%'"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-acciones">
+        <button mat-stroked-button (click)="editarInforme(informe)">
+          <mat-icon>edit</mat-icon> Editar
+        </button>
+        <button mat-stroked-button color="primary" (click)="descargarWord(informe)">
+          <mat-icon>download</mat-icon> Word
+        </button>
+        <button mat-flat-button color="accent" (click)="irARegistrarCaso(informe)">
+          <mat-icon>upload_file</mat-icon> Registrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

@@ -12,37 +12,92 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MaltratoService } from './../../services/maltrato.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import {MatCardModule} from '@angular/material/card';
+import { MatCardModule } from '@angular/material/card';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router } from '@angular/router';
+import { InformeService } from '../../../informes/services/informe.service';
 
 @Component({
   selector: 'app-add-case-maltrato',
-  providers: [
-    provideNativeDateAdapter()
-  ],
+  providers: [provideNativeDateAdapter()],
   imports: [
-    MatFormFieldModule,
-    MatSelectModule,
-    ReactiveFormsModule,
-    MatSlideToggleModule,
-    MatInputModule,
-    MatIconModule,
-    MatButtonModule,
-    MatDatepickerModule,
-    CommonModule,
-    MatProgressSpinnerModule,
-    MatCardModule
+    MatFormFieldModule, MatSelectModule, ReactiveFormsModule,
+    MatSlideToggleModule, MatInputModule, MatIconModule,
+    MatButtonModule, MatDatepickerModule, CommonModule,
+    MatProgressSpinnerModule, MatCardModule, MatTooltipModule
   ],
   templateUrl: './add-case-maltrato.component.html',
   styleUrl: './add-case-maltrato.component.css'
 })
-export default class AddCaseMaltratoComponent implements OnInit{
+export default class AddCaseMaltratoComponent implements OnInit {
+
+  private formBuider = inject(FormBuilder);
+  private maltratoService = inject(MaltratoService);
+  private informeService = inject(InformeService);
+  private _snackBar = inject(MatSnackBar);
+  private router = inject(Router);
+
+  estados = [
+    { value: 'Informado', viewValue: 'Informado' },
+    { value: 'Desestimado', viewValue: 'Desestimado' },
+  ];
+
+  isLoading = false;
+  fileName: string | null = null;
+  selectedFile: File | null = null;
+  informeDeic: string | null = null;
+  casoYaExiste = false;
+  deicDuplicado = '';
+
+  myForm = this.formBuider.group({
+    numeroDeic: ['', [Validators.required]],
+    numeroMp: ['', [Validators.required]],
+    estadoInvestigacion: ['', [Validators.required]],
+    infractores: this.formBuider.array([]),
+    victimas: this.formBuider.array([]),
+    fileUrls: this.formBuider.array([]),
+  });
+
+  get infractores(): FormArray<FormGroup> {
+    return this.myForm.get('infractores') as FormArray;
+  }
+
+  get victimas(): FormArray<FormGroup> {
+    return this.myForm.get('victimas') as FormArray;
+  }
 
   ngOnInit(): void {
     this.agregarInfractor();
     this.agregarVictima();
+
     const datos = history.state;
 
-    if (datos && datos.numeroDeic) {
+    if (datos?.informe) {
+      const inf = datos.informe;
+      this.informeDeic = inf.numeroDeic;
+
+      this.myForm.patchValue({
+        numeroDeic: inf.numeroDeic,
+        numeroMp: inf.numeroMp,
+      });
+
+      const s = inf.perfilSecundario || {};
+      (this.infractores.at(0) as FormGroup).patchValue({
+        nombre: s.nombre || '',
+        cui: s.documentoIdentificacion || '',
+        fecha_Nac: s.fechaNacimiento ? new Date(s.fechaNacimiento) : null,
+        direccion: s.residencia || '',
+      });
+
+      const v = inf.perfilVictima || {};
+      (this.victimas.at(0) as FormGroup).patchValue({
+        nombre: v.nombre || '',
+        fecha_Nac: v.fechaNacimiento ? new Date(v.fechaNacimiento) : null,
+        direccion: v.residencia || '',
+        cui: '',
+      });
+
+    } else if (datos?.numeroDeic) {
       this.myForm.patchValue({
         numeroDeic: datos.numeroDeic,
         numeroMp: datos.numeroMp,
@@ -50,23 +105,6 @@ export default class AddCaseMaltratoComponent implements OnInit{
     }
   }
 
-  //Inyeccion de dependencias
-  private formBuider = inject(FormBuilder);
-  private maltratoService = inject(MaltratoService);
-  private _snackBar = inject(MatSnackBar);
-
-  estados = [
-    { value: 'Informado', viewValue: 'Informado' },
-    { value: 'Desestimado', viewValue: 'Desestimado' },
-  ];
-
-  //variables
-  isLoading = false;
-  fileName: string | null = null;
-  selectedFile: File | null = null;
-
-
-  //metodo para seleccionar un archvio
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -78,115 +116,96 @@ export default class AddCaseMaltratoComponent implements OnInit{
     }
   }
 
-  //formbuilder
-  myForm = this.formBuider.group({
-    numeroDeic: ['', [Validators.required]],
-    numeroMp: ['', [Validators.required]],
-    estadoInvestigacion: ['', [Validators.required]],
-    infractores: this.formBuider.array([]),
-    victimas: this.formBuider.array([]),
-    fileUrls: this.formBuider.array([]),
-  });
-
-  // Getters para acceder a los FormArrays
-  get infractores(): FormArray<FormGroup> {
-    return this.myForm.get('infractores') as FormArray;
-  }
-
-  get victimas(): FormArray<FormGroup> {
-    return this.myForm.get('victimas') as FormArray;
-  }
-
-  // Métodos para manejar los infractores
   agregarInfractor() {
-    const infractorForm = this.formBuider.group({
+    this.infractores.push(this.formBuider.group({
       nombre: ['', Validators.required],
       cui: ['', Validators.required],
       fecha_Nac: ['', Validators.required],
       direccion: ['', Validators.required],
-    });
-    this.infractores.push(infractorForm);
+    }));
   }
 
-  //metodos para eliminar infractores
   eliminarInfractor(index: number) {
     this.infractores.removeAt(index);
   }
 
-  // Métodos para manejar las víctimas
   agregarVictima() {
-    const victimaForm = this.formBuider.group({
+    this.victimas.push(this.formBuider.group({
       nombre: ['', Validators.required],
       fecha_Nac: ['', Validators.required],
       direccion: ['', Validators.required],
       cui: ['', Validators.required],
-    });
-    this.victimas.push(victimaForm);
+    }));
   }
 
-  //metod para eliminar victimas
   eliminarVictima(index: number) {
     this.victimas.removeAt(index);
   }
 
-  //metodo para registrar caso
   registrarCaso() {
-
     if (this.myForm.invalid || !this.selectedFile) {
-      this._snackBar.open('Debes completar todos los campos y seleccionar un archivo', 'Cerrar', {
-        duration: 3000
-      });
+      this._snackBar.open('Debes completar todos los campos y seleccionar un archivo', 'Cerrar', { duration: 3000, panelClass: ['snack-warning'] });
       return;
     }
 
     this.isLoading = true;
-
     const formData = new FormData();
     formData.append('numeroDeic', this.myForm.value.numeroDeic?.trim() || '');
     formData.append('numeroMp', this.myForm.value.numeroMp?.trim() || '');
     formData.append('estadoInvestigacion', this.myForm.value.estadoInvestigacion || '');
 
-    this.myForm.value.infractores?.forEach((infractor: any, index: number) => {
-      formData.append(`infractores[${index}][nombre]`, infractor.nombre);
-      formData.append(`infractores[${index}][cui]`, infractor.cui);
-      formData.append(`infractores[${index}][fecha_Nac]`, infractor.fecha_Nac);
-      formData.append(`infractores[${index}][direccion]`, infractor.direccion);
+    this.myForm.value.infractores?.forEach((inf: any, i: number) => {
+      formData.append(`infractores[${i}][nombre]`, inf.nombre);
+      formData.append(`infractores[${i}][cui]`, inf.cui);
+      formData.append(`infractores[${i}][fecha_Nac]`, inf.fecha_Nac);
+      formData.append(`infractores[${i}][direccion]`, inf.direccion);
     });
 
-    this.myForm.value.victimas?.forEach((victima: any, index: number) => {
-      formData.append(`victimas[${index}][nombre]`, victima.nombre);
-      formData.append(`victimas[${index}][fecha_Nac]`, victima.fecha_Nac);
-      formData.append(`victimas[${index}][direccion]`, victima.direccion);
-      formData.append(`victimas[${index}][cui]`, victima.cui);
+    this.myForm.value.victimas?.forEach((vic: any, i: number) => {
+      formData.append(`victimas[${i}][nombre]`, vic.nombre);
+      formData.append(`victimas[${i}][fecha_Nac]`, vic.fecha_Nac);
+      formData.append(`victimas[${i}][direccion]`, vic.direccion);
+      formData.append(`victimas[${i}][cui]`, vic.cui);
     });
 
-    formData.append('file', this.selectedFile)
+    formData.append('file', this.selectedFile);
 
-    console.log('formData', formData);
-    console.log('datos del formulario', this.myForm.value);
-    this.maltratoService.sendFormData(formData)
-      .subscribe({
-        next: (response) => {
-          this._snackBar.open('Caso registrado con exito', 'Cerrar', { duration: 3000 });
-          this.resetFormState(this.myForm);
-          this.selectedFile = null;
-          this.isLoading = false;
-        },
-        error: (error) => {
-          this._snackBar.open('Error al registrar el caso', 'Cerrar', { duration: 3000 });
+    this.maltratoService.sendFormData(formData).subscribe({
+      next: () => {
+        if (this.informeDeic) {
+          this.informeService.eliminar(this.informeDeic).subscribe();
+        }
+        this._snackBar.open('Caso registrado con éxito', 'Cerrar', { duration: 3000, panelClass: ['snack-success'] });
+        this.resetFormState(this.myForm);
+        this.selectedFile = null;
+        this.isLoading = false;
+        this.informeDeic = null;
+      },
+      error: (error) => {
+        this.isLoading = false;
+        const msg: string = error?.error?.message || '';
+        if (msg.toLowerCase().includes('exist')) {
+          this.deicDuplicado = this.myForm.value.numeroDeic || '';
+          this.casoYaExiste = true;
+        } else {
+          this._snackBar.open('Error al registrar el caso', 'Cerrar', { duration: 3000, panelClass: ['snack-error'] });
         }
       }
-      )
+    });
+  }
+
+  irASeguimiento() {
+    this.router.navigate(['/casos/seguimiento-maltrato'], {
+      state: { numeroDeic: this.deicDuplicado }
+    });
   }
 
   resetFormState(form: FormGroup) {
     form.reset();
-
-    Object.keys(form.controls).forEach((key) => {
+    Object.keys(form.controls).forEach(key => {
       const control = form.get(key);
-
       if (control instanceof FormGroup) {
-        this.resetFormState(control); // Recursivo para subgrupos
+        this.resetFormState(control);
       } else {
         control?.markAsPristine();
         control?.markAsUntouched();
@@ -194,6 +213,4 @@ export default class AddCaseMaltratoComponent implements OnInit{
       }
     });
   }
-
-
 }

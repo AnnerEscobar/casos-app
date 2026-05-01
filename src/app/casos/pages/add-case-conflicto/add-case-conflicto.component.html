@@ -170,4 +170,19 @@
     <mat-spinner diameter="50"></mat-spinner>
   </div>
 
+  <!-- Overlay: caso ya existe -->
+  <div class="overlay" *ngIf="casoYaExiste" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; background:rgba(0,0,0,0.6);">
+    <div style="background:#fff; border-radius:12px; padding:32px; max-width:420px; text-align:center; box-shadow:0 4px 24px rgba(0,0,0,0.2);">
+      <mat-icon style="font-size:48px; width:48px; height:48px; color:#e53935;">warning</mat-icon>
+      <h3 style="margin:12px 0 8px; font-size:1.2rem; font-weight:600;">Caso ya registrado</h3>
+      <p style="color:#555; margin-bottom:24px;">El caso <strong>{{ deicDuplicado }}</strong> ya existe en el sistema. Puedes agregar un seguimiento desde la opción correspondiente.</p>
+      <div style="display:flex; gap:12px; justify-content:center;">
+        <button mat-stroked-button (click)="casoYaExiste = false">Cerrar</button>
+        <button mat-flat-button color="primary" (click)="irASeguimiento()">
+          <mat-icon>assignment_add</mat-icon> Ir a Seguimiento
+        </button>
+      </div>
+    </div>
+  </div>
+
 </div>

@@ -80,6 +80,16 @@ export const routes: Routes = [
         loadComponent: () => import('./busquedas/profile/profile.component')
       },
       {
+        path: 'crear-informe',
+        title: 'Crear Informe',
+        loadComponent: () => import('./informes/crear-informe/crear-informe.component').then(m => m.CrearInformeComponent)
+      },
+      {
+        path: 'pendientes-informe',
+        title: 'Pendientes de Registro',
+        loadComponent: () => import('./informes/pendientes-informe/pendientes-informe.component').then(m => m.PendientesInformeComponent)
+      },
+      {
         path: '', redirectTo: 'estadisticas', pathMatch: 'full'
       }
     ]
