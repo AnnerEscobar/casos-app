@@ -1,0 +1,80 @@
+/* ── Contenedor ───────────────────────────────────────────────────────── */
+.page-container {
+  max-width: 100%;
+  padding: 24px 16px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+.header-icon {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  background: rgba(0,137,123,.12);
+  color: #00897b;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.header-icon mat-icon { font-size: 28px; width: 28px; height: 28px; }
+.page-title { margin: 0; font-size: 20px; font-weight: 700; color: #1e2432; }
+.page-sub   { margin: 3px 0 0; font-size: 13px; color: #7a828e; }
+
+/* ── Section card ─────────────────────────────────────────────────────── */
+.section-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f2f5;
+}
+.section-icon  { font-size: 20px; width: 20px; height: 20px; color: #64748b; }
+.section-title { font-size: 14px; font-weight: 700; color: #1e2432; flex: 1; }
+
+/* ── Fields grids ─────────────────────────────────────────────────────── */
+.fields-grid { display: grid; gap: 4px 16px; }
+
+.fields-grid-3 { grid-template-columns: 1fr; }
+@media (min-width: 600px) { .fields-grid-3 { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 900px) { .fields-grid-3 { grid-template-columns: repeat(3, 1fr); } }
+
+.fields-grid-2 { grid-template-columns: 1fr; }
+@media (min-width: 700px) { .fields-grid-2 { grid-template-columns: repeat(2, 1fr); } }
+
+.span-2 { grid-column: 1 / -1; }
+.mt-8   { margin-top: 8px; }
+
+/* ── Form actions ─────────────────────────────────────────────────────── */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+.btn-submit {
+  height: 42px !important;
+  padding: 0 28px !important;
+  border-radius: 10px !important;
+  background: #00897b !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  display: flex; align-items: center; gap: 6px;
+}
+.btn-submit[disabled] { background: #e2e8f0 !important; color: #94a3b8 !important; }
+
+/* ── Utility ──────────────────────────────────────────────────────────── */
+.w-full { width: 100%; }

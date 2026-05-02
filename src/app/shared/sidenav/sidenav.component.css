@@ -83,9 +83,14 @@
   transition: background 0.15s, color 0.15s;
   border-radius: 8px;
   margin: 2px 8px;
+  text-decoration: none;
 }
 .icon-only-item:hover {
   background: #f0f4ff;
+  color: #1976d2;
+}
+.icon-only-item.active-link {
+  background: #e8f0fe;
   color: #1976d2;
 }
 

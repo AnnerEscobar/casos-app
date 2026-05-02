@@ -1,46 +1,82 @@
-<!-- settings.component.html -->
-<div
-  class="min-h-screen p-4 bg-gray-50
-         flex items-center justify-center"
->
-  <mat-card class="w-full max-w-lg p-6 bg-white space-y-6">
-    <h2 class="text-2xl font-semibold text-black">Configuraciones</h2>
-    <mat-divider></mat-divider>
+<div class="settings-page">
 
-    <!-- Toggle Modo Oscuro / Claro -->
-    <div class="flex items-center justify-between">
-      <span>Modo Oscuro</span>
-      <mat-slide-toggle></mat-slide-toggle>
+  <!-- Header -->
+  <div class="settings-header">
+    <button mat-icon-button class="back-btn" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="header-icon">
+      <mat-icon>settings</mat-icon>
+    </div>
+    <div>
+      <h2 class="page-title">Configuraciones</h2>
+      <p class="page-sub">Personaliza la apariencia y gestiona tu cuenta</p>
+    </div>
+  </div>
+
+  <div class="settings-content">
+
+    <!-- Apariencia -->
+    <div class="section-card">
+      <div class="section-header">
+        <mat-icon class="section-icon">palette</mat-icon>
+        <span class="section-title">Apariencia</span>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <mat-icon class="setting-icon">dark_mode</mat-icon>
+          <div>
+            <span class="setting-label">Modo oscuro</span>
+            <span class="setting-desc">Cambia el tema visual de la aplicación</span>
+          </div>
+        </div>
+        <mat-slide-toggle
+          [checked]="theme.isDark"
+          (change)="toggleDark()">
+        </mat-slide-toggle>
+      </div>
     </div>
 
-    <!-- Toggle Notificaciones -->
-    <div class="flex items-center justify-between">
-      <span>Notificaciones</span>
-      <mat-slide-toggle></mat-slide-toggle>
+    <!-- Cuenta -->
+    <div class="section-card">
+      <div class="section-header">
+        <mat-icon class="section-icon">manage_accounts</mat-icon>
+        <span class="section-title">Cuenta</span>
+      </div>
+
+      <div class="account-actions">
+
+        <a class="action-row" routerLink="/change-password">
+          <div class="action-left">
+            <div class="action-icon-wrap">
+              <mat-icon>lock_reset</mat-icon>
+            </div>
+            <div>
+              <span class="action-label">Cambiar contraseña</span>
+              <span class="action-desc">Actualiza tu contraseña de acceso</span>
+            </div>
+          </div>
+          <mat-icon class="action-arrow">chevron_right</mat-icon>
+        </a>
+
+        <div class="divider"></div>
+
+        <button class="action-row action-danger" (click)="cerrarSesion()">
+          <div class="action-left">
+            <div class="action-icon-wrap danger">
+              <mat-icon>logout</mat-icon>
+            </div>
+            <div>
+              <span class="action-label">Cerrar sesión</span>
+              <span class="action-desc">Salir de la cuenta actual</span>
+            </div>
+          </div>
+          <mat-icon class="action-arrow">chevron_right</mat-icon>
+        </button>
+
+      </div>
     </div>
 
-    <!-- Selector de Idioma -->
-    <div class="flex items-center justify-between">
-      <span>Idioma</span>
-      <mat-form-field appearance="outline" class="w-1/2">
-        <mat-select>
-          <mat-option value="es">Español</mat-option>
-          <mat-option value="en">Inglés</mat-option>
-          <!-- Agrega más idiomas si lo deseas -->
-        </mat-select>
-      </mat-form-field>
-    </div>
-
-    <!-- Botón Guardar -->
-    <div class="flex justify-between">
-      <button mat-raised-button color="primary">
-        Guardar Cambios
-      </button>
-       <button
-       (click)="goBack()"
-       mat-raised-button color="primary">
-        Regresar
-      </button>
-    </div>
-  </mat-card>
+  </div>
 </div>

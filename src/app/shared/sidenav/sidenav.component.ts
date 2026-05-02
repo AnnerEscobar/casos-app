@@ -260,7 +260,15 @@ export class SidenavComponent {
         { title: 'Generar Caratula', path: 'caratulas' },
         { title: 'Pendienetes', path: 'pendientes', badge: this.pendientesCount },
       ]
-    }
+    },
+    {
+  title: 'Informes',
+  icon: 'article',
+  children: [
+    { title: 'Crear Informe', path: 'crear-informe' },
+    { title: 'Pendientes de Registro', path: 'pendientes-informe' },
+  ]
+},
   ];
 
   closeSession() {

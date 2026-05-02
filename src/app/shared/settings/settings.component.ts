@@ -1,26 +1,28 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggle } from '@angular/material/slide-toggle';
-import { Router } from '@angular/router';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { ThemeService } from '../theme.service';
+import { AuthService } from '../../auth/auth-service/auth.service';
 
 @Component({
   selector: 'app-settings',
-  imports: [MatFormFieldModule, MatCardModule, MatSelectModule, MatSlideToggle, MatDividerModule, MatButtonModule],
+  imports: [
+    CommonModule, RouterModule,
+    MatIconModule, MatButtonModule, MatSlideToggleModule, MatSnackBarModule,
+  ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css'
 })
 export default class SettingsComponent {
+  theme  = inject(ThemeService);
+  private auth   = inject(AuthService);
+  private router = inject(Router);
 
-  constructor(private router: Router){
-
-  }
-
-  goBack(){
-    this.router.navigate(['casos/estadisticas']);
-  }
-
+  toggleDark()   { this.theme.toggle(); }
+  goBack()       { this.router.navigate(['/casos']); }
+  cerrarSesion() { this.auth.logout(); }
 }

@@ -81,6 +81,16 @@
         </mat-error>
       </mat-form-field>
 
+      <!-- Olvidaste tu contraseña -->
+      <div style="text-align:right; margin-top:-8px;">
+        <a routerLink="/recover-password"
+           style="font-size:13px; color:#64748b; text-decoration:none;"
+           onmouseover="this.style.color='#3949ab'"
+           onmouseout="this.style.color='#64748b'">
+          ¿Olvidaste tu contraseña?
+        </a>
+      </div>
+
       <!-- Submit -->
       <button mat-flat-button color="primary" class="w-full h-12 rounded-xl font-medium"
         [disabled]="loginForm.invalid || loading">

@@ -1,246 +1,185 @@
 import { BusquedaService } from './busqueda.service';
-import { ChangeDetectionStrategy, Component, NgModule, signal } from '@angular/core';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { provideNativeDateAdapter } from '@angular/material/core';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-search-profile',
   imports: [
-    MatCheckboxModule,
-    MatExpansionModule,
-    MatButtonModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatDividerModule,
-    MatCardModule,
-    CommonModule,
-    FormsModule,
-    MatProgressSpinnerModule,
+    MatButtonModule, MatFormFieldModule, MatIconModule,
+    MatInputModule, CommonModule, FormsModule,
+    MatProgressSpinnerModule, MatSnackBarModule,
   ],
-  providers: [
-    provideNativeDateAdapter()
-  ],
-
   templateUrl: './search-profile.component.html',
   styleUrl: './search-profile.component.css'
-
 })
 export default class SearchProfileComponent {
 
-  nombre: string = ''; // Variable para almacenar el nombre
-  cui: string = ''; // Variable para almacenar el CUI
-  numeroMp: string = ''; // Variable para almacenar el número de expediente MP
-  numeroDeic: string = ''; // Variable para almacenar el número DEIC
-  numeroAlerta: string = '';
-  // Variable para almacenar el número de alerta// Variable para almacenar el número de expediente MP
+  tipoBusqueda = '';
+  termino = '';
   resultadosBusqueda: any[] = [];
-  busquedaRealizada: boolean = false;
-  isLoading: boolean = false;// Variable para almacenar los resultados de la búsqueda
-  tipoBusqueda: string = '';
+  busquedaRealizada = false;
+  isLoading = false;
 
-  constructor(private busquedaService: BusquedaService,
-    private route: Router
-  ) { }
+  searchTypes = [
+    { key: 'nombre',       label: 'Nombre',             icon: 'person_search',          placeholder: 'Ej. Juan Pérez',        hint: 'Busca por nombre completo o parcial' },
+    { key: 'cui',          label: 'CUI / DPI',           icon: 'badge',                  placeholder: 'Ej. 2345678901234',     hint: 'Número de CUI o DPI del individuo' },
+    { key: 'numeroMp',     label: 'Expediente MP',       icon: 'article',                placeholder: 'M0030-2025-100',        hint: 'Número de caso del Ministerio Público' },
+    { key: 'numeroDeic',   label: 'Número DEIC',         icon: 'folder_shared',          placeholder: 'DEIC52-2025-01-02-01', hint: 'Número de expediente DEIC' },
+    { key: 'numeroAlerta', label: 'Alerta Alba-Keneth',  icon: 'notification_important', placeholder: 'Ej. 2664-2025',         hint: 'Número de alerta registrada' },
+  ];
 
+  get tipoActivo() {
+    return this.searchTypes.find(t => t.key === this.tipoBusqueda);
+  }
 
-  // Método para buscar por nombre
-  buscarPorNombre() {
-    if (!this.nombre) {
-      alert('Por favor, ingresa un nombre.');
-      return;
-    }
+  constructor(
+    private busquedaService: BusquedaService,
+    private router: Router,
+    private snackBar: MatSnackBar,
+  ) {}
 
-    this.tipoBusqueda = 'nombre';
-    this.iniciarBusqueda();
+  seleccionarTipo(tipo: string) {
+    this.tipoBusqueda = tipo;
+    this.termino = '';
+    this.busquedaRealizada = false;
+    this.resultadosBusqueda = [];
+  }
 
-    this.busquedaService.buscarPorNombre(this.nombre).subscribe(
-      (resultados) => {
-        this.resultadosBusqueda = this.procesarResultadosPorNombre(this.nombre, resultados);
+  ejecutarBusqueda() {
+    if (!this.termino?.trim()) return;
+
+    this.isLoading = true;
+    this.busquedaRealizada = true;
+    this.resultadosBusqueda = [];
+    const t = this.termino.trim();
+
+    const obs$ = (() => {
+      switch (this.tipoBusqueda) {
+        case 'nombre':       return this.busquedaService.buscarPorNombre(t);
+        case 'cui':          return this.busquedaService.buscarPorCUI(t);
+        case 'numeroMp':     return this.busquedaService.buscarPorExpedienteMP(t);
+        case 'numeroDeic':   return this.busquedaService.buscarPorNumeroDeic(t);
+        case 'numeroAlerta': return this.busquedaService.buscarPorAlertaAlbaKeneth(t);
+        default:             return null;
+      }
+    })();
+
+    if (!obs$) { this.isLoading = false; return; }
+
+    obs$.subscribe({
+      next: (resultados) => {
+        this.resultadosBusqueda = this.tipoBusqueda === 'nombre'
+          ? this.procesarResultadosPorNombre(t, resultados)
+          : resultados;
         this.isLoading = false;
       },
-      (error) => {
-        console.error('Error al buscar por nombre:', error);
+      error: () => {
         this.isLoading = false;
-        alert('No se encontraron resultados.');
+        this.snackBar.open('No se encontraron resultados para esa búsqueda.', 'Cerrar', {
+          duration: 4000, panelClass: ['snack-error']
+        });
       }
-    );
-  }
-
-
-
-  // Método para buscar por CUI
-  buscarPorCUI() {
-    if (!this.cui) {
-      alert('Por favor, ingresa un número de CUI.');
-      return;
-    }
-
-    this.tipoBusqueda = 'cui'; // Establecer el tipo de búsqueda
-    this.iniciarBusqueda();
-    this.busquedaService.buscarPorCUI(this.cui).subscribe(
-      (resultados) => {
-        this.finalizarBusqueda(resultados);
-      },
-      (error) => {
-        this.manejarError(error, 'CUI');
-      }
-    );
-  }
-
-  // Método para buscar por expediente MP
-  buscarPorExpedienteMP() {
-    if (!this.numeroMp) {
-      alert('Por favor, ingresa un número de expediente MP.');
-      return;
-    }
-
-    this.tipoBusqueda = 'numeroMp'; // Establecer el tipo de búsqueda
-    this.iniciarBusqueda();
-    this.busquedaService.buscarPorExpedienteMP(this.numeroMp).subscribe(
-      (resultados) => {
-        this.finalizarBusqueda(resultados);
-      },
-      (error) => {
-        this.manejarError(error, 'expediente MP');
-      }
-    );
-  }
-
-  // Método para buscar por número DEIC
-  buscarPorNumeroDeic() {
-    if (!this.numeroDeic) {
-      alert('Por favor, ingresa un número DEIC.');
-      return;
-    }
-
-    this.tipoBusqueda = 'numeroDeic'; // Establecer el tipo de búsqueda
-    this.iniciarBusqueda();
-    this.busquedaService.buscarPorNumeroDeic(this.numeroDeic).subscribe(
-      (resultados) => {
-        this.finalizarBusqueda(resultados);
-      },
-      (error) => {
-        this.manejarError(error, 'número DEIC');
-      }
-    );
-  }
-
-  // Método para buscar por Alerta Alba-Keneth
-  buscarPorAlertaAlbaKeneth() {
-    if (!this.numeroAlerta) {
-      alert('Por favor, ingresa un número de alerta.');
-      return;
-    }
-
-    this.tipoBusqueda = 'numeroAlerta'; // Establecer el tipo de búsqueda
-    this.iniciarBusqueda();
-    this.busquedaService.buscarPorAlertaAlbaKeneth(this.numeroAlerta).subscribe(
-      (resultados) => {
-        this.finalizarBusqueda(resultados);
-      },
-      (error) => {
-        this.manejarError(error, 'Alerta Alba-Keneth');
-      }
-    );
-  }
-  // Método para iniciar la búsqueda
-  iniciarBusqueda() {
-    this.isLoading = true; // Mostrar el spinner
-    this.busquedaRealizada = true; // Mostrar la sección de resultados
-    this.resultadosBusqueda = []; // Limpiar resultados anteriores
-  }
-
-  // Método para finalizar la búsqueda
-  finalizarBusqueda(resultados: any[]) {
-    setTimeout(() => {
-      this.isLoading = false; // Ocultar el spinner después de 3 segundos
-      this.resultadosBusqueda = resultados; // Mostrar los resultados
-    }, 2000); // Mostrar los resultados
-  }
-
-  // Método para manejar errores
-  manejarError(error: any, tipoBusqueda: string) {
-    this.isLoading = false; // Ocultar el spinner
-    console.error(`Error al buscar por ${tipoBusqueda}:`, error);
-    alert(`Ocurrió un error al buscar por ${tipoBusqueda}.`);
-  }
-
-  // Método para descargar el archivo asociado al expediente
-  descargarArchivo(archivoUrl: string) {
-    if (archivoUrl) {
-      window.open(archivoUrl, '_blank'); // Abrir la URL en una nueva pestaña
-    } else {
-      alert('No hay un archivo asociado a este expediente.');
-    }
-  }
-
-  verPerfil() {
-    // Aquí puedes redirigir a la vista de perfil o abrir un modal
-this.route.navigate(['/casos/profile'], {queryParams: {nombre: this.nombre}});
-    // Ejemplo de redirección:
-    // this.router.navigate(['/perfil', resultado._id]);
-  }
-
-
-  // Método para procesar los resultados de la búsqueda por nombre
-  procesarResultadosPorNombre(nombreBuscado: string, resultados: any[]): any[] {
-    const lowerName = nombreBuscado.trim().toLowerCase();
-
-    return resultados.map(caso => {
-      let rol = '';
-      let nombreFinal = '';
-
-      // Desaparecido
-      if (caso.nombreDesaparecido?.toLowerCase().includes(lowerName)) {
-        rol = 'Desaparecido';
-        nombreFinal = caso.nombreDesaparecido;
-      }
-
-      // Infractores
-      const infractorMatch = caso.infractores?.find((i: any) =>
-        i.nombre.toLowerCase().includes(lowerName)
-      );
-      if (infractorMatch) {
-        rol = 'Infractor';
-        nombreFinal = infractorMatch.nombre;
-      }
-
-      // Víctimas
-      const victimaMatch = caso.victimas?.find((v: any) =>
-        v.nombre.toLowerCase().includes(lowerName)
-      );
-      if (victimaMatch) {
-        rol = 'Víctima';
-        nombreFinal = victimaMatch.nombre;
-      }
-
-      return {
-        rol,
-        nombre: nombreFinal,
-        tipo: caso.tipo || 'Desconocido',
-        numeroMp: caso.numeroMp,
-        numeroDeic: caso.numeroDeic,
-        estadoInvestigacion: caso.estadoInvestigacion,
-        fileUrls: caso.fileUrls ?? []
-      };
     });
   }
 
+  verPerfil(resultado: any) {
+    this.router.navigate(['/casos/profile'], { state: { persona: resultado } });
+  }
 
+  descargarArchivo(archivoUrl: string) {
+    if (archivoUrl) {
+      window.open(archivoUrl, '_blank');
+    } else {
+      this.snackBar.open('No hay un archivo asociado a este expediente.', 'Cerrar', {
+        duration: 3000, panelClass: ['snack-warning']
+      });
+    }
+  }
 
+  getNombre(r: any): string {
+    return r.nombre || r.nombreDesaparecido
+      || r.victimas?.[0]?.nombre
+      || r.infractores?.[0]?.nombre
+      || '';
+  }
 
+  tipoClass(tipo: string): string {
+    if (!tipo) return '';
+    const t = tipo.toLowerCase();
+    if (t.includes('alerta')) return 'tipo-alerta';
+    if (t === 'maltrato')     return 'tipo-maltrato';
+    if (t === 'conflicto')    return 'tipo-conflicto';
+    return '';
+  }
+
+  estadoClass(estado: string): string {
+    if (!estado) return '';
+    const e = estado.toLowerCase();
+    if (e === 'informado')   return 'estado-informado';
+    if (e === 'remitido')    return 'estado-remitido';
+    if (e === 'concluido')   return 'estado-concluido';
+    if (e === 'desestimado') return 'estado-desestimado';
+    return '';
+  }
+
+  procesarResultadosPorNombre(nombreBuscado: string, resultados: any[]): any[] {
+    const lowerName = nombreBuscado.trim().toLowerCase();
+    return resultados
+      .map(caso => {
+        let rol = '', nombreFinal = '', cui = '', fechaNacimiento = '', direccion = '';
+
+        if (caso.nombreDesaparecido?.toLowerCase().includes(lowerName)) {
+          rol            = 'Desaparecido';
+          nombreFinal    = caso.nombreDesaparecido;
+          fechaNacimiento = caso.fecha_Nac || '';
+          direccion      = caso.direccion?.direccionDetallada || '';
+        }
+
+        const infractorMatch = caso.infractores?.find((i: any) =>
+          i.nombre.toLowerCase().includes(lowerName)
+        );
+        if (infractorMatch) {
+          rol             = 'Infractor';
+          nombreFinal     = infractorMatch.nombre;
+          cui             = infractorMatch.cui || '';
+          fechaNacimiento = infractorMatch.fecha_Nac || '';
+          direccion       = infractorMatch.direccion || '';
+        }
+
+        const victimaMatch = caso.victimas?.find((v: any) =>
+          v.nombre.toLowerCase().includes(lowerName)
+        );
+        if (victimaMatch) {
+          rol             = 'Víctima';
+          nombreFinal     = victimaMatch.nombre;
+          cui             = victimaMatch.cui || '';
+          fechaNacimiento = victimaMatch.fecha_Nac || '';
+          direccion       = victimaMatch.direccion || '';
+        }
+
+        if (!rol) return null;
+
+        return {
+          rol,
+          nombre:               nombreFinal,
+          tipo:                 caso.tipo || 'Desconocido',
+          numeroMp:             caso.numeroMp,
+          numeroDeic:           caso.numeroDeic,
+          estadoInvestigacion:  caso.estadoInvestigacion,
+          fileUrls:             caso.fileUrls ?? [],
+          cui,
+          fechaNacimiento,
+          direccion,
+        };
+      })
+      .filter(Boolean);
+  }
 }

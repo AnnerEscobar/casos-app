@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -13,50 +13,41 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AlertaService } from '../../services/alerta.service';
 import { MatCardModule } from '@angular/material/card';
-
+import { Router } from '@angular/router';
+import { InformeService } from '../../../informes/services/informe.service';
 
 @Component({
   selector: 'app-add-case-alerta',
-  providers: [
-    provideNativeDateAdapter(),
-  ],
+  providers: [provideNativeDateAdapter()],
   imports: [
-    CommonModule,
-    MatButtonModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatSelectModule,
-    MatSlideToggleModule,
-    ReactiveFormsModule,
-    MatProgressSpinnerModule,
-    MatCardModule
+    CommonModule, MatButtonModule, MatDatepickerModule,
+    MatFormFieldModule, MatIconModule, MatInputModule,
+    MatSelectModule, MatSlideToggleModule, ReactiveFormsModule,
+    MatProgressSpinnerModule, MatCardModule
   ],
   templateUrl: './add-case-alerta.component.html',
   styleUrl: './add-case-alerta.component.css'
 })
-export default class AddCaseAlertaComponent {
+export default class AddCaseAlertaComponent implements OnInit {
 
-
-  //Inyeccion de dependencias
   private formBuilder = inject(FormBuilder);
   private _snackBar = inject(MatSnackBar);
   private alertaService = inject(AlertaService);
+  private informeService = inject(InformeService);
+  private router = inject(Router);
 
-
-
-  //variables
   isLoading = false;
   fileName: string | null = null;
   selectedFile: File | null = null;
+  informeDeic: string | null = null;
+  casoYaExiste = false;
+  deicDuplicado = '';
+
   estados = [
     { value: 'Informado', viewValue: 'Informado' },
     { value: 'Concluido', viewValue: 'Concluido' },
     { value: 'Remitido', viewValue: 'Remitido' },
   ];
-
-
 
   myForm = this.formBuilder.group({
     numeroDeic: ['', [Validators.required, Validators.pattern(/^DEIC52-\d{4}-\d{2}-\d{2}-\d+$/)]],
@@ -81,15 +72,7 @@ export default class AddCaseAlertaComponent {
   ngOnInit() {
     this.myForm.get('estadoInvestigacion')?.valueChanges.subscribe((estado) => {
       const mostrar = estado === 'Remitido';
-
-      const campos = [
-        'direccionLocalizacion',
-        'nombreAcompanante',
-        'telefono',
-        'horaLocalizacion',
-        'fechaLocalizacion'
-      ];
-
+      const campos = ['direccionLocalizacion', 'nombreAcompanante', 'telefono', 'horaLocalizacion', 'fechaLocalizacion'];
       campos.forEach(campo => {
         const control = this.myForm.get(campo);
         if (mostrar) {
@@ -103,10 +86,23 @@ export default class AddCaseAlertaComponent {
       });
     });
 
-    //precargar datos de la caratula
     const datos = history.state;
 
-    if (datos && datos.numeroDeic) {
+    if (datos?.informe) {
+      const inf = datos.informe;
+      this.informeDeic = inf.numeroDeic;
+      const v = inf.perfilVictima || {};
+      const dg = inf.datosGenerales || {};
+
+      this.myForm.patchValue({
+        numeroDeic: inf.numeroDeic,
+        numeroMp: inf.numeroMp,
+        numeroAlerta: dg.numeroAlerta || '',
+        nombreDesaparecido: v.nombre || '',
+        fecha_Nac: v.fechaNacimiento ? new Date(v.fechaNacimiento) as any : null,
+      });
+
+    } else if (datos?.numeroDeic) {
       this.myForm.patchValue({
         numeroDeic: datos.numeroDeic,
         numeroMp: datos.numeroMp,
@@ -122,18 +118,24 @@ export default class AddCaseAlertaComponent {
     }
   }
 
-
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+      this.fileName = this.selectedFile.name;
+    } else {
+      this.selectedFile = null;
+      this.fileName = null;
+    }
+  }
 
   registrarCaso() {
     if (this.myForm.invalid || !this.selectedFile) {
-      this._snackBar.open('Debes completar todos los campos y seleccionar un archivo', 'Cerrar', {
-        duration: 3000
-      });
+      this._snackBar.open('Debes completar todos los campos y seleccionar un archivo', 'Cerrar', { duration: 3000, panelClass: ['snack-warning'] });
       return;
     }
 
     this.isLoading = true;
-
     const formData = new FormData();
     formData.append('numeroDeic', this.myForm.value.numeroDeic || '');
     formData.append('numeroMp', this.myForm.value.numeroMp || '');
@@ -145,6 +147,7 @@ export default class AddCaseAlertaComponent {
     formData.append('direccion[municipio]', this.myForm.value.direccion?.municipio || '');
     formData.append('direccion[direccionDetallada]', this.myForm.value.direccion?.direccionDetallada || '');
     formData.append('file', this.selectedFile);
+
     if (this.myForm.value.estadoInvestigacion === 'Remitido') {
       formData.append('direccionLocalizacion', this.myForm.value.direccionLocalizacion || '');
       formData.append('nombreAcompanante', this.myForm.value.nombreAcompanante || '');
@@ -154,49 +157,41 @@ export default class AddCaseAlertaComponent {
     }
 
     this.alertaService.registrarAlerta(formData).subscribe({
-      next: (response) => {
-        this._snackBar.open('Caso registrado correctamente', 'cerrado', { duration: 3000 });
-        console.log('Respuesta del servidor', response);
-
+      next: () => {
+        if (this.informeDeic) {
+          this.informeService.eliminar(this.informeDeic).subscribe();
+        }
+        this._snackBar.open('Caso registrado correctamente', 'Cerrar', { duration: 3000, panelClass: ['snack-success'] });
         this.resetFormState(this.myForm);
         this.selectedFile = null;
         this.isLoading = false;
+        this.informeDeic = null;
       },
       error: (error) => {
-        this._snackBar.open('Error al registrar el caso', 'cerrar', { duration: 3500 });
-        console.log('Error al registrar el caso de alerta', error.message);
         this.isLoading = false;
-      },
-      complete: () => {
-        console.log('La operación de registro de caso ha finalizado.');
+        const msg: string = error?.error?.message || '';
+        if (msg.toLowerCase().includes('exist')) {
+          this.deicDuplicado = this.myForm.value.numeroDeic || '';
+          this.casoYaExiste = true;
+        } else {
+          this._snackBar.open('Error al registrar el caso', 'Cerrar', { duration: 3000, panelClass: ['snack-error'] });
+        }
       }
     });
   }
 
-
-
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
-      this.fileName = this.selectedFile.name;
-      console.log('Archivo seleccionado:', this.selectedFile);
-    } else {
-      this.selectedFile = null;
-      this.fileName = null;
-    }
+  irASeguimiento() {
+    this.router.navigate(['/casos/seguimiento-alerta'], {
+      state: { numeroDeic: this.deicDuplicado }
+    });
   }
-
-
 
   resetFormState(form: FormGroup) {
     form.reset();
-
-    Object.keys(form.controls).forEach((key) => {
+    Object.keys(form.controls).forEach(key => {
       const control = form.get(key);
-
       if (control instanceof FormGroup) {
-        this.resetFormState(control); // Recursivo para subgrupos
+        this.resetFormState(control);
       } else {
         control?.markAsPristine();
         control?.markAsUntouched();
@@ -204,7 +199,4 @@ export default class AddCaseAlertaComponent {
       }
     });
   }
-
-
-
 }

@@ -1,84 +1,71 @@
+import { Component, inject } from '@angular/core';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { Router } from '@angular/router';
-import { SharedService } from '../../../shared/shared.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../auth-service/auth.service';
 
 @Component({
   selector: 'app-change-password',
   imports: [
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatIconModule,
-    MatButtonModule,
-    ReactiveFormsModule,
-    CommonModule
+    CommonModule, RouterModule, ReactiveFormsModule,
+    MatFormFieldModule, MatInputModule, MatIconModule,
+    MatButtonModule, MatProgressSpinnerModule, MatSnackBarModule,
   ],
   templateUrl: './change-password.component.html',
   styleUrl: './change-password.component.css'
 })
 export default class ChangePasswordComponent {
 
-  passwordForm: FormGroup;
+  private fb        = inject(FormBuilder);
+  private router    = inject(Router);
+  private auth      = inject(AuthService);
+  private snackBar  = inject(MatSnackBar);
 
+  isLoading   = false;
   hideCurrent = true;
-  hideNew = true;
+  hideNew     = true;
   hideConfirm = true;
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private authService: AuthService, // Asegúrate de importar tu servicio SharedService
-    private snackBar: MatSnackBar // Asegúrate de importar ToastrService si lo usas para notificaciones
-  ) {
-    this.passwordForm = this.fb.group(
-      {
-        currentPassword: ['', Validators.required],
-        newPassword: ['', [Validators.required, Validators.minLength(8)]],
-        confirmPassword: ['', Validators.required],
-      },
-      { validators: this.passwordMatchValidator }
-    );
+  form = this.fb.group({
+    currentPassword: ['', Validators.required],
+    newPassword:     ['', [Validators.required, Validators.minLength(8)]],
+    confirmPassword: ['', Validators.required],
+  }, { validators: this.matchValidator });
+
+  private matchValidator(ctrl: AbstractControl): ValidationErrors | null {
+    const n = ctrl.get('newPassword')?.value;
+    const c = ctrl.get('confirmPassword')?.value;
+    return n && c && n !== c ? { mismatch: true } : null;
   }
 
-  private passwordMatchValidator(ctrl: AbstractControl): ValidationErrors | null {
-    const newPass = ctrl.get('newPassword')?.value;
-    const confirm = ctrl.get('confirmPassword')?.value;
-    return newPass && confirm && newPass !== confirm
-      ? { mismatch: true }
-      : null;
-  }
+  goBack() { history.back(); }
 
-onSubmit(): void {
-  if (this.passwordForm.valid) {
-    const { currentPassword, newPassword } = this.passwordForm.value;
+  onSubmit() {
+    if (this.form.invalid || this.isLoading) return;
+    this.isLoading = true;
+    const { currentPassword, newPassword } = this.form.value;
 
-    this.authService.changePassword({ currentPassword, newPassword }).subscribe({
+    this.auth.changePassword({ currentPassword: currentPassword!, newPassword: newPassword! }).subscribe({
       next: () => {
-        this.snackBar.open('Contraseña actualizada con éxito', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['snackbar-success']
+        this.isLoading = false;
+        this.snackBar.open('Contraseña actualizada con éxito.', 'Cerrar', {
+          duration: 3000, panelClass: ['snack-success']
         });
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        const msg = err.error?.message || 'Error al cambiar contraseña';
+        this.isLoading = false;
+        const msg = err.error?.message || 'Error al cambiar la contraseña. Verifica tu contraseña actual.';
         this.snackBar.open(msg, 'Cerrar', {
-          duration: 4000,
-          panelClass: ['snackbar-error']
+          duration: 4000, panelClass: ['snack-error']
         });
       }
     });
   }
-}
-
-
 }
