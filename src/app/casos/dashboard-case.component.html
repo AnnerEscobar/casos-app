@@ -1,23 +1,11 @@
-<mat-drawer-container class="layout-container">
+<div class="layout">
 
-  <mat-drawer #sidenav
-    [mode]="isHandset ? 'over' : 'side'"
-    [opened]="opened"
-    [style.width]="collapsed && !isHandset ? '64px' : '280px'">
+  <div class="sidenav-wrapper" [class.collapsed]="collapsed">
+    <app-sidenav [collapsed]="collapsed" (collapsedChange)="collapsed = $event"></app-sidenav>
+  </div>
 
-    <app-sidenav [collapsed]="collapsed"></app-sidenav>
+  <div class="main-content">
+    <router-outlet />
+  </div>
 
-  </mat-drawer>
-
-  <mat-drawer-content class="drawer-content">
-    <div class="toolbar">
-      <button mat-icon-button (click)="onToggle(sidenav)" class="toggle-btn">
-        <mat-icon>menu</mat-icon>
-      </button>
-    </div>
-    <div class="page-content">
-      <router-outlet />
-    </div>
-  </mat-drawer-content>
-
-</mat-drawer-container>
+</div>

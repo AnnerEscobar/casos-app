@@ -1,207 +1,186 @@
-<div class="form-container" [ngClass]="{ 'loading': isLoading }">
+<div class="page-container">
 
-  <h1 class="text-3xl ml-7">Registro de caso --Alerta--</h1>
-
-  <form [formGroup]="myForm" (ngSubmit)="registrarCaso()" class="example-forme w-full p-2">
-
-    <p class="text ml-5">Identificadores del caso</p>
-
-    <!--Numeros de caso-->
-    <div class="gap-4 p-5 grid grid-cols-1 md:grid-cols-3">
-
-
-      <mat-form-field class="w-full">
-        <mat-label>Numero de Caso (DEIC)</mat-label>
-        <input matInput placeholder="DEIC52-2025-01-02-01" formControlName="numeroDeic">
-        <mat-error *ngIf="myForm.get('numeroDeic')?.hasError('required')">
-          El número DEIC es obligatorio.
-        </mat-error>
-        <mat-error *ngIf="myForm.get('numeroDeic')?.hasError('pattern')">
-          Formato inválido. Use DEIC51-AAAA-MM-DD-XXX
-        </mat-error>
-      </mat-form-field>
-
-
-      <mat-form-field class="w-full">
-        <mat-label>Numero de Caso (MP)</mat-label>
-        <input matInput placeholder="M0030-2025-100" formControlName="numeroMp">
-        <mat-error *ngIf="myForm.get('numeroMp')?.hasError('required')">
-          El número de caso MP es obligatorio.
-        </mat-error>
-        <mat-error *ngIf="myForm.get('numeroMp')?.hasError('pattern')">
-          Formato inválido. Use M0030-AAAA-XXX
-        </mat-error>
-      </mat-form-field>
-
-      <mat-form-field class="w-full">
-        <mat-label>Numero de Alerta</mat-label>
-        <input matInput placeholder="2664-2025" formControlName="numeroAlerta">
-        <mat-error *ngIf="myForm.get('numeroAlerta')?.hasError('required')">
-          El número de Alerta es obligatorio.
-        </mat-error>
-        <mat-error *ngIf="myForm.get('numeroAlerta')?.hasError('pattern')">
-          Formato inválido. Use AAAA-XXX
-        </mat-error>
-      </mat-form-field>
+  <!-- Page header -->
+  <div class="page-header">
+    <div class="header-icon alerta">
+      <mat-icon>person_search</mat-icon>
     </div>
-
-    <!--Datos del desaparecido-->
-
-    <p class="text ml-5">Datos del desaparecido</p>
-    <div class="gap-4 p-5 grid grid-cols-1 md:grid-cols-3">
-
-      <mat-form-field class="">
-        <mat-label>Nombre</mat-label>
-        <input matInput placeholder="Escriba el nombre completo" formControlName="nombreDesaparecido">
-        <mat-error *ngIf="myForm.get('nombreDesaparecido')?.hasError('required')">
-          El nombre es obligatorio.
-        </mat-error>
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Fecha de Nacimiento</mat-label>
-        <input matInput formControlName="fecha_Nac" [matDatepicker]="picker">
-        <mat-hint>MM/DD/YYYY</mat-hint>
-        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-        <mat-error *ngIf="myForm.get('fecha_Nac')?.hasError('required')">
-          La fecha es obligatoria.
-        </mat-error>
-      </mat-form-field>
-
-      <mat-form-field class="">
-        <mat-label>Estado de la Investigacion</mat-label>
-        <mat-select formControlName="estadoInvestigacion">
-          @for (estado of estados; track estado) {
-          <mat-option [value]="estado.value">{{estado.viewValue}}</mat-option>
-          }
-        </mat-select>
-        <mat-error *ngIf="myForm.get('estadoInvestigacion')?.hasError('required')">
-          Estado de investigacion obligatorio.
-        </mat-error>
-      </mat-form-field>
+    <div>
+      <h2 class="page-title">Registro de caso de Alerta Alba-Keneth</h2>
+      <p class="page-sub">Completa todos los campos para registrar el caso en el sistema</p>
     </div>
+  </div>
 
-    <h1 class="text ml-5">Lugar de desaparicion</h1>
-    <div formGroupName="direccion" class="h-full w-full gap-4 p-5 grid grid-cols-1 md:grid-cols-3">
+  <form [formGroup]="myForm" (ngSubmit)="registrarCaso()">
 
-      <mat-form-field class="w-full">
-        <mat-label>Departamento</mat-label>
-        <input matInput formControlName="departamento" placeholder="Ingrese el departamento">
-        <mat-error *ngIf="myForm.get('direccion.departamento')?.hasError('required')">
-          El departamento es obligatorio.
-        </mat-error>
-      </mat-form-field>
-
-      <mat-form-field class="w-full">
-        <mat-label>Municipio</mat-label>
-        <input matInput formControlName="municipio" placeholder="Ingrese el municipio">
-        <mat-error *ngIf="myForm.get('direccion.municipio')?.hasError('required')">
-          El municipio es obligatorio.
-        </mat-error>
-      </mat-form-field>
-
-      <mat-form-field class="w-full">
-        <mat-label>Direccion del hecho o desaparicion</mat-label>
-        <input matInput formControlName="direccionDetallada" placeholder="Ingrese la direccion completa">
-        <mat-error *ngIf="myForm.get('direccion.direccionDetallada')?.hasError('required')">
-          La direccion es obligatoria.
-        </mat-error>
-      </mat-form-field>
-
-    </div>
-
-    <h1 *ngIf="myForm.get('estadoInvestigacion')?.value === 'Remitido'" class="text ml-5">Lugar de localizacion</h1>
-    <!-- Campos de localización solo si estado es Remitido -->
-    <div *ngIf="myForm.get('estadoInvestigacion')?.value === 'Remitido'"
-      class="gap-4 p-5 grid grid-cols-1 md:grid-cols-3">
-
-      <mat-form-field class="w-full">
-        <mat-label>Dirección de la localización</mat-label>
-        <input matInput formControlName="direccionLocalizacion" placeholder="Ingrese la dirección donde fue localizado">
-        <mat-error *ngIf="myForm.get('direccionLocalizacion')?.hasError('required')">
-          La direccion es obligatoria.
-        </mat-error>
-      </mat-form-field>
-
-      <mat-form-field class="w-full">
-        <mat-label>Nombre de la persona con quien se encontraba</mat-label>
-        <input matInput formControlName="nombreAcompanante" placeholder="Ej. Juan Pérez">
-        <mat-error *ngIf="myForm.get('nombreAcompanante')?.hasError('required')">
-          Agregue un nombre o que estaba solo/a
-        </mat-error>
-      </mat-form-field>
-
-      <mat-form-field class="w-full">
-        <mat-label>Número telefónico</mat-label>
-        <input matInput formControlName="telefono" placeholder="Ej. 45678901" type="tel">
-        <mat-error *ngIf="myForm.get('telefono')?.hasError('required')">
-          El número telefónico es obligatorio.
-        </mat-error>
-      </mat-form-field>
-
-      <mat-form-field class="w-full">
-        <mat-label>Fecha de localización</mat-label>
-        <input matInput [matDatepicker]="fechaPicker" formControlName="fechaLocalizacion">
-        <mat-datepicker-toggle matSuffix [for]="fechaPicker"></mat-datepicker-toggle>
-        <mat-datepicker #fechaPicker></mat-datepicker>
-        <mat-error *ngIf="myForm.get('fechaLocalizacion')?.hasError('required')">
-          La fecha es obligatoria.
-        </mat-error>
-      </mat-form-field>
-
-      <mat-form-field class="w-full">
-        <mat-label>Hora de localización</mat-label>
-        <input matInput formControlName="horaLocalizacion" type="time">
-        <mat-error *ngIf="myForm.get('horaLocalizacion')?.hasError('required')">
-          La hora es obligatoria.
-        </mat-error>
-      </mat-form-field>
-
-    </div>
-
-    <!--Espacio para carga de archivo-->
-    <mat-card class="file-upload-card">
-      <mat-card-title>
-        <mat-icon class="mr-2">upload</mat-icon>
-        Cargar archivo de investigación
-      </mat-card-title>
-
-      <mat-card-content>
-        <button mat-stroked-button color="primary" (click)="fileInput.click()">
-          <mat-icon class="mr-2">attach_file</mat-icon>
-          Seleccionar archivo
-        </button>
-
-        <input #fileInput type="file" hidden (change)="onFileSelected($event)" />
-
-        <div class="file-preview mt-4">
-          <p *ngIf="fileName">📄 Archivo seleccionado: {{ fileName }}</p>
-          <p *ngIf="!fileName" class="text-muted">No se ha seleccionado ningún archivo.</p>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-
-    <section class="p-2">
-      <div class="">
-        <button mat-raised-button color="primary" class="w-full" type="submit" disabled="{{myForm.invalid}}">Registrar Caso</button>
+    <!-- Identificadores -->
+    <div class="section-card">
+      <div class="section-header">
+        <mat-icon class="section-icon">badge</mat-icon>
+        <span class="section-title">Identificadores del caso</span>
       </div>
-    </section>
+      <div class="fields-grid-2">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Número de caso (DEIC)</mat-label>
+          <input matInput placeholder="DEIC52-2025-01-02-01" formControlName="numeroDeic">
+          <mat-error *ngIf="myForm.get('numeroDeic')?.hasError('required')">Campo requerido</mat-error>
+          <mat-error *ngIf="myForm.get('numeroDeic')?.hasError('pattern')">Formato: DEIC52-AAAA-MM-DD-XXX</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Número de caso (MP)</mat-label>
+          <input matInput placeholder="M0030-2025-100" formControlName="numeroMp">
+          <mat-error *ngIf="myForm.get('numeroMp')?.hasError('required')">Campo requerido</mat-error>
+          <mat-error *ngIf="myForm.get('numeroMp')?.hasError('pattern')">Formato: M0030-AAAA-XXX</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Número de alerta</mat-label>
+          <input matInput placeholder="2664-2025" formControlName="numeroAlerta">
+          <mat-error *ngIf="myForm.get('numeroAlerta')?.hasError('required')">Campo requerido</mat-error>
+          <mat-error *ngIf="myForm.get('numeroAlerta')?.hasError('pattern')">Formato: XXXX-AAAA</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Estado de la investigación</mat-label>
+          <mat-select formControlName="estadoInvestigacion">
+            @for (estado of estados; track estado) {
+              <mat-option [value]="estado.value">{{ estado.viewValue }}</mat-option>
+            }
+          </mat-select>
+          <mat-error>Selecciona un estado</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Datos del desaparecido -->
+    <div class="section-card">
+      <div class="section-header">
+        <mat-icon class="section-icon desaparecido">child_care</mat-icon>
+        <span class="section-title">Datos del desaparecido</span>
+      </div>
+      <div class="fields-grid-2">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Nombre completo</mat-label>
+          <input matInput placeholder="Nombre completo" formControlName="nombreDesaparecido">
+          <mat-error>Campo requerido</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Fecha de nacimiento</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="fecha_Nac">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error>Campo requerido</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Lugar de desaparición -->
+    <div class="section-card" formGroupName="direccion">
+      <div class="section-header">
+        <mat-icon class="section-icon">location_on</mat-icon>
+        <span class="section-title">Lugar de desaparición</span>
+      </div>
+      <div class="fields-grid-3">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Departamento</mat-label>
+          <input matInput placeholder="Departamento" formControlName="departamento">
+          <mat-error>Campo requerido</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Municipio</mat-label>
+          <input matInput placeholder="Municipio" formControlName="municipio">
+          <mat-error>Campo requerido</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Dirección del hecho</mat-label>
+          <input matInput placeholder="Dirección completa" formControlName="direccionDetallada">
+          <mat-error>Campo requerido</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Datos de localización (solo si Remitido) -->
+    <div class="section-card remitido-card"
+         *ngIf="myForm.get('estadoInvestigacion')?.value === 'Remitido'">
+      <div class="section-header">
+        <mat-icon class="section-icon remitido">where_to_vote</mat-icon>
+        <span class="section-title">Datos de localización</span>
+        <span class="remitido-badge">Remitido</span>
+      </div>
+      <div class="fields-grid-3">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Dirección de localización</mat-label>
+          <input matInput placeholder="Dirección donde fue localizado" formControlName="direccionLocalizacion">
+          <mat-error>Campo requerido</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Nombre del acompañante</mat-label>
+          <input matInput placeholder="Ej. Juan Pérez" formControlName="nombreAcompanante">
+          <mat-error>Campo requerido</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Número telefónico</mat-label>
+          <input matInput placeholder="45678901" type="tel" formControlName="telefono">
+          <mat-error>Campo requerido</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Fecha de localización</mat-label>
+          <input matInput [matDatepicker]="fechaPicker" formControlName="fechaLocalizacion">
+          <mat-datepicker-toggle matSuffix [for]="fechaPicker"></mat-datepicker-toggle>
+          <mat-datepicker #fechaPicker></mat-datepicker>
+          <mat-error>Campo requerido</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Hora de localización</mat-label>
+          <input matInput type="time" formControlName="horaLocalizacion">
+          <mat-error>Campo requerido</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Upload -->
+    <div class="section-card">
+      <div class="section-header">
+        <mat-icon class="section-icon">upload_file</mat-icon>
+        <span class="section-title">Archivo de investigación</span>
+      </div>
+      <input #fileInput type="file" hidden (change)="onFileSelected($event)" accept=".pdf,.doc,.docx" />
+      <div class="upload-zone" [class.has-file]="selectedFile" (click)="fileInput.click()">
+        <ng-container *ngIf="!selectedFile">
+          <mat-icon class="upload-icon">cloud_upload</mat-icon>
+          <p class="upload-label">Haz clic para seleccionar el archivo</p>
+          <p class="upload-hint">PDF, DOC o DOCX</p>
+        </ng-container>
+        <ng-container *ngIf="selectedFile">
+          <mat-icon class="upload-icon done">check_circle</mat-icon>
+          <p class="upload-label done">{{ fileName }}</p>
+          <p class="upload-hint">Archivo listo — haz clic para cambiar</p>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <button mat-flat-button class="btn-submit" type="submit"
+            [disabled]="myForm.invalid || !selectedFile || isLoading">
+      <mat-icon>save</mat-icon>
+      Registrar caso
+    </button>
 
   </form>
 
+  <!-- Loading overlay -->
   <div class="overlay" *ngIf="isLoading">
     <mat-spinner diameter="50"></mat-spinner>
   </div>
 
   <!-- Overlay: caso ya existe -->
-  <div class="overlay" *ngIf="casoYaExiste" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; background:rgba(0,0,0,0.6);">
-    <div style="background:#fff; border-radius:12px; padding:32px; max-width:420px; text-align:center; box-shadow:0 4px 24px rgba(0,0,0,0.2);">
-      <mat-icon style="font-size:48px; width:48px; height:48px; color:#e53935;">warning</mat-icon>
-      <h3 style="margin:12px 0 8px; font-size:1.2rem; font-weight:600;">Caso ya registrado</h3>
-      <p style="color:#555; margin-bottom:24px;">El caso <strong>{{ deicDuplicado }}</strong> ya existe en el sistema. Puedes agregar un seguimiento desde la opción correspondiente.</p>
-      <div style="display:flex; gap:12px; justify-content:center;">
+  <div class="overlay duplicate-overlay" *ngIf="casoYaExiste">
+    <div class="duplicate-card">
+      <mat-icon class="duplicate-icon">warning_amber</mat-icon>
+      <h3 class="duplicate-title">Caso ya registrado</h3>
+      <p class="duplicate-msg">
+        El caso <strong>{{ deicDuplicado }}</strong> ya existe en el sistema.<br>
+        Puedes agregar un seguimiento desde la opción correspondiente.
+      </p>
+      <div class="duplicate-actions">
         <button mat-stroked-button (click)="casoYaExiste = false">Cerrar</button>
         <button mat-flat-button color="primary" (click)="irASeguimiento()">
           <mat-icon>assignment_add</mat-icon> Ir a Seguimiento

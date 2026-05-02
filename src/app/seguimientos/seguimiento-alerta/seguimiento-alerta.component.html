@@ -1,60 +1,140 @@
-<mat-card class="p-4 m-6">
-  <h2>Seguimiento - Alerta Alba-Keneth</h2>
+<div class="page-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-icon">
+      <mat-icon>assignment_add</mat-icon>
+    </div>
+    <div>
+      <h2 class="page-title">Seguimiento de caso — Alerta Alba-Keneth</h2>
+      <p class="page-sub">Busca el caso por número DEIC para agregar un seguimiento</p>
+    </div>
+  </div>
 
   <form [formGroup]="seguimientoForm" (ngSubmit)="enviarSeguimiento()">
 
-    <mat-form-field class="w-full">
-      <mat-label>Número DEIC</mat-label>
-      <input matInput formControlName="numeroDeic">
-    </mat-form-field>
-
-    <div class="w-full flex justify-center mb-4">
-      <button mat-raised-button color="primary" type="button" (click)="buscarCaso()" class="">Buscar Caso</button>
+    <!-- Búsqueda -->
+    <div class="section-card">
+      <div class="section-header">
+        <mat-icon class="section-icon">search</mat-icon>
+        <span class="section-title">Buscar caso</span>
+      </div>
+      <div class="search-row">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Número de caso (DEIC)</mat-label>
+          <input matInput formControlName="numeroDeic" placeholder="DEIC52-2025-01-02-01" />
+          <mat-error>Campo requerido</mat-error>
+        </mat-form-field>
+        <button mat-flat-button type="button" class="btn-search"
+                [disabled]="!seguimientoForm.get('numeroDeic')?.value || searching"
+                (click)="buscarCaso()">
+          <mat-spinner *ngIf="searching" diameter="18"></mat-spinner>
+          <mat-icon *ngIf="!searching">search</mat-icon>
+          {{ searching ? 'Buscando...' : 'Buscar' }}
+        </button>
+      </div>
     </div>
 
-    <div *ngIf="casoEncontrado">
-      <div class="w-full" m-2>
-        <p><strong>Estado actual:</strong> {{ estadoActual }}</p>
+    <!-- Info del caso encontrado -->
+    <div class="section-card caso-card" *ngIf="casoEncontrado">
+      <div class="section-header">
+        <mat-icon class="section-icon found">check_circle</mat-icon>
+        <span class="section-title">Caso encontrado</span>
+        <span class="deic-badge">{{ casoEncontrado.numeroDeic }}</span>
       </div>
 
-      <mat-form-field class="w-full mt-4" appearance="fill">
-        <mat-label>Nuevo estado</mat-label>
+      <div class="caso-grid">
+        <div class="caso-field">
+          <span class="caso-label">Número MP</span>
+          <span class="caso-value">{{ casoEncontrado.numeroMp || '—' }}</span>
+        </div>
+        <div class="caso-field">
+          <span class="caso-label">Estado actual</span>
+          <span class="estado-chip" [class]="'estado-' + (casoEncontrado.estadoInvestigacion | lowercase)">
+            {{ casoEncontrado.estadoInvestigacion }}
+          </span>
+        </div>
+        <div class="caso-field" *ngIf="casoEncontrado.nombreDesaparecido">
+          <span class="caso-label">Desaparecido</span>
+          <span class="caso-value">{{ casoEncontrado.nombreDesaparecido }}</span>
+        </div>
+        <div class="caso-field" *ngIf="casoEncontrado.numeroAlerta">
+          <span class="caso-label">Número de alerta</span>
+          <span class="caso-value">{{ casoEncontrado.numeroAlerta }}</span>
+        </div>
+      </div>
+
+      <!-- Nuevo estado -->
+      <div class="section-header" style="margin-top:8px;">
+        <mat-icon class="section-icon">update</mat-icon>
+        <span class="section-title">Actualizar seguimiento</span>
+      </div>
+
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Nuevo estado de la investigación</mat-label>
         <mat-select formControlName="nuevoEstado">
-          <mat-option value="Informado">Informado</mat-option>
-          <mat-option value="Remitido">Remitido</mat-option>
-          <mat-option value="Concluido">Concluido</mat-option>
+          @for (e of estados; track e.value) {
+            <mat-option [value]="e.value">{{ e.label }}</mat-option>
+          }
         </mat-select>
       </mat-form-field>
 
-      <ng-container *ngIf="seguimientoForm.value.nuevoEstado === 'Remitido'">
-        <mat-form-field class="w-full">
-          <mat-label>Con quién se encontraba</mat-label>
-          <input matInput formControlName="acompanante">
-        </mat-form-field>
-
-        <mat-form-field class="w-full">
-          <mat-label>Número de teléfono</mat-label>
-          <input matInput formControlName="telefono">
-        </mat-form-field>
-
-        <mat-form-field class="w-full">
-          <mat-label>Dirección</mat-label>
-          <input matInput formControlName="direccion">
-        </mat-form-field>
-      </ng-container>
-
-      <!-- NO usar mat-form-field con type="file" -->
-      <div class="w-full m-4 p-2">
-        <label>Archivo:</label>
-        <input type="file" (change)="onFileChange($event)" accept=".pdf,.doc,.docx">
+      <!-- Datos extra si Remitido -->
+      <div class="remitido-section" *ngIf="esRemitido">
+        <div class="remitido-section-header">
+          <mat-icon>where_to_vote</mat-icon>
+          <span>Datos de localización</span>
+        </div>
+        <div class="fields-grid-3">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Con quién se encontraba</mat-label>
+            <input matInput formControlName="acompanante" placeholder="Nombre del acompañante" />
+            <mat-error>Campo requerido</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Número de teléfono</mat-label>
+            <input matInput formControlName="telefono" placeholder="45678901" type="tel" />
+            <mat-error>Campo requerido</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Dirección de localización</mat-label>
+            <input matInput formControlName="direccion" placeholder="Dirección donde fue localizado" />
+            <mat-error>Campo requerido</mat-error>
+          </mat-form-field>
+        </div>
       </div>
 
-      <div class="w-full flex justify-center mb-4">
-        <button mat-raised-button color="accent" type="submit" [disabled]="!seguimientoForm.valid">
-          Enviar seguimiento
-        </button>
+      <!-- Upload -->
+      <div class="upload-section">
+        <p class="upload-section-label">
+          <mat-icon>upload_file</mat-icon>
+          Adjuntar archivo(s) de seguimiento
+        </p>
+        <input id="seg-file-alerta" type="file" hidden (change)="onFileChange($event)"
+               accept=".pdf,.doc,.docx" multiple />
+        <label for="seg-file-alerta" class="upload-zone" [class.has-file]="files.length">
+          <ng-container *ngIf="!files.length">
+            <mat-icon class="upload-icon">cloud_upload</mat-icon>
+            <span class="upload-label">Haz clic para seleccionar archivo(s)</span>
+            <span class="upload-hint">PDF, DOC o DOCX — puedes seleccionar varios</span>
+          </ng-container>
+          <ng-container *ngIf="files.length">
+            <mat-icon class="upload-icon done">check_circle</mat-icon>
+            <span class="upload-label done">{{ fileName }}</span>
+            <span class="upload-hint">Haz clic para cambiar</span>
+          </ng-container>
+        </label>
       </div>
 
+      <!-- Submit -->
+      <button mat-flat-button class="btn-submit" type="submit"
+              [disabled]="!seguimientoForm.valid || submitting">
+        <mat-spinner *ngIf="submitting" diameter="18" style="display:inline-block;margin-right:8px;"></mat-spinner>
+        <mat-icon *ngIf="!submitting">send</mat-icon>
+        {{ submitting ? 'Enviando...' : 'Registrar seguimiento' }}
+      </button>
     </div>
+
   </form>
-</mat-card>
+
+</div>

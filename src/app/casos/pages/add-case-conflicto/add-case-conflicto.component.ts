@@ -14,6 +14,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConflictoService } from '../../services/conflicto.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { InformeService } from '../../../informes/services/informe.service';
 
@@ -24,7 +25,7 @@ import { InformeService } from '../../../informes/services/informe.service';
     MatFormFieldModule, MatSelectModule, ReactiveFormsModule,
     MatSlideToggleModule, MatInputModule, MatIconModule,
     MatButtonModule, MatDatepickerModule, CommonModule,
-    FormsModule, MatProgressSpinnerModule, MatCardModule, MatProgressBarModule
+    FormsModule, MatProgressSpinnerModule, MatCardModule, MatProgressBarModule, MatTooltipModule
   ],
   templateUrl: './add-case-conflicto.component.html',
   styleUrl: './add-case-conflicto.component.css'
@@ -144,7 +145,7 @@ export default class AddCaseConflictoComponent implements OnInit {
 
   registrarCaso() {
     if (!this.myForm.valid || !this.selectedFile) {
-      this._snackBar.open('Debes completar todos los campos y seleccionar un archivo', 'Cerrar', { duration: 3000 });
+      this._snackBar.open('Debes completar todos los campos y seleccionar un archivo', 'Cerrar', { duration: 3000, panelClass: ['snack-warning'] });
       return;
     }
 
@@ -175,7 +176,7 @@ export default class AddCaseConflictoComponent implements OnInit {
         if (this.informeDeic) {
           this.informeService.eliminar(this.informeDeic).subscribe();
         }
-        this._snackBar.open('Caso registrado con éxito', 'Cerrar', { duration: 3000 });
+        this._snackBar.open('Caso registrado con éxito', 'Cerrar', { duration: 3000, panelClass: ['snack-success'] });
         this.resetFormState(this.myForm);
         this.selectedFile = null;
         this.isLoading = false;
@@ -188,7 +189,7 @@ export default class AddCaseConflictoComponent implements OnInit {
           this.deicDuplicado = this.myForm.value.numeroDeic || '';
           this.casoYaExiste = true;
         } else {
-          this._snackBar.open('Error al registrar el caso', 'Cerrar', { duration: 3500 });
+          this._snackBar.open('Error al registrar el caso', 'Cerrar', { duration: 3000, panelClass: ['snack-error'] });
         }
       }
     });

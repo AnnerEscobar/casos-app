@@ -82,9 +82,12 @@
       return token !== null && !this.isTokenExpired(token);
     }
 
-    //metodo para cambiar la contraseña
     changePassword(data: { currentPassword: string; newPassword: string }) {
       return this.http.patch(`${this.apiUrl}/change-password`, data);
+    }
+
+    recoverPassword(email: string) {
+      return this.http.post(`${this.apiUrl}/recover-password`, { email });
     }
 
   }

@@ -112,11 +112,12 @@
       <mat-accordion>
       @for (item of menuItems; track $index) {
 
-        <!-- Colapsado: solo icono con tooltip -->
-        <div *ngIf="collapsed" class="icon-only-item"
-          [matTooltip]="item.title" matTooltipPosition="right">
+        <!-- Colapsado: solo icono, navega al primer hijo sin expandir -->
+        <a *ngIf="collapsed" class="icon-only-item"
+           [routerLink]="item.children[0].path"
+           [matTooltip]="item.title" matTooltipPosition="right">
           <mat-icon>{{ item.icon }}</mat-icon>
-        </div>
+        </a>
 
         <!-- Expandido: panel completo -->
         <mat-expansion-panel *ngIf="!collapsed" class="mat-elevation-z0" [expanded]="false">

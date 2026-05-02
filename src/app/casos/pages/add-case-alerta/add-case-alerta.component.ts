@@ -131,7 +131,7 @@ export default class AddCaseAlertaComponent implements OnInit {
 
   registrarCaso() {
     if (this.myForm.invalid || !this.selectedFile) {
-      this._snackBar.open('Debes completar todos los campos y seleccionar un archivo', 'Cerrar', { duration: 3000 });
+      this._snackBar.open('Debes completar todos los campos y seleccionar un archivo', 'Cerrar', { duration: 3000, panelClass: ['snack-warning'] });
       return;
     }
 
@@ -161,7 +161,7 @@ export default class AddCaseAlertaComponent implements OnInit {
         if (this.informeDeic) {
           this.informeService.eliminar(this.informeDeic).subscribe();
         }
-        this._snackBar.open('Caso registrado correctamente', 'Cerrar', { duration: 3000 });
+        this._snackBar.open('Caso registrado correctamente', 'Cerrar', { duration: 3000, panelClass: ['snack-success'] });
         this.resetFormState(this.myForm);
         this.selectedFile = null;
         this.isLoading = false;
@@ -174,7 +174,7 @@ export default class AddCaseAlertaComponent implements OnInit {
           this.deicDuplicado = this.myForm.value.numeroDeic || '';
           this.casoYaExiste = true;
         } else {
-          this._snackBar.open('Error al registrar el caso', 'Cerrar', { duration: 3500 });
+          this._snackBar.open('Error al registrar el caso', 'Cerrar', { duration: 3000, panelClass: ['snack-error'] });
         }
       }
     });

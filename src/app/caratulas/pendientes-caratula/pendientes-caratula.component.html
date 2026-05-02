@@ -1,41 +1,82 @@
-<mat-card class="m-8 p-6">
-  <h2>Carátulas Pendientes</h2>
+<div class="page-container">
 
-  <mat-table [dataSource]="pendientes">
-    <!-- Tipo de Caso -->
-    <ng-container matColumnDef="tipoCaso">
-      <mat-header-cell *matHeaderCellDef> Tipo </mat-header-cell>
-      <mat-cell *matCellDef="let item"> {{ item.tipoCaso }} </mat-cell>
-    </ng-container>
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-icon">
+      <mat-icon>pending_actions</mat-icon>
+    </div>
+    <div>
+      <h2 class="page-title">Carátulas Pendientes</h2>
+      <p class="page-sub">Carátulas generadas pendientes de asignación a un caso</p>
+    </div>
+  </div>
 
-    <!-- Número DEIC -->
-    <ng-container matColumnDef="numeroDeic">
-      <mat-header-cell *matHeaderCellDef> DEIC </mat-header-cell>
-      <mat-cell *matCellDef="let item"> {{ item.numeroDeic }} </mat-cell>
-    </ng-container>
+  <!-- Loading -->
+  <div class="loading-box" *ngIf="isLoading">
+    <mat-spinner diameter="36"></mat-spinner>
+    <span>Cargando carátulas...</span>
+  </div>
 
-    <!-- Nombre -->
-    <ng-container matColumnDef="nombre">
-      <mat-header-cell *matHeaderCellDef> Nombre </mat-header-cell>
-      <mat-cell *matCellDef="let item"> {{ item.nombre }} </mat-cell>
-    </ng-container>
+  <!-- Table card -->
+  <div class="section-card" *ngIf="!isLoading">
+    <div class="section-header">
+      <mat-icon class="section-icon">list_alt</mat-icon>
+      <span class="section-title">Carátulas disponibles</span>
+      <span class="results-badge">{{ totalItems }}</span>
+    </div>
 
-    <!-- Acción -->
-    <ng-container matColumnDef="accion">
-      <mat-header-cell *matHeaderCellDef> Acción </mat-header-cell>
-      <mat-cell *matCellDef="let item">
-        <button mat-button color="primary" (click)="usarCaratula(item)">Usar</button>
-      </mat-cell>
-    </ng-container>
+    <!-- Empty state -->
+    <div class="empty-state" *ngIf="!pendientes.data.length">
+      <mat-icon>inbox</mat-icon>
+      <span>No hay carátulas pendientes en este momento</span>
+    </div>
 
-    <mat-header-row *matHeaderRowDef="['tipoCaso', 'numeroDeic', 'nombre', 'accion']"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: ['tipoCaso', 'numeroDeic', 'nombre', 'accion']"></mat-row>
-  </mat-table>
+    <!-- Table -->
+    <div class="table-wrapper" *ngIf="pendientes.data.length">
+      <table mat-table [dataSource]="pendientes" matSort class="pendientes-table">
 
-  <mat-paginator class="bottom-0"
-               [length]="totalItems"
-               [pageSize]="pageSize"
-               [pageSizeOptions]="[5, 10, 20]"
-               (page)="onPageChange($event)">
-</mat-paginator>
-</mat-card>
+        <!-- Tipo -->
+        <ng-container matColumnDef="tipoCaso">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+          <td mat-cell *matCellDef="let item">
+            <span class="tipo-chip" [ngClass]="tipoClass(item.tipoCaso)">{{ item.tipoCaso }}</span>
+          </td>
+        </ng-container>
+
+        <!-- DEIC -->
+        <ng-container matColumnDef="numeroDeic">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>N° DEIC</th>
+          <td mat-cell *matCellDef="let item" class="mono-cell">{{ item.numeroDeic }}</td>
+        </ng-container>
+
+        <!-- Nombre -->
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+          <td mat-cell *matCellDef="let item">{{ item.nombre }}</td>
+        </ng-container>
+
+        <!-- Acción -->
+        <ng-container matColumnDef="accion">
+          <th mat-header-cell *matHeaderCellDef>Acción</th>
+          <td mat-cell *matCellDef="let item">
+            <button mat-stroked-button class="btn-usar" (click)="usarCaratula(item)">
+              <mat-icon>arrow_forward</mat-icon> Usar
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <mat-paginator
+        [length]="totalItems"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 25]"
+        showFirstLastButtons
+        (page)="onPageChange($event)">
+      </mat-paginator>
+    </div>
+  </div>
+
+</div>

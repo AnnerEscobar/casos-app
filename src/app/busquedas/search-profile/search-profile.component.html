@@ -1,123 +1,125 @@
-<div class="flex justify-center m-10 p2">
-  <mat-accordion class="w-full sm:w-3/4 md:w-2/4 pt-10">
-    <!-- Busqueda por nombre -->
-    <mat-expansion-panel hideToggle>
-      <mat-expansion-panel-header  class="!min-h-[92px] !items-start !flex-col !py-2 !whitespace-normal">
-        <mat-panel-title> Busqueda por nombre </mat-panel-title>
-        <mat-panel-description> Ingresa un nombre para realizar tu busqueda </mat-panel-description>
-      </mat-expansion-panel-header>
+<div class="page-container">
 
-      <div class="flex flex-col items-center w-full p-4 space-y-4">
-        <mat-form-field class="w-full">
-          <mat-label>Ingresa un nombre</mat-label>
-          <input matInput placeholder="Nombre" [(ngModel)]="nombre">
-        </mat-form-field>
-        <button mat-raised-button color="primary" class="mt-6" (click)="buscarPorNombre()">Buscar</button>
-      </div>
-    </mat-expansion-panel>
-
-    <!-- Busqueda por CUI -->
-    <mat-expansion-panel hideToggle class="h-auto">
-      <mat-expansion-panel-header class="!min-h-[92px] !items-start !flex-col !py-2 !whitespace-normal">
-        <mat-panel-title> Por numero CUI</mat-panel-title>
-        <mat-panel-description > Realiza tu busqueda ingresando un numero de DPI </mat-panel-description>
-      </mat-expansion-panel-header>
-      <div class="flex flex-col items-center w-full p-4 space-y-4 ">
-      <mat-form-field class="w-full">
-        <mat-label>Ingresa el numero de CUI</mat-label>
-        <input matInput placeholder="Numero de CUI" [(ngModel)]="cui">
-      </mat-form-field>
-      <button mat-raised-button color="primary" (click)="buscarPorCUI()">Buscar</button>
-      </div>
-    </mat-expansion-panel>
-
-    <!-- Busqueda por expediente MP -->
-    <mat-expansion-panel hideToggle>
-      <mat-expansion-panel-header class="!min-h-[92px] !items-start !flex-col !py-2 !whitespace-normal">
-        <mat-panel-title> Por expediente MP</mat-panel-title>
-        <mat-panel-description> Realiza una busqueda ingresando el numero de caso MP </mat-panel-description>
-      </mat-expansion-panel-header>
-      <div class="flex flex-col items-center w-full p-4 space-y-4">
-      <mat-form-field class="w-full">
-        <mat-label>Ingresa el número de expediente MP</mat-label>
-        <input matInput placeholder="Número de expediente MP" [(ngModel)]="numeroMp">
-      </mat-form-field>
-      <button mat-raised-button color="primary" (click)="buscarPorExpedienteMP()">Buscar</button>
-      </div>
-    </mat-expansion-panel>
-
-    <!-- Busqueda por expediente DEIC -->
-    <mat-expansion-panel hideToggle>
-      <mat-expansion-panel-header class="!min-h-[92px] !items-start !flex-col !py-2 !whitespace-normal">
-        <mat-panel-title> Por expediente DEIC</mat-panel-title>
-        <mat-panel-description> Realiza una busqueda ingresando el numero de caso DEIC </mat-panel-description>
-      </mat-expansion-panel-header>
-      <div class="flex flex-col items-center w-full p-4 space-y-4">
-      <mat-form-field class="w-full">
-        <mat-label>Ingresa el número DEIC</mat-label>
-        <input matInput placeholder="Número DEIC" [(ngModel)]="numeroDeic">
-      </mat-form-field>
-      <button mat-raised-button color="primary" (click)="buscarPorNumeroDeic()">Buscar</button>
-      </div>
-    </mat-expansion-panel>
-
-    <!-- Busqueda por Alerta Alba-Keneth -->
-    <mat-expansion-panel hideToggle>
-      <mat-expansion-panel-header class="!min-h-[92px] !items-start !flex-col !py-2 !whitespace-normal">
-        <mat-panel-title> Por Alerta Alba-Keneth</mat-panel-title>
-        <mat-panel-description> Realiza una busqueda ingresando el numero de alerta </mat-panel-description>
-      </mat-expansion-panel-header>
-      <div class="flex flex-col items-center w-full p-4 space-y-4">
-      <mat-form-field class="w-full">
-        <mat-label>Ingresa el número de alerta</mat-label>
-        <input matInput placeholder="Número de alerta" [(ngModel)]="numeroAlerta">
-      </mat-form-field>
-      <button mat-raised-button color="primary" (click)="buscarPorAlertaAlbaKeneth()">Buscar</button>
-      </div>
-    </mat-expansion-panel>
-
-    <!-- Busqueda por rango de fechas -->
-  </mat-accordion>
-</div>
-
-<!-- Resultados de Búsqueda -->
-<div *ngIf="busquedaRealizada" class="flex justify-center items-center mt-6">
-  <div class="w-4/5 bg-gray-100 shadow-lg rounded-lg p-6">
-    <h2 class="text-2xl font-bold text-center mb-6">Resultados de Búsqueda</h2>
-
-    <!-- Spinner mientras se carga -->
-    <div *ngIf="isLoading" class="flex justify-center items-center">
-      <mat-spinner diameter="50"></mat-spinner>
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-icon">
+      <mat-icon>manage_search</mat-icon>
     </div>
-
-    <!-- Resultados dinámicos -->
-    <div *ngIf="!isLoading">
-      <div *ngIf="resultadosBusqueda.length > 0; else noResults">
-        <mat-card *ngFor="let resultado of resultadosBusqueda" class="flex justify-between items-center p-4">
-          <div class="text-lg font-medium">
-            <p><strong>Rol:</strong> {{ resultado.rol }}</p>
-            <p><strong>Nombre:</strong> {{ resultado.nombre }}</p>
-            <p><strong>Tipo de Caso:</strong> {{ resultado.tipo }}</p>
-            <p><strong>Número de Expediente MP:</strong> {{ resultado.numeroMp }}</p>
-            <p><strong>Número DEIC:</strong> {{ resultado.numeroDeic }}</p>
-            <p><strong>Estado de Investigación:</strong> {{ resultado.estadoInvestigacion }}</p>
-          </div>
-          <!-- Mostrar "Ver perfil" si la búsqueda es por nombre -->
-          <button *ngIf="tipoBusqueda === 'nombre'" mat-flat-button color="primary" (click)="verPerfil()">
-            Ver perfil
-          </button>
-          <!-- Mostrar "Descargar" para otros tipos de búsqueda -->
-          <button *ngIf="tipoBusqueda !== 'nombre'" mat-raised-button color="primary"
-            (click)="descargarArchivo(resultado.fileUrls)">
-            Descargar
-          </button>
-        </mat-card>
-      </div>
-
-      <!-- Mensaje si no hay resultados -->
-      <ng-template #noResults>
-        <p class="text-center">No se encontraron resultados.</p>
-      </ng-template>
+    <div>
+      <h2 class="page-title">Búsquedas</h2>
+      <p class="page-sub">Encuentra casos registrados por diferentes criterios</p>
     </div>
   </div>
+
+  <!-- Selector de tipo + input -->
+  <div class="section-card">
+    <div class="section-header">
+      <mat-icon class="section-icon">tune</mat-icon>
+      <span class="section-title">Criterio de búsqueda</span>
+    </div>
+
+    <!-- Chips de tipo -->
+    <div class="type-chips">
+      <button *ngFor="let t of searchTypes"
+              class="type-chip"
+              [class.active]="tipoBusqueda === t.key"
+              (click)="seleccionarTipo(t.key)">
+        <mat-icon>{{ t.icon }}</mat-icon>
+        <span>{{ t.label }}</span>
+      </button>
+    </div>
+
+    <!-- Input dinámico -->
+    <ng-container *ngIf="tipoActivo">
+      <p class="search-hint-text">{{ tipoActivo.hint }}</p>
+      <div class="search-row">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>{{ tipoActivo.label }}</mat-label>
+          <input matInput [(ngModel)]="termino"
+                 [placeholder]="tipoActivo.placeholder"
+                 (keyup.enter)="ejecutarBusqueda()" />
+          <mat-icon matSuffix>{{ tipoActivo.icon }}</mat-icon>
+        </mat-form-field>
+        <button mat-flat-button class="btn-search"
+                (click)="ejecutarBusqueda()"
+                [disabled]="!termino.trim() || isLoading">
+          <mat-spinner *ngIf="isLoading" diameter="18"></mat-spinner>
+          <mat-icon *ngIf="!isLoading">search</mat-icon>
+          {{ isLoading ? 'Buscando...' : 'Buscar' }}
+        </button>
+      </div>
+    </ng-container>
+
+    <div class="empty-hint" *ngIf="!tipoActivo">
+      <mat-icon>touch_app</mat-icon>
+      <span>Selecciona un criterio de búsqueda para comenzar</span>
+    </div>
+  </div>
+
+  <!-- Resultados -->
+  <ng-container *ngIf="busquedaRealizada">
+
+    <div class="loading-box" *ngIf="isLoading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>Buscando resultados...</span>
+    </div>
+
+    <ng-container *ngIf="!isLoading">
+
+      <div class="results-header" *ngIf="resultadosBusqueda.length">
+        <mat-icon class="results-icon">format_list_bulleted</mat-icon>
+        <span class="results-title">Resultados de búsqueda</span>
+        <span class="results-badge">{{ resultadosBusqueda.length }}</span>
+      </div>
+
+      <div class="results-grid" *ngIf="resultadosBusqueda.length">
+        <div class="result-card" *ngFor="let r of resultadosBusqueda">
+
+          <div class="result-top">
+            <span class="tipo-chip" [ngClass]="tipoClass(r.tipo)">{{ r.tipo }}</span>
+            <span class="estado-chip" [ngClass]="estadoClass(r.estadoInvestigacion)">
+              {{ r.estadoInvestigacion }}
+            </span>
+          </div>
+
+          <div class="result-body">
+            <div class="result-field" *ngIf="getNombre(r)">
+              <span class="field-label">Nombre</span>
+              <span class="field-value">{{ getNombre(r) }}</span>
+            </div>
+            <div class="result-field" *ngIf="r.rol">
+              <span class="field-label">Rol</span>
+              <span class="field-value">{{ r.rol }}</span>
+            </div>
+            <div class="result-field">
+              <span class="field-label">DEIC</span>
+              <span class="field-value mono">{{ r.numeroDeic || '—' }}</span>
+            </div>
+            <div class="result-field">
+              <span class="field-label">MP</span>
+              <span class="field-value mono">{{ r.numeroMp || '—' }}</span>
+            </div>
+          </div>
+
+          <div class="result-footer">
+            <button *ngIf="tipoBusqueda === 'nombre'" mat-stroked-button class="btn-action"
+                    (click)="verPerfil(r)">
+              <mat-icon>account_circle</mat-icon> Ver perfil
+            </button>
+            <button *ngIf="tipoBusqueda !== 'nombre'" mat-stroked-button class="btn-action"
+                    (click)="descargarArchivo(r.fileUrls?.[0])">
+              <mat-icon>download</mat-icon> Descargar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="no-results" *ngIf="!resultadosBusqueda.length">
+        <mat-icon>search_off</mat-icon>
+        <span>No se encontraron resultados para tu búsqueda</span>
+      </div>
+
+    </ng-container>
+  </ng-container>
+
 </div>

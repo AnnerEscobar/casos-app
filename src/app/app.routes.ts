@@ -115,6 +115,10 @@ export const routes: Routes = [
     path: 'change-password',
     loadComponent: () => import('./auth/pages/change-password/change-password.component')
   },
+  {
+    path: 'recover-password',
+    loadComponent: () => import('./auth/pages/recover-password/recover-password.component')
+  },
 
   {
     path: '',

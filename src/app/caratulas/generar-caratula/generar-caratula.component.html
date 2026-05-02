@@ -1,57 +1,94 @@
-<mat-card class="p-6 m-8">
-  <h2>Generar Carátula</h2>
+<div class="page-container">
 
-  <form [formGroup]="caratulaForm" (ngSubmit)="generarCaratula()">
-    <mat-form-field class="w-full m-2">
-      <mat-label>Tipo de caso</mat-label>
-      <mat-select formControlName="tipoCaso">
-        <mat-option value="Maltrato">Maltrato</mat-option>
-        <mat-option value="Alerta">Alerta Alba-Keneth</mat-option>
-        <mat-option value="Conflicto">Conflicto</mat-option>
-      </mat-select>
-    </mat-form-field>
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-icon">
+      <mat-icon>description</mat-icon>
+    </div>
+    <div>
+      <h2 class="page-title">Generar Carátula</h2>
+      <p class="page-sub">Completa los datos para generar e imprimir una carátula de caso</p>
+    </div>
+  </div>
 
-    <div class="flex col-2">
-      <mat-form-field class="w-full m-2">
-        <mat-label>Número de caso interno (DEIC)</mat-label>
-        <input matInput formControlName="numeroDeic">
-      </mat-form-field>
-
-      <mat-form-field class="w-full m-2">
-        <mat-label>Número expediente MP</mat-label>
-        <input matInput formControlName="numeroMp">
-      </mat-form-field>
-
-      <mat-form-field class="w-full m-2" *ngIf="caratulaForm.value.tipoCaso === 'Alerta'">
-        <mat-label>Número de Alerta</mat-label>
-        <input matInput formControlName="numeroAlerta">
-      </mat-form-field>
+  <!-- Form card -->
+  <div class="section-card">
+    <div class="section-header">
+      <mat-icon class="section-icon">edit_document</mat-icon>
+      <span class="section-title">Datos de la carátula</span>
     </div>
 
-    <mat-form-field class="w-full m-2">
-      <mat-label>Nombre</mat-label>
-      <input matInput formControlName="nombre">
-    </mat-form-field>
+    <form [formGroup]="caratulaForm" (ngSubmit)="generarCaratula()">
 
-    <mat-form-field class="w-full m-2">
-      <mat-label>Lugar de los hechos/desaparición</mat-label>
-      <textarea matInput formControlName="lugar"></textarea>
-    </mat-form-field>
+      <!-- Identificadores -->
+      <div class="fields-grid fields-grid-3">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Tipo de caso</mat-label>
+          <mat-select formControlName="tipoCaso">
+            <mat-option value="Maltrato">Maltrato</mat-option>
+            <mat-option value="Alerta">Alerta Alba-Keneth</mat-option>
+            <mat-option value="Conflicto">Conflicto</mat-option>
+          </mat-select>
+          <mat-icon matSuffix>label</mat-icon>
+        </mat-form-field>
 
-    <mat-form-field class="w-full m-2">
-      <mat-label>Observaciones</mat-label>
-      <textarea matInput formControlName="observaciones"></textarea>
-    </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>N° DEIC</mat-label>
+          <input matInput formControlName="numeroDeic" placeholder="DEIC52-2025-01-02-01">
+          <mat-icon matSuffix>folder_shared</mat-icon>
+        </mat-form-field>
 
-    <mat-form-field class="w-full m-2">
-      <mat-label>Investigador</mat-label>
-      <input matInput formControlName="investigador">
-    </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>N° Expediente MP</mat-label>
+          <input matInput formControlName="numeroMp" placeholder="M0030-2025-100">
+          <mat-icon matSuffix>article</mat-icon>
+        </mat-form-field>
 
-    <div class="w-full flex justify-center mb-4">
-      <button mat-raised-button color="primary">
-        Generar Carátula
-      </button>
-    </div>
-  </form>
-</mat-card>
+        <mat-form-field appearance="outline" class="w-full" *ngIf="esAlerta">
+          <mat-label>N° de Alerta Alba-Keneth</mat-label>
+          <input matInput formControlName="numeroAlerta" placeholder="Ej. 2664-2025">
+          <mat-icon matSuffix>notification_important</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <!-- Datos del caso -->
+      <div class="fields-grid fields-grid-2 mt-8">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="nombre" placeholder="Nombre completo">
+          <mat-icon matSuffix>person</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Investigador</mat-label>
+          <input matInput formControlName="investigador" placeholder="Nombre del investigador">
+          <mat-icon matSuffix>badge</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full span-2">
+          <mat-label>Lugar de los hechos / desaparición</mat-label>
+          <textarea matInput formControlName="lugar" rows="2"
+                    placeholder="Descripción del lugar"></textarea>
+          <mat-icon matSuffix>location_on</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full span-2">
+          <mat-label>Observaciones</mat-label>
+          <textarea matInput formControlName="observaciones" rows="3"
+                    placeholder="Detalles adicionales..."></textarea>
+        </mat-form-field>
+      </div>
+
+      <!-- Acciones -->
+      <div class="form-actions">
+        <button mat-flat-button type="submit" class="btn-submit" [disabled]="isLoading">
+          <mat-spinner *ngIf="isLoading" diameter="18"></mat-spinner>
+          <mat-icon *ngIf="!isLoading">picture_as_pdf</mat-icon>
+          {{ isLoading ? 'Generando...' : 'Generar carátula' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+</div>

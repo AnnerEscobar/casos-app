@@ -1,65 +1,135 @@
-<div class="bg-blue-100 border-2 p-5 h-full w-full">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>{{ nombreReal }}</mat-card-title>
-      <mat-card-subtitle>Rol: {{ rol }} | Datos obtenidos a través de investigaciones</mat-card-subtitle>
-    </mat-card-header>
-    <div class="justify-items-center">
-      <img class="w-48 h-48 rounded-full border-4 border-blue-800"
-        src="https://cdn.pixabay.com/photo/2016/04/15/18/05/computer-1331579_1280.png" alt="profile">
-      <mat-card-content>Información</mat-card-content>
-    </div>
-    <mat-divider></mat-divider>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-      <!-- Columna 1: Datos personales -->
-      <div class="bg-white shadow-lg rounded-lg p-4">
-        <h1 class="text-xl font-semibold mb-4">Datos personales</h1>
-        <ul class="space-y-2">
-          <li><strong>Nombre:</strong> {{ nombreReal }}</li>
-          <li *ngIf="cui"><strong>CUI:</strong> {{ cui }}</li>
-          <li *ngIf="fechaNacimiento"><strong>Fecha de Nacimiento:</strong> {{ fechaNacimiento | date }}</li>
-          <li *ngIf="direccion"><strong>Dirección:</strong> {{ direccion }}</li>
-        </ul>
-      </div>
+<div class="page-container">
 
-      <!-- Columna 2: Casos relacionados -->
-      <div class="bg-white shadow-lg rounded-lg p-4">
-        <h1 class="text-xl font-semibold mb-4">Casos relacionados</h1>
-        <ul class="space-y-2">
-          <li *ngFor="let caso of casosRelacionados" class="flex items-center justify-between">
-            <span>{{ caso.numeroMp }}</span>
-            <button mat-flat-button (click)="descargarExpediente(caso.fileUrls[0])">Download</button>
-          </li>
-        </ul>
+  <!-- Header -->
+  <div class="page-header">
+    <button mat-icon-button class="back-btn" (click)="volver()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="header-icon">
+      <mat-icon>account_circle</mat-icon>
+    </div>
+    <div class="header-text" *ngIf="persona">
+      <h2 class="page-title">{{ persona.nombre }}</h2>
+      <div class="header-chips">
+        <span class="rol-chip" [ngClass]="rolClass(persona.rol)">{{ persona.rol }}</span>
+        <span class="tipo-chip" [ngClass]="tipoClass(persona.tipo)">{{ persona.tipo }}</span>
+        <span class="estado-chip" [ngClass]="estadoClass(persona.estadoInvestigacion)">
+          {{ persona.estadoInvestigacion }}
+        </span>
       </div>
     </div>
+  </div>
 
-    <!-- Sección de Infractores -->
-    <!-- Infractores -->
-    <div *ngIf="infractores.length > 0" class="bg-white shadow-lg rounded-lg p-4 mt-4">
-      <h1 class="text-xl font-semibold mb-4">Infractores</h1>
-      <ul class="space-y-2">
-        <li *ngFor="let infractor of infractores">
-          <strong>Nombre:</strong> {{ infractor.nombre }}<br>
-          <strong>CUI:</strong> {{ infractor.cui }}<br>
-          <strong>Fecha de Nacimiento:</strong> {{ infractor.fecha_Nac | date }}<br>
-          <strong>Dirección:</strong> {{ infractor.direccion }}
-        </li>
-      </ul>
+  <ng-container *ngIf="persona">
+
+    <!-- Datos personales + Caso de origen -->
+    <div class="profile-grid">
+
+      <!-- Datos personales -->
+      <div class="section-card">
+        <div class="section-header">
+          <mat-icon class="section-icon">person</mat-icon>
+          <span class="section-title">Datos personales</span>
+        </div>
+        <div class="data-list">
+          <div class="data-row">
+            <span class="data-label">Nombre</span>
+            <span class="data-value">{{ persona.nombre }}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Rol</span>
+            <span class="rol-chip" [ngClass]="rolClass(persona.rol)">{{ persona.rol }}</span>
+          </div>
+          <div class="data-row" *ngIf="persona.cui">
+            <span class="data-label">CUI / DPI</span>
+            <span class="data-value mono">{{ persona.cui }}</span>
+          </div>
+          <div class="data-row" *ngIf="persona.fechaNacimiento">
+            <span class="data-label">Fecha de nacimiento</span>
+            <span class="data-value">{{ persona.fechaNacimiento | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="data-row" *ngIf="persona.direccion">
+            <span class="data-label">Dirección</span>
+            <span class="data-value">{{ persona.direccion }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Caso de origen -->
+      <div class="section-card">
+        <div class="section-header">
+          <mat-icon class="section-icon">folder_open</mat-icon>
+          <span class="section-title">Caso de origen</span>
+        </div>
+        <div class="data-list">
+          <div class="data-row">
+            <span class="data-label">Tipo de caso</span>
+            <span class="tipo-chip" [ngClass]="tipoClass(persona.tipo)">{{ persona.tipo }}</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Estado</span>
+            <span class="estado-chip" [ngClass]="estadoClass(persona.estadoInvestigacion)">
+              {{ persona.estadoInvestigacion }}
+            </span>
+          </div>
+          <div class="data-row" *ngIf="persona.numeroDeic">
+            <span class="data-label">N° DEIC</span>
+            <span class="data-value mono">{{ persona.numeroDeic }}</span>
+          </div>
+          <div class="data-row" *ngIf="persona.numeroMp">
+            <span class="data-label">N° Expediente MP</span>
+            <span class="data-value mono">{{ persona.numeroMp }}</span>
+          </div>
+          <div class="data-row" *ngIf="persona.fileUrls?.length">
+            <span class="data-label">Documento</span>
+            <button mat-stroked-button class="btn-download"
+                    (click)="descargarArchivo(persona.fileUrls[0])">
+              <mat-icon>download</mat-icon> Descargar
+            </button>
+          </div>
+        </div>
+      </div>
+
     </div>
 
+    <!-- Casos relacionados -->
+    <div class="section-card">
+      <div class="section-header">
+        <mat-icon class="section-icon">link</mat-icon>
+        <span class="section-title">Casos relacionados</span>
+        <span class="results-badge" *ngIf="!isLoading">{{ casosRelacionados.length }}</span>
+        <mat-spinner *ngIf="isLoading" diameter="16"></mat-spinner>
+      </div>
 
-    <!-- Sección de Víctimas -->
-<!--     <div class="bg-white shadow-lg rounded-lg p-4 mt-4">
-      <h1 class="text-xl font-semibold mb-4">Víctimas</h1>
-      <ul class="space-y-2">
-        <li *ngFor="let victima of victimas">
-          <strong>Nombre:</strong> {{ victima.nombre }}<br>
-          <strong>CUI:</strong> {{ victima.cui }}<br>
-          <strong>Fecha de Nacimiento:</strong> {{ victima.fecha_Nac | date }}<br>
-          <strong>Dirección:</strong> {{ victima.direccion }}
-        </li>
-      </ul>
-    </div> -->
-  </mat-card>
+      <div class="empty-hint" *ngIf="!isLoading && !casosRelacionados.length">
+        <mat-icon>search_off</mat-icon>
+        <span>No se encontraron otros casos relacionados</span>
+      </div>
+
+      <div class="casos-grid" *ngIf="!isLoading && casosRelacionados.length">
+        <div class="caso-card" *ngFor="let caso of casosRelacionados">
+          <div class="caso-top">
+            <span class="tipo-chip" [ngClass]="tipoClass(caso.tipo)">{{ caso.tipo }}</span>
+            <span class="estado-chip" [ngClass]="estadoClass(caso.estadoInvestigacion)">
+              {{ caso.estadoInvestigacion }}
+            </span>
+          </div>
+          <div class="caso-nums">
+            <span class="num-label">DEIC</span>
+            <span class="num-value mono">{{ caso.numeroDeic || '—' }}</span>
+            <span class="num-label">MP</span>
+            <span class="num-value mono">{{ caso.numeroMp || '—' }}</span>
+          </div>
+          <div class="caso-footer" *ngIf="caso.fileUrls?.length">
+            <button mat-stroked-button class="btn-download"
+                    (click)="descargarArchivo(caso.fileUrls[0])">
+              <mat-icon>download</mat-icon> Descargar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+
 </div>

@@ -1,114 +1,180 @@
-<form [formGroup]="filtroForm" (ngSubmit)="buscarCasos()" class="flex gap-4">
-  <!-- Tipo de caso -->
-  <mat-form-field appearance="fill" class="margen flex-1">
-    <mat-label>Tipo de caso</mat-label>
-    <mat-select formControlName="tipoCaso" (selectionChange)="onTipoCasoChange()">
-      <mat-option value="Alerta Alba-Keneth">Alerta Alba-Keneth</mat-option>
-      <mat-option value="Maltrato">Maltrato</mat-option>
-      <mat-option value="Conflicto">Conflicto</mat-option>
-    </mat-select>
-  </mat-form-field>
+<div class="page-container">
 
-  <!-- Estado de investigación (condicional) -->
-  <mat-form-field appearance="fill" *ngIf="estados.length > 0" class="margen flex-1">
-    <mat-label>Estado</mat-label>
-    <mat-select formControlName="estado">
-      <mat-option *ngFor="let estado of estados" [value]="estado">{{ estado }}</mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <!-- Rango de fechas -->
-  <mat-form-field appearance="fill" class="margen flex-1">
-    <mat-label>Desde</mat-label>
-    <input matInput [matDatepicker]="picker1" formControlName="fechaInicio">
-    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-    <mat-datepicker #picker1></mat-datepicker>
-  </mat-form-field>
-
-  <mat-form-field appearance="fill" class="margen flex-1">
-    <mat-label>Hasta</mat-label>
-    <input matInput [matDatepicker]="picker2" formControlName="fechaFin">
-    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-    <mat-datepicker #picker2></mat-datepicker>
-  </mat-form-field>
-
-</form>
-
-  <div class="">
-    <button class="m-2" mat-raised-button color="primary" type="submit" (click)="buscarCasos()">Buscar</button>
-    <button class="m-2" mat-raised-button color="primary" type="button" (click)="resetearFiltros()">Limpiar
-      filtros</button>
-
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-icon">
+      <mat-icon>youtube_searched_for</mat-icon>
+    </div>
+    <div>
+      <h2 class="page-title">Búsqueda Avanzada</h2>
+      <p class="page-sub">Aplica filtros combinados para encontrar casos específicos</p>
+    </div>
   </div>
 
-  <div class="overlay-stats" *ngIf="isLoading">
-  <mat-spinner diameter="50"></mat-spinner>
-</div>
+  <!-- Filtros -->
+  <div class="section-card">
+    <div class="section-header">
+      <mat-icon class="section-icon">filter_list</mat-icon>
+      <span class="section-title">Filtros de búsqueda</span>
+    </div>
 
+    <form [formGroup]="filtroForm" (ngSubmit)="buscarCasos()">
+      <div class="filters-grid">
 
+        <!-- Tipo de caso -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Tipo de caso</mat-label>
+          <mat-select formControlName="tipoCaso" (selectionChange)="onTipoCasoChange()">
+            <mat-option value="">Todos los tipos</mat-option>
+            <mat-option value="Alerta Alba-Keneth">Alerta Alba-Keneth</mat-option>
+            <mat-option value="Maltrato">Maltrato</mat-option>
+            <mat-option value="Conflicto">Conflicto</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-<div class="m-2 p-4 border-2 rounded-md">
-<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        <!-- Estado (condicional) -->
+        <mat-form-field appearance="outline" class="w-full" *ngIf="estados.length">
+          <mat-label>Estado de investigación</mat-label>
+          <mat-select formControlName="estado">
+            <mat-option value="">Todos los estados</mat-option>
+            <mat-option *ngFor="let e of estados" [value]="e">{{ e }}</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-  <!-- Tipo -->
-  <ng-container matColumnDef="tipo">
-    <th mat-header-cell *matHeaderCellDef> Tipo </th>
-    <td mat-cell *matCellDef="let row"> {{ row.tipo }} </td>
-  </ng-container>
+        <!-- Rango de fechas -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Fecha desde</mat-label>
+          <input matInput [matDatepicker]="picker1" formControlName="fechaInicio">
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
 
-  <ng-container matColumnDef="nombre">
-    <th mat-header-cell *matHeaderCellDef> Nombre </th>
-    <td mat-cell *matCellDef="let row"> {{ row.nombreDesaparecido }} </td>
-  </ng-container>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Fecha hasta</mat-label>
+          <input matInput [matDatepicker]="picker2" formControlName="fechaFin">
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
 
-  <!-- Número DEIC -->
-  <ng-container matColumnDef="numeroDeic">
-    <th mat-header-cell *matHeaderCellDef> N° DEIC </th>
-    <td mat-cell *matCellDef="let row"> {{ row.numeroDeic }} </td>
-  </ng-container>
+      </div>
 
-  <!-- Estado -->
-  <ng-container matColumnDef="estadoInvestigacion">
-    <th mat-header-cell *matHeaderCellDef> Estado </th>
-    <td mat-cell *matCellDef="let row"> {{ row.estadoInvestigacion }} </td>
-  </ng-container>
+      <div class="filter-actions">
+        <button mat-stroked-button type="button" class="btn-clear" (click)="resetearFiltros()">
+          <mat-icon>clear</mat-icon> Limpiar filtros
+        </button>
+        <button mat-flat-button type="submit" class="btn-search" [disabled]="isLoading">
+          <mat-spinner *ngIf="isLoading" diameter="18"></mat-spinner>
+          <mat-icon *ngIf="!isLoading">search</mat-icon>
+          {{ isLoading ? 'Buscando...' : 'Buscar casos' }}
+        </button>
+      </div>
+    </form>
+  </div>
 
-  <!-- Fecha -->
-  <ng-container matColumnDef="numeroMp">
-    <th mat-header-cell *matHeaderCellDef> Numero MP</th>
-    <td mat-cell *matCellDef="let row"> {{ row.numeroMp}} </td>
-  </ng-container>
+  <!-- Resultados -->
+  <div class="section-card results-card" *ngIf="busquedaRealizada && !isLoading">
+    <div class="section-header">
+      <mat-icon class="section-icon">table_chart</mat-icon>
+      <span class="section-title">Resultados</span>
+      <span class="results-badge">{{ dataSource.filteredData.length }}</span>
+    </div>
 
-  <!-- Acciones -->
-  <ng-container matColumnDef="acciones">
-    <th mat-header-cell *matHeaderCellDef> Acciones </th>
-    <td mat-cell *matCellDef="let row">
-      <ng-container *ngIf="row.fileUrls?.length > 0">
-        <ng-container *ngIf="obtenerGoogleDriveId(row.fileUrls[0]) as fileId">
+    <!-- Filtro rápido -->
+    <div class="quick-filter-row">
+      <mat-form-field appearance="outline" class="quick-filter-field">
+        <mat-label>Filtrar resultados</mat-label>
+        <input matInput [(ngModel)]="filtroRapido" (input)="applyFilter($event)"
+               placeholder="Nombre, DEIC, MP..." />
+        <mat-icon matSuffix>filter_list</mat-icon>
+      </mat-form-field>
+    </div>
 
-          <!-- Ver -->
-          <a [href]="'https://drive.google.com/file/d/' + obtenerGoogleDriveId(row.fileUrls) + '/view'" target="_blank">
-            <button mat-icon-button color="primary" aria-label="Ver documento">
-              <mat-icon>visibility</mat-icon>
-            </button>
-          </a>
+    <!-- Tabla -->
+    <div class="table-wrapper">
+      <table mat-table [dataSource]="dataSource" matSort class="results-table">
 
-          <a [href]="'https://drive.google.com/uc?export=download&id=' + obtenerGoogleDriveId(row.fileUrls)" download>
-            <button mat-icon-button color="accent" aria-label="Descargar documento">
-              <mat-icon>download</mat-icon>
-            </button>
-          </a>
-
+        <!-- Tipo -->
+        <ng-container matColumnDef="tipo">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="tipo-chip" [ngClass]="tipoClass(row.tipo)">{{ row.tipo }}</span>
+          </td>
         </ng-container>
-      </ng-container>
-    </td>
-  </ng-container>
 
+        <!-- Nombre -->
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+          <td mat-cell *matCellDef="let row">{{ getNombre(row) }}</td>
+        </ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>
+        <!-- N° DEIC -->
+        <ng-container matColumnDef="numeroDeic">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>N° DEIC</th>
+          <td mat-cell *matCellDef="let row" class="mono-cell">{{ row.numeroDeic }}</td>
+        </ng-container>
 
-<mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]"></mat-paginator>
+        <!-- Estado -->
+        <ng-container matColumnDef="estadoInvestigacion">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="estado-chip" [ngClass]="estadoClass(row.estadoInvestigacion)">
+              {{ row.estadoInvestigacion }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- N° MP -->
+        <ng-container matColumnDef="numeroMp">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>N° MP</th>
+          <td mat-cell *matCellDef="let row" class="mono-cell">{{ row.numeroMp }}</td>
+        </ng-container>
+
+        <!-- Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let row">
+            <ng-container *ngIf="obtenerGoogleDriveId(row.fileUrls) as fileId">
+              <a *ngIf="fileId"
+                 [href]="'https://drive.google.com/file/d/' + fileId + '/view'"
+                 target="_blank">
+                <button mat-icon-button matTooltip="Ver documento">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </a>
+              <a *ngIf="fileId"
+                 [href]="'https://drive.google.com/uc?export=download&id=' + fileId"
+                 download>
+                <button mat-icon-button matTooltip="Descargar">
+                  <mat-icon>download</mat-icon>
+                </button>
+              </a>
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <!-- No data row -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="no-data-cell" [attr.colspan]="displayedColumns.length">
+            <div class="no-results-inline">
+              <mat-icon>search_off</mat-icon>
+              <span>Sin resultados para "{{ filtroRapido }}"</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 50]"
+                     showFirstLastButtons></mat-paginator>
+    </div>
+  </div>
+
+  <!-- Estado vacío inicial -->
+  <div class="empty-state" *ngIf="!busquedaRealizada">
+    <mat-icon>manage_search</mat-icon>
+    <span>Aplica los filtros y presiona <strong>Buscar casos</strong> para ver resultados</span>
+  </div>
 
 </div>
