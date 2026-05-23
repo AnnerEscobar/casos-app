@@ -169,6 +169,88 @@
   justify-content: flex-end;
 }
 
+.seccion-form-card,
+.entrevista-builder,
+.diligencias-builder {
+  background: #fff;
+  border: 1px solid #e8eaed;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.diligencia-grupo {
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #e8eaed;
+}
+
+.diligencia-grupo:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: 0;
+}
+
+.diligencia-grupo h4 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.entrevistas-lista {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.entrevista-card {
+  background: #fff;
+  border: 1px solid #e8eaed;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.entrevista-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.builder-actions,
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.builder-actions {
+  margin-top: 8px;
+}
+
+.card-actions {
+  flex-shrink: 0;
+}
+
+.entrevista-titulo {
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 4px;
+}
+
+.entrevista-meta {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.entrevista-preview {
+  color: #334155;
+  margin: 10px 0 0;
+  white-space: pre-line;
+}
+
 .cargando-overlay {
   display: flex;
   align-items: center;
@@ -182,20 +264,35 @@
 }
 
 :host-context(.dark-theme) .inicio-panel,
-:host-context(.dark-theme) .secciones-panel {
+:host-context(.dark-theme) .secciones-panel,
+:host-context(.dark-theme) .seccion-form-card,
+:host-context(.dark-theme) .entrevista-builder,
+:host-context(.dark-theme) .diligencias-builder,
+:host-context(.dark-theme) .entrevista-card {
   background: #1e293b;
   border-color: #334155;
 }
 
+:host-context(.dark-theme) .diligencia-grupo {
+  border-bottom-color: #334155;
+}
+
 :host-context(.dark-theme) .titulo-seccion,
 :host-context(.dark-theme) .seccion-titulo,
-:host-context(.dark-theme) .informe-deic {
+:host-context(.dark-theme) .informe-deic,
+:host-context(.dark-theme) .entrevista-titulo,
+:host-context(.dark-theme) .diligencia-grupo h4 {
   color: #f1f5f9;
 }
 
 :host-context(.dark-theme) .subtitulo,
-:host-context(.dark-theme) .subtitulo-seccion {
+:host-context(.dark-theme) .subtitulo-seccion,
+:host-context(.dark-theme) .entrevista-meta {
   color: #94a3b8;
+}
+
+:host-context(.dark-theme) .entrevista-preview {
+  color: #cbd5e1;
 }
 
 :host-context(.dark-theme) .informe-header,
@@ -279,4 +376,127 @@
 :host-context(.dark-theme) ::ng-deep .mdc-notched-outline__notch,
 :host-context(.dark-theme) ::ng-deep .mdc-notched-outline__trailing {
   border-color: #475569 !important;
+}
+
+@media (max-width: 768px) {
+  .informe-container {
+    min-height: 100%;
+  }
+
+  .inicio-panel {
+    max-width: none;
+    margin: 12px;
+    padding: 18px;
+    border-radius: 8px;
+  }
+
+  .editor-layout {
+    display: block;
+    height: auto;
+    min-height: calc(100vh - 52px);
+    overflow: visible;
+  }
+
+  .secciones-panel {
+    width: auto;
+    min-width: 0;
+    max-height: none;
+    overflow: visible;
+    border-right: 0;
+    border-bottom: 1px solid #e8eaed;
+  }
+
+  .informe-header {
+    padding: 14px 16px 10px;
+  }
+
+  .secciones-lista {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 8px 12px 12px;
+    scroll-snap-type: x proximity;
+  }
+
+  .seccion-item {
+    flex: 0 0 auto;
+    min-width: 148px;
+    margin: 0;
+    padding: 10px 12px;
+    scroll-snap-align: start;
+  }
+
+  .seccion-label {
+    white-space: nowrap;
+  }
+
+  .acciones-panel {
+    position: static;
+    padding: 12px 16px;
+    border-top: 1px solid #e8eaed;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .btn-accion {
+    justify-content: center;
+    min-height: 40px;
+  }
+
+  .seccion-contenido {
+    overflow: visible;
+    padding: 16px 12px 96px;
+  }
+
+  .seccion-form-card,
+  .entrevista-builder,
+  .diligencias-builder,
+  .entrevista-card {
+    padding: 14px;
+    border-radius: 8px;
+  }
+
+  .campos-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .guardar-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    margin: 18px -12px -96px;
+    padding: 12px;
+    background: #f4f6fb;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .guardar-bar button {
+    width: 100%;
+  }
+
+  :host-context(.dark-theme) .secciones-panel {
+    border-bottom-color: #334155;
+  }
+
+  :host-context(.dark-theme) .acciones-panel {
+    border-top-color: #334155;
+  }
+
+  :host-context(.dark-theme) .guardar-bar {
+    background: #0f172a;
+    border-top-color: #334155;
+  }
+}
+
+@media (max-width: 430px) {
+  .seccion-item {
+    min-width: 132px;
+  }
+
+  .seccion-label {
+    max-width: 88px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }

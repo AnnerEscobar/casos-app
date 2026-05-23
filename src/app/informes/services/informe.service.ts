@@ -11,7 +11,7 @@ export class InformeService {
   private baseUrl = `${environment.apiUrl}/informes`;
   private http = inject(HttpClient);
 
-  crear(data: { numeroDeic: string; numeroMp: string; tipoInforme: string }): Observable<any> {
+  crear(data: { numeroDeic: string; numeroMp: string; tipoInforme: string; datosGenerales?: any }): Observable<any> {
     return this.http.post<any>(this.baseUrl, data);
   }
 

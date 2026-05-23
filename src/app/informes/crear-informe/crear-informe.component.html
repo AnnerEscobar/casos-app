@@ -30,6 +30,13 @@
       </mat-form-field>
     </div>
 
+    <div class="campo-grupo" *ngIf="nuevoTipo === 'alerta'">
+      <mat-form-field appearance="outline" class="campo-full">
+        <mat-label>NÃºmero de Alerta Alba-Keneth</mat-label>
+        <input matInput [(ngModel)]="nuevoNumeroAlerta" placeholder="2374-2026">
+      </mat-form-field>
+    </div>
+
     <div *ngIf="error" class="error-msg">{{ error }}</div>
 
     <button mat-flat-button color="primary" (click)="crearNuevoInforme()" [disabled]="cargando">
@@ -76,7 +83,7 @@
     <div class="seccion-contenido">
 
       <!-- DATOS GENERALES -->
-      <div *ngIf="seccionActiva === 'datosGenerales'">
+      <div class="seccion-form-card" *ngIf="seccionActiva === 'datosGenerales'">
         <h3 class="seccion-titulo">Datos generales</h3>
         <div class="campos-grid">
           <mat-form-field appearance="outline">
@@ -109,6 +116,10 @@
             <mat-label>Vehículo utilizado</mat-label>
             <input matInput [(ngModel)]="datosGenerales.vehiculo">
           </mat-form-field>
+          <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'alerta'">
+            <mat-label>Número de Alerta Alba-Keneth</mat-label>
+            <input matInput [(ngModel)]="datosGenerales.numeroAlerta">
+          </mat-form-field>
         </div>
         <mat-form-field appearance="outline" class="campo-full">
           <mat-label>Hipótesis preliminar</mat-label>
@@ -118,7 +129,7 @@
       </div>
 
       <!-- PERFIL VÍCTIMA -->
-      <div *ngIf="seccionActiva === 'perfilVictima'">
+      <div class="seccion-form-card" *ngIf="seccionActiva === 'perfilVictima' && !esPerfilMultiple()">
         <h3 class="seccion-titulo">Perfil de la víctima</h3>
         <div class="campos-grid">
           <mat-form-field appearance="outline"><mat-label>Nombre completo</mat-label><input matInput [(ngModel)]="perfilVictima.nombre"></mat-form-field>
@@ -155,8 +166,67 @@
         </mat-form-field>
       </div>
 
+      <div *ngIf="seccionActiva === 'perfilVictima' && esPerfilMultiple()">
+        <h3 class="seccion-titulo">Perfil de la vÃ­ctima</h3>
+        <p class="subtitulo">Agrega una o varias vÃ­ctimas. Al agregar una, el formulario queda listo para ingresar otra.</p>
+        <div class="entrevista-builder">
+          <div class="campos-grid">
+            <mat-form-field appearance="outline"><mat-label>Nombre completo</mat-label><input matInput [(ngModel)]="nuevaVictima.nombre"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Alias</mat-label><input matInput [(ngModel)]="nuevaVictima.alias"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Edad</mat-label><input matInput type="number" min="0" max="120" [(ngModel)]="nuevaVictima.edad"></mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Fecha de nacimiento</mat-label>
+              <input matInput [matDatepicker]="pickerNacVictimaMultiple" [(ngModel)]="nuevaVictima.fechaNacimiento">
+              <mat-datepicker-toggle matIconSuffix [for]="pickerNacVictimaMultiple"></mat-datepicker-toggle>
+              <mat-datepicker #pickerNacVictimaMultiple></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Nacionalidad</mat-label><input matInput [(ngModel)]="nuevaVictima.nacionalidad"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Grado de escolaridad</mat-label><input matInput [(ngModel)]="nuevaVictima.escolaridad"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Centro educativo</mat-label><input matInput [(ngModel)]="nuevaVictima.centroEducativo"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Nombre de padres/encargados</mat-label><input matInput [(ngModel)]="nuevaVictima.nombrePadres"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Residencia</mat-label><input matInput [(ngModel)]="nuevaVictima.residencia"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>TelÃ©fono</mat-label><input matInput [(ngModel)]="nuevaVictima.telefono"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Parentesco con sindicado/adolescente</mat-label><input matInput [(ngModel)]="nuevaVictima.parentescoSindicado"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Antecedentes de protecciÃ³n</mat-label><input matInput [(ngModel)]="nuevaVictima.antecedentesProteccion"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Antecedentes Alba-Keneth</mat-label><input matInput [(ngModel)]="nuevaVictima.antecedentesAlerta"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Hermanos menores de edad</mat-label><input matInput [(ngModel)]="nuevaVictima.hermanosmenores"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Estado civil</mat-label><input matInput [(ngModel)]="nuevaVictima.estadoCivil"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>ProfesiÃ³n u oficio</mat-label><input matInput [(ngModel)]="nuevaVictima.profesion"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Lugar de estudios</mat-label><input matInput [(ngModel)]="nuevaVictima.lugarEstudios"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>CUI</mat-label><input matInput [(ngModel)]="nuevaVictima.cui"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Pertenencia Ã©tnica</mat-label><input matInput [(ngModel)]="nuevaVictima.pertenenciaEtnica"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Discapacidad</mat-label><input matInput [(ngModel)]="nuevaVictima.discapacidad"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Identidad de gÃ©nero</mat-label><input matInput [(ngModel)]="nuevaVictima.identidadGenero"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Redes sociales</mat-label><input matInput [(ngModel)]="nuevaVictima.redesSociales"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Flujo migratorio</mat-label><input matInput [(ngModel)]="nuevaVictima.flujoMigratorio"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Antecedentes policiales</mat-label><input matInput [(ngModel)]="nuevaVictima.antecedentesPolicia"></mat-form-field>
+          </div>
+          <mat-form-field appearance="outline" class="campo-full"><mat-label>CaracterÃ­sticas fÃ­sicas</mat-label><textarea matInput [(ngModel)]="nuevaVictima.caracteristicasFisicas" rows="3"></textarea></mat-form-field>
+          <mat-form-field appearance="outline" class="campo-full"><mat-label>Indicadores de maltrato</mat-label><textarea matInput [(ngModel)]="nuevaVictima.indicadoresMaltrato" rows="3"></textarea></mat-form-field>
+          <mat-form-field appearance="outline" class="campo-full"><mat-label>Otra informaciÃ³n relevante</mat-label><textarea matInput [(ngModel)]="nuevaVictima.otraInfo" rows="3"></textarea></mat-form-field>
+          <div class="builder-actions">
+            <button mat-stroked-button color="primary" type="button" (click)="agregarVictima()">
+              <mat-icon>{{ indiceVictimaEditando !== null ? 'save' : 'add' }}</mat-icon>
+              {{ indiceVictimaEditando !== null ? 'Actualizar vÃ­ctima' : 'Agregar vÃ­ctima' }}
+            </button>
+            <button mat-button type="button" *ngIf="indiceVictimaEditando !== null" (click)="cancelarEdicionVictima()">Cancelar</button>
+          </div>
+        </div>
+        <div class="entrevistas-lista" *ngIf="perfilVictima.items?.length">
+          <div class="entrevista-card" *ngFor="let victima of perfilVictima.items; let i = index">
+            <div class="entrevista-card-header">
+              <div><div class="entrevista-titulo">{{ i + 1 }}. {{ victima.nombre }}</div><div class="entrevista-meta">{{ victima.edad || 'Edad no consignada' }} aÃ±os</div></div>
+              <div class="card-actions">
+                <button mat-icon-button color="primary" (click)="editarVictima(i)" matTooltip="Editar"><mat-icon>edit</mat-icon></button>
+                <button mat-icon-button color="warn" (click)="eliminarVictima(i)" matTooltip="Eliminar"><mat-icon>delete</mat-icon></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- PERFIL SECUNDARIO -->
-      <div *ngIf="seccionActiva === 'perfilSecundario'">
+      <div class="seccion-form-card" *ngIf="seccionActiva === 'perfilSecundario' && !esPerfilMultiple()">
         <h3 class="seccion-titulo">{{ labelSecundario }}</h3>
         <div class="campos-grid">
           <mat-form-field appearance="outline"><mat-label>Nombre completo</mat-label><input matInput [(ngModel)]="perfilSecundario.nombre"></mat-form-field>
@@ -181,7 +251,7 @@
         </div>
 
         <!-- Campos extra solo para ACLP -->
-        <ng-container *ngIf="informe?.tipoInforme === 'conflicto'">
+        <div class="diligencias-builder" *ngIf="informe?.tipoInforme === 'conflicto'">
           <h4 class="subtitulo-seccion">Datos adicionales — Adolescente en conflicto</h4>
           <div class="campos-grid">
             <mat-form-field appearance="outline"><mat-label>CUI</mat-label><input matInput [(ngModel)]="perfilSecundario.cui"></mat-form-field>
@@ -196,7 +266,7 @@
             <mat-form-field appearance="outline"><mat-label>Pertenencia a pandillas</mat-label><input matInput [(ngModel)]="perfilSecundario.pandillas"></mat-form-field>
             <mat-form-field appearance="outline"><mat-label>Parientes en pandillas</mat-label><input matInput [(ngModel)]="perfilSecundario.parientesPandillas"></mat-form-field>
           </div>
-        </ng-container>
+        </div>
 
         <mat-form-field appearance="outline" class="campo-full">
           <mat-label>Características físicas</mat-label>
@@ -212,9 +282,191 @@
         </mat-form-field>
       </div>
 
+      <div *ngIf="seccionActiva === 'perfilSecundario' && esPerfilMultiple()">
+        <h3 class="seccion-titulo">{{ labelSecundario }}</h3>
+        <p class="subtitulo">Agrega uno o varios registros. Al agregar uno, el formulario queda listo para ingresar otro.</p>
+        <div class="entrevista-builder">
+          <div class="campos-grid">
+            <mat-form-field appearance="outline"><mat-label>Nombre completo</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.nombre"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Alias</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.alias"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Edad</mat-label><input matInput type="number" min="0" max="120" [(ngModel)]="nuevoPerfilSecundario.edad"></mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Fecha de nacimiento</mat-label>
+              <input matInput [matDatepicker]="pickerNacSecundarioMultiple" [(ngModel)]="nuevoPerfilSecundario.fechaNacimiento">
+              <mat-datepicker-toggle matIconSuffix [for]="pickerNacSecundarioMultiple"></mat-datepicker-toggle>
+              <mat-datepicker #pickerNacSecundarioMultiple></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Estado civil</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.estadoCivil"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>ProfesiÃ³n u oficio</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.profesion"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Lugar de trabajo</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.lugarTrabajo"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Documento de identificaciÃ³n</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.documentoIdentificacion"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Nacionalidad</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.nacionalidad"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Nombre de los padres</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.nombrePadres"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Residencia</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.residencia"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>TelÃ©fono</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.telefono"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Parentesco con la vÃ­ctima</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.parentescoVictima"></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Antecedentes policiacos</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.antecedentesPolicia"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>CUI</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.cui"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Pertenencia Ã©tnica</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.pertenenciaEtnica"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Discapacidad</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.discapacidad"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Identidad de gÃ©nero</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.identidadGenero"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Redes sociales</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.redesSociales"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Consumo de drogas</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.consumoDrogas"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Ingreso a centros de privaciÃ³n</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.ingresoCentroPrivacion"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Parientes privados de libertad</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.parientesPrivados"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Flujo migratorio</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.flujoMigratorio"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Pertenencia a pandillas</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.pandillas"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Tiempo en pandilla</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.tiempoPandilla"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Clica</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.clica"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Rango o puesto</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.rangoPandilla"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Area geografica de operacion</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.areaOperacion"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Metodologia criminal</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.metodologiaCriminal"></mat-form-field>
+            <mat-form-field appearance="outline" *ngIf="informe?.tipoInforme === 'conflicto'"><mat-label>Grado de violencia</mat-label><input matInput [(ngModel)]="nuevoPerfilSecundario.gradoViolencia"></mat-form-field>
+          </div>
+          <mat-form-field appearance="outline" class="campo-full"><mat-label>CaracterÃ­sticas fÃ­sicas</mat-label><textarea matInput [(ngModel)]="nuevoPerfilSecundario.caracteristicasFisicas" rows="3"></textarea></mat-form-field>
+          <mat-form-field appearance="outline" class="campo-full"><mat-label>Referencias personales</mat-label><textarea matInput [(ngModel)]="nuevoPerfilSecundario.referencias" rows="3"></textarea></mat-form-field>
+          <mat-form-field appearance="outline" class="campo-full"><mat-label>Otra informaciÃ³n relevante</mat-label><textarea matInput [(ngModel)]="nuevoPerfilSecundario.otraInfo" rows="3"></textarea></mat-form-field>
+          <div class="builder-actions">
+            <button mat-stroked-button color="primary" type="button" (click)="agregarPerfilSecundario()">
+              <mat-icon>{{ indicePerfilSecundarioEditando !== null ? 'save' : 'add' }}</mat-icon>
+              {{ indicePerfilSecundarioEditando !== null ? 'Actualizar' : 'Agregar' }} {{ labelSecundario | lowercase }}
+            </button>
+            <button mat-button type="button" *ngIf="indicePerfilSecundarioEditando !== null" (click)="cancelarEdicionPerfilSecundario()">Cancelar</button>
+          </div>
+        </div>
+        <div class="entrevistas-lista" *ngIf="perfilSecundario.items?.length">
+          <div class="entrevista-card" *ngFor="let perfil of perfilSecundario.items; let i = index">
+            <div class="entrevista-card-header">
+              <div><div class="entrevista-titulo">{{ i + 1 }}. {{ perfil.nombre }}</div><div class="entrevista-meta">{{ perfil.edad || 'Edad no consignada' }} aÃ±os</div></div>
+              <div class="card-actions">
+                <button mat-icon-button color="primary" (click)="editarPerfilSecundario(i)" matTooltip="Editar"><mat-icon>edit</mat-icon></button>
+                <button mat-icon-button color="warn" (click)="eliminarPerfilSecundario(i)" matTooltip="Eliminar"><mat-icon>delete</mat-icon></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ENTREVISTAS -->
       <div *ngIf="seccionActiva === 'entrevistas'">
         <h3 class="seccion-titulo">Entrevistas</h3>
+        <p class="subtitulo">
+          Agrega solo las entrevistas que necesites. El encabezado se genera automaticamente; escribe unicamente el contenido de la entrevista.
+        </p>
+
+        <div class="entrevista-builder">
+          <div class="campos-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>A quien vas a entrevistar</mat-label>
+              <input matInput [(ngModel)]="nuevaEntrevista.titulo" placeholder="Entrevista a denunciante">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre de la persona</mat-label>
+              <input matInput [(ngModel)]="nuevaEntrevista.persona" placeholder="Nombre completo">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Edad</mat-label>
+              <input matInput [(ngModel)]="nuevaEntrevista.edad" placeholder="30">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>DPI</mat-label>
+              <input matInput [(ngModel)]="nuevaEntrevista.dpi" placeholder="3423 35413 2201">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Parentesco, cargo o calidad</mat-label>
+              <input matInput [(ngModel)]="nuevaEntrevista.calidadPersona" placeholder="madrastra de la adolescente">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Modalidad</mat-label>
+              <mat-select [(ngModel)]="nuevaEntrevista.modalidad">
+                <mat-option value="telefonica">Telefonica</mat-option>
+                <mat-option value="presencial">Presencial</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Fecha de entrevista</mat-label>
+              <input matInput [matDatepicker]="pickerFechaEntrevista" [(ngModel)]="nuevaEntrevista.fecha">
+              <mat-datepicker-toggle matIconSuffix [for]="pickerFechaEntrevista"></mat-datepicker-toggle>
+              <mat-datepicker #pickerFechaEntrevista></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Hora de entrevista</mat-label>
+              <input matInput type="time" [(ngModel)]="nuevaEntrevista.hora">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" *ngIf="nuevaEntrevista.modalidad === 'telefonica'">
+              <mat-label>Voz que atendio</mat-label>
+              <mat-select [(ngModel)]="nuevaEntrevista.vozAtendio">
+                <mat-option value="femenina">Femenina</mat-option>
+                <mat-option value="masculina">Masculina</mat-option>
+                <mat-option value="">No especificar</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" *ngIf="nuevaEntrevista.modalidad === 'telefonica'">
+              <mat-label>Telefono</mat-label>
+              <input matInput [(ngModel)]="nuevaEntrevista.telefono" placeholder="4744-3199">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" *ngIf="nuevaEntrevista.modalidad === 'presencial'">
+              <mat-label>Estado civil</mat-label>
+              <input matInput [(ngModel)]="nuevaEntrevista.estadoCivil" placeholder="unido">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" *ngIf="nuevaEntrevista.modalidad === 'presencial'">
+              <mat-label>Ocupacion</mat-label>
+              <input matInput [(ngModel)]="nuevaEntrevista.ocupacion" placeholder="comerciante">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" *ngIf="nuevaEntrevista.modalidad === 'presencial'">
+              <mat-label>Lugar de entrevista</mat-label>
+              <input matInput [(ngModel)]="nuevaEntrevista.lugar" placeholder="Residencia, sede o lugar">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Nota de identificacion</mat-label>
+              <input matInput [(ngModel)]="nuevaEntrevista.notaIdentificacion" placeholder="quien no pudo ser identificada plenamente...">
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="campo-full">
+            <mat-label>Contenido de la entrevista</mat-label>
+            <textarea matInput [(ngModel)]="nuevaEntrevista.contenido" rows="7"
+              placeholder="Escribe aqui lo manifestado por la persona entrevistada."></textarea>
+          </mat-form-field>
+
+          <button mat-flat-button color="primary" type="button" (click)="agregarEntrevista()">
+            <mat-icon>add</mat-icon>
+            Agregar entrevista
+          </button>
+        </div>
+
+        <div class="entrevistas-lista" *ngIf="entrevistas.items?.length">
+          <div class="entrevista-card" *ngFor="let entrevista of entrevistas.items; let i = index">
+            <div class="entrevista-card-header">
+              <div>
+                <div class="entrevista-titulo">{{ i + 1 }}. {{ entrevista.titulo }}</div>
+                <div class="entrevista-meta">
+                  {{ entrevista.modalidad === 'presencial' ? 'Presencial' : 'Telefonica' }}
+                  <span *ngIf="entrevista.persona"> - {{ entrevista.persona }}</span>
+                </div>
+              </div>
+              <button mat-icon-button color="warn" type="button" (click)="eliminarEntrevista(i)" matTooltip="Eliminar entrevista">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            <p class="entrevista-preview">{{ entrevista.contenido }}</p>
+          </div>
+        </div>
+
+        <ng-container *ngIf="false">
         <mat-form-field appearance="outline" class="campo-full">
           <mat-label>Padres o encargados del niño/a víctima</mat-label>
           <textarea matInput [(ngModel)]="entrevistas.padresEncargados" rows="5"></textarea>
@@ -231,21 +483,77 @@
           <mat-label>Entrevista a la víctima</mat-label>
           <textarea matInput [(ngModel)]="entrevistas.victima" rows="5"></textarea>
         </mat-form-field>
+        </ng-container>
       </div>
 
       <!-- PERFILACIÓN DEL LUGAR -->
-      <div *ngIf="seccionActiva === 'perfilacionLugar'">
+      <div class="seccion-form-card" *ngIf="seccionActiva === 'perfilacionLugar'">
         <h3 class="seccion-titulo">Perfilación del lugar de los hechos</h3>
+        <div class="campos-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha de perfilacion</mat-label>
+            <input matInput [matDatepicker]="pickerFechaPerfilacion" [(ngModel)]="perfilacionLugar.fecha">
+            <mat-datepicker-toggle matIconSuffix [for]="pickerFechaPerfilacion"></mat-datepicker-toggle>
+            <mat-datepicker #pickerFechaPerfilacion></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Hora</mat-label>
+            <input matInput type="time" [(ngModel)]="perfilacionLugar.hora">
+          </mat-form-field>
+        </div>
         <mat-form-field appearance="outline" class="campo-full">
           <mat-label>Descripción del lugar</mat-label>
-          <textarea matInput [(ngModel)]="perfilacionLugar.descripcion" rows="5"></textarea>
+          <textarea matInput [(ngModel)]="perfilacionLugar.ubicacion" rows="3"
+            placeholder="2 calle 09-03, Colonia Trinidad zona 03"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="campo-full">
+          <mat-label>Municipio y departamento</mat-label>
+          <input matInput [(ngModel)]="perfilacionLugar.municipioDepartamento"
+            placeholder="municipio y departamento de Guatemala">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="campo-full">
+          <mat-label>Contador electrico u otra referencia</mat-label>
+          <input matInput [(ngModel)]="perfilacionLugar.contadorElectrico" placeholder="O-22238">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="campo-full">
+          <mat-label>Ubicacion GPS del lugar</mat-label>
+          <input matInput [(ngModel)]="perfilacionLugar.coordenadasGps" placeholder="14.542032, -90.550425">
+        </mat-form-field>
+
+        <mat-checkbox [(ngModel)]="perfilacionLugar.documentarFotografias">
+          Documentar el lugar mediante fotografias
+        </mat-checkbox>
+
+        <mat-form-field appearance="outline" class="campo-full">
+          <mat-label>Descripcion adicional</mat-label>
+          <textarea matInput [(ngModel)]="perfilacionLugar.descripcion" rows="4"></textarea>
         </mat-form-field>
         <mat-form-field appearance="outline" class="campo-full">
           <mat-label>Cámaras de seguridad</mat-label>
+          <mat-select [(ngModel)]="perfilacionLugar.camarasEstado">
+            <mat-option value="no_ubicadas">No se ubicaron camaras de videovigilancia</mat-option>
+            <mat-option value="hay">Si hay camaras o informacion que detallar</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="campo-full" *ngIf="perfilacionLugar.camarasEstado === 'hay'">
+          <mat-label>Detalle de camaras de seguridad</mat-label>
           <textarea matInput [(ngModel)]="perfilacionLugar.camaras" rows="4"></textarea>
         </mat-form-field>
         <mat-form-field appearance="outline" class="campo-full">
           <mat-label>Indicadores ambientales de maltrato</mat-label>
+          <mat-select [(ngModel)]="perfilacionLugar.indicadoresEstado">
+            <mat-option value="no_ubicados">No se ubicaron indicadores ambientales de maltrato</mat-option>
+            <mat-option value="hay">Si hay indicadores que detallar</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="campo-full" *ngIf="perfilacionLugar.indicadoresEstado === 'hay'">
+          <mat-label>Detalle de indicadores ambientales</mat-label>
           <textarea matInput [(ngModel)]="perfilacionLugar.indicadoresAmbientales" rows="4"></textarea>
         </mat-form-field>
         <mat-form-field appearance="outline" class="campo-full">
@@ -258,48 +566,53 @@
       <div *ngIf="seccionActiva === 'diligencias'">
         <h3 class="seccion-titulo">Diligencias de investigación</h3>
 
-        <ng-container *ngIf="informe?.tipoInforme === 'alerta'">
-          <mat-form-field appearance="outline" class="campo-full"><mat-label>Visitas a centros asistenciales</mat-label><textarea matInput [(ngModel)]="diligencias.centrosAsistenciales" rows="3"></textarea></mat-form-field>
-          <mat-form-field appearance="outline" class="campo-full"><mat-label>Juzgados</mat-label><textarea matInput [(ngModel)]="diligencias.juzgados" rows="3"></textarea></mat-form-field>
-          <mat-form-field appearance="outline" class="campo-full"><mat-label>Centros de asistencia médica</mat-label><textarea matInput [(ngModel)]="diligencias.centrosMedicos" rows="3"></textarea></mat-form-field>
-          <mat-form-field appearance="outline" class="campo-full"><mat-label>Bomberos</mat-label><textarea matInput [(ngModel)]="diligencias.bomberos" rows="3"></textarea></mat-form-field>
-          <mat-form-field appearance="outline" class="campo-full"><mat-label>Hogares de protección y abrigo</mat-label><textarea matInput [(ngModel)]="diligencias.hogaresProteccion" rows="3"></textarea></mat-form-field>
-          <mat-form-field appearance="outline" class="campo-full"><mat-label>INACIF</mat-label><textarea matInput [(ngModel)]="diligencias.inacif" rows="3"></textarea></mat-form-field>
-          <mat-form-field appearance="outline" class="campo-full"><mat-label>Centros de detención juvenil</mat-label><textarea matInput [(ngModel)]="diligencias.centrosDetencion" rows="3"></textarea></mat-form-field>
-          <mat-form-field appearance="outline" class="campo-full"><mat-label>Comunicación a otras dependencias PNC</mat-label><textarea matInput [(ngModel)]="diligencias.comunicacionPnc" rows="3"></textarea></mat-form-field>
-          <mat-form-field appearance="outline" class="campo-full"><mat-label>Oficio de localización al Sistema 110</mat-label><textarea matInput [(ngModel)]="diligencias.oficio110" rows="3"></textarea></mat-form-field>
-          <mat-form-field appearance="outline" class="campo-full"><mat-label>Oficio de coordinación con otras Delegaciones DEIC</mat-label><textarea matInput [(ngModel)]="diligencias.oficioDelegaciones" rows="3"></textarea></mat-form-field>
-          <mat-form-field appearance="outline" class="campo-full"><mat-label>Oficio a Dirección General de Migración</mat-label><textarea matInput [(ngModel)]="diligencias.oficioDireccionMigracion" rows="3"></textarea></mat-form-field>
-          <mat-form-field appearance="outline" class="campo-full"><mat-label>Oficio a INTERPOL</mat-label><textarea matInput [(ngModel)]="diligencias.oficioInterpol" rows="3"></textarea></mat-form-field>
-          <mat-form-field appearance="outline" class="campo-full"><mat-label>Contacto a personal policial — búsqueda inmediata</mat-label><textarea matInput [(ngModel)]="diligencias.busquedaInmediata" rows="3"></textarea></mat-form-field>
-        </ng-container>
+        <div class="diligencias-builder" *ngIf="informe?.tipoInforme === 'alerta'">
+          <div class="diligencia-grupo">
+            <h4>5. Visitas a centros asistenciales</h4>
+            <mat-form-field appearance="outline" class="campo-full"><mat-label>5.1. Centros de asistencia médica</mat-label><textarea matInput [(ngModel)]="diligencias.centrosMedicos" rows="3"></textarea></mat-form-field>
+            <mat-form-field appearance="outline" class="campo-full"><mat-label>5.2. INACIF</mat-label><textarea matInput [(ngModel)]="diligencias.inacif" rows="3"></textarea></mat-form-field>
+          </div>
 
-        <ng-container *ngIf="informe?.tipoInforme === 'conflicto'">
+          <div class="diligencia-grupo">
+            <h4>6. Comunicación a otras dependencias</h4>
+            <mat-form-field appearance="outline" class="campo-full"><mat-label>6.1. Oficio de localización al Sistema 110</mat-label><textarea matInput [(ngModel)]="diligencias.oficio110" rows="3"></textarea></mat-form-field>
+          </div>
+
+          <div class="diligencia-grupo">
+            <h4>7. Otras diligencias de investigación</h4>
+            <mat-form-field appearance="outline" class="campo-full">
+              <mat-label>Otras diligencias de investigación</mat-label>
+              <textarea matInput [(ngModel)]="diligencias.otrasDiligencias" rows="5"></textarea>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="diligencias-builder" *ngIf="informe?.tipoInforme === 'conflicto'">
           <mat-form-field appearance="outline" class="campo-full"><mat-label>Solicitud de orden de conducción</mat-label><textarea matInput [(ngModel)]="diligencias.solicitudOrdenConduccion" rows="3"></textarea></mat-form-field>
           <mat-form-field appearance="outline" class="campo-full"><mat-label>Solicitud de orden de allanamiento</mat-label><textarea matInput [(ngModel)]="diligencias.solicitudAllanamiento" rows="3"></textarea></mat-form-field>
           <mat-form-field appearance="outline" class="campo-full"><mat-label>Solicitud de métodos especiales de investigación</mat-label><textarea matInput [(ngModel)]="diligencias.metodosEspeciales" rows="3"></textarea></mat-form-field>
           <mat-form-field appearance="outline" class="campo-full"><mat-label>Solicitud de exhibiciones personales</mat-label><textarea matInput [(ngModel)]="diligencias.exhibicionesPersonales" rows="3"></textarea></mat-form-field>
-        </ng-container>
+        </div>
 
-        <mat-form-field appearance="outline" class="campo-full">
+        <mat-form-field appearance="outline" class="campo-full" *ngIf="informe?.tipoInforme !== 'alerta'">
           <mat-label>Otras diligencias de investigación</mat-label>
           <textarea matInput [(ngModel)]="diligencias.otrasDiligencias" rows="5"></textarea>
         </mat-form-field>
       </div>
 
       <!-- CONCLUSIONES -->
-      <div *ngIf="seccionActiva === 'conclusiones'">
+      <div class="seccion-form-card" *ngIf="seccionActiva === 'conclusiones'">
         <h3 class="seccion-titulo">Conclusiones y cierre</h3>
         <mat-form-field appearance="outline" class="campo-full">
           <mat-label>Conclusiones de las diligencias</mat-label>
           <textarea matInput [(ngModel)]="conclusiones.conclusiones" rows="6"></textarea>
         </mat-form-field>
         <mat-form-field appearance="outline" class="campo-full">
-          <mat-label>Observaciones (si las hubiere)</mat-label>
+          <mat-label>Observaciones personalizadas (opcional)</mat-label>
           <textarea matInput [(ngModel)]="conclusiones.observaciones" rows="4"></textarea>
         </mat-form-field>
         <mat-form-field appearance="outline" class="campo-full">
-          <mat-label>Anexos (enumerar)</mat-label>
+          <mat-label>Descripcion de anexos</mat-label>
           <textarea matInput [(ngModel)]="conclusiones.anexos" rows="4"
             placeholder="1) fotocopia de partida de nacimiento; 2) medidas de protección; etc."></textarea>
         </mat-form-field>
@@ -323,3 +636,4 @@
   </div>
 
 </div>
+
