@@ -160,3 +160,103 @@
 
 /* ── Utility ──────────────────────────────────────────────────────────── */
 .w-full { width: 100%; }
+
+:host-context(.dark-theme) .page-title {
+  color: #f1f5f9;
+}
+
+:host-context(.dark-theme) .page-sub {
+  color: #94a3b8;
+}
+
+:host-context(.dark-theme) .header-icon {
+  background: #172554;
+  color: #93c5fd;
+}
+
+:host-context(.dark-theme) .section-card,
+:host-context(.dark-theme) .empty-state {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+:host-context(.dark-theme) .section-header {
+  border-color: #334155;
+}
+
+:host-context(.dark-theme) .section-title {
+  color: #f1f5f9;
+}
+
+:host-context(.dark-theme) .section-icon,
+:host-context(.dark-theme) .empty-state,
+:host-context(.dark-theme) .no-results-inline {
+  color: #94a3b8;
+}
+
+:host-context(.dark-theme) .results-badge {
+  background: #172554;
+  color: #bfdbfe;
+}
+
+:host-context(.dark-theme) .btn-clear {
+  color: #cbd5e1 !important;
+  border-color: #475569 !important;
+}
+
+:host-context(.dark-theme) .btn-search[disabled] {
+  background: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+:host-context(.dark-theme) .table-wrapper {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+:host-context(.dark-theme) .results-table,
+:host-context(.dark-theme) ::ng-deep .results-table.mat-mdc-table,
+:host-context(.dark-theme) ::ng-deep .mat-mdc-paginator {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .results-table .mat-mdc-header-row,
+:host-context(.dark-theme) ::ng-deep .results-table .mat-mdc-row,
+:host-context(.dark-theme) ::ng-deep .results-table .mat-mdc-no-data-row {
+  background: #1e293b !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .results-table .mat-mdc-header-cell {
+  background: #0f172a !important;
+  color: #cbd5e1 !important;
+  border-bottom-color: #334155 !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .results-table .mat-mdc-cell {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+  border-bottom-color: #334155 !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .results-table .mat-mdc-row:hover .mat-mdc-cell {
+  background: #273449 !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .mat-sort-header-arrow,
+:host-context(.dark-theme) ::ng-deep .mat-sort-header-indicator,
+:host-context(.dark-theme) ::ng-deep .mat-sort-header-stem {
+  color: #cbd5e1 !important;
+}
+
+:host-context(.dark-theme) .mono-cell {
+  color: #cbd5e1;
+}
+
+:host-context(.dark-theme) ::ng-deep .mat-mdc-paginator-container,
+:host-context(.dark-theme) ::ng-deep .mat-mdc-paginator-page-size-label,
+:host-context(.dark-theme) ::ng-deep .mat-mdc-paginator-range-label,
+:host-context(.dark-theme) ::ng-deep .mat-mdc-paginator-icon {
+  color: #cbd5e1 !important;
+  fill: #cbd5e1 !important;
+}

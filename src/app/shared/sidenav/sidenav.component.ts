@@ -11,6 +11,8 @@ import { CaratulaService } from '../../caratulas/caratula.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { SharedService } from '../shared.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { AuthService } from '../../auth/auth-service/auth.service';
+import { AuthService } from '../../auth/auth-service/auth.service';
 
 
 @Component({
@@ -151,7 +153,7 @@ export class SidenavComponent {
 
 }   */
 
-  import { Component, Input, Output, EventEmitter } from '@angular/core';
+  import { Component, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -164,6 +166,8 @@ import { CaratulaService } from '../../caratulas/caratula.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { SharedService } from '../shared.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { AuthService } from '../../auth/auth-service/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-sidenav',
@@ -175,7 +179,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   templateUrl: './sidenav.component.html',
   styleUrl: './sidenav.component.css'
 })
-export class SidenavComponent {
+export class SidenavComponent implements OnDestroy {
 
   user = { email: '', role: '' };
   loading = false;
@@ -184,16 +188,25 @@ export class SidenavComponent {
 
   @Input() collapsed = true;
   @Output() collapsedChange = new EventEmitter<boolean>();
+  private pendientesSubscription?: Subscription;
 
   constructor(
     private caratulaService: CaratulaService,
     private router: Router,
-    private shared: SharedService
+    private shared: SharedService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
-    this.getContadorPendientes();
+    this.pendientesSubscription = this.caratulaService.pendientesCount$.subscribe((count) => {
+      this.updatePendientesBadge(count);
+    });
+    this.caratulaService.refreshPendientesCount();
     this.loadUser();
+  }
+
+  ngOnDestroy() {
+    this.pendientesSubscription?.unsubscribe();
   }
 
   toggleCollapsed() {
@@ -204,20 +217,24 @@ export class SidenavComponent {
   getContadorPendientes() {
     this.caratulaService.getPendientesCount().subscribe({
       next: (res) => {
-        this.pendientesCount = res.total;
-        this.menuItems = this.menuItems.map(item => {
-          if (item.title === 'Generar Caratulas') {
-            return {
-              ...item,
-              children: item.children.map(sub =>
-                sub.title === 'Pendienetes' ? { ...sub, badge: this.pendientesCount } : sub
-              )
-            };
-          }
-          return item;
-        });
+        this.updatePendientesBadge(res.total);
       },
       error: (err) => console.error('Error al obtener contador', err)
+    });
+  }
+
+  private updatePendientesBadge(count: number) {
+    this.pendientesCount = count;
+    this.menuItems = this.menuItems.map(item => {
+      if (item.title === 'Generar Caratulas') {
+        return {
+          ...item,
+          children: item.children.map(sub =>
+            sub.title === 'Pendienetes' ? { ...sub, badge: this.pendientesCount } : sub
+          )
+        };
+      }
+      return item;
     });
   }
 
@@ -272,8 +289,7 @@ export class SidenavComponent {
   ];
 
   closeSession() {
-    localStorage.removeItem('access_token');
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 
   loadUser(): void {

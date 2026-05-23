@@ -1,112 +1,318 @@
-/* .login-container {
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(360px, 0.95fr) minmax(420px, 1.05fr);
+  background:
+    linear-gradient(90deg, rgba(15, 23, 42, 0.02), rgba(15, 23, 42, 0)),
+    #f4f6fb;
+}
+
+.brand-panel {
+  position: relative;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 48px;
+  color: #ffffff;
+  background:
+    linear-gradient(145deg, rgba(15, 23, 42, 0.94), rgba(30, 64, 175, 0.84)),
+    url("https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1400&q=80") center/cover;
+}
+
+.brand-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.22;
+}
+
+.brand-content,
+.brand-stats {
+  position: relative;
+  z-index: 1;
+}
+
+.brand-content {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 520px;
+}
+
+.brand-mark,
+.form-icon {
+  width: 52px;
+  height: 52px;
+  display: inline-flex;
   align-items: center;
-  height: 100vh;
-  background-color: #fef5f8;
+  justify-content: center;
+  border-radius: 14px;
+}
+
+.brand-mark {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.brand-mark mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: #bfdbfe;
+}
+
+.brand-content h1 {
+  margin: 0;
+  max-width: 480px;
+  font-size: clamp(34px, 5vw, 58px);
+  line-height: 1.02;
+  font-weight: 800;
+}
+
+.brand-copy {
+  max-width: 420px;
+  margin: 18px 0 0;
+  color: #dbeafe;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.brand-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.brand-stats div {
+  min-height: 96px;
+  padding: 16px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+}
+
+.brand-stats span {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #93c5fd;
+}
+
+.brand-stats p {
+  margin: 0;
+  color: #eff6ff;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.form-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
 }
 
 .login-card {
+  width: min(100%, 430px);
+  padding: 34px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.form-icon {
+  flex-shrink: 0;
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.form-header h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.form-header p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.login-field {
   width: 100%;
-  max-width: 400px;
-  padding: 1.5rem;
 }
 
-.email-spacing {
-  margin-right: 20px;
-  font-size: 20px;
-  line-height: 1;
+:host ::ng-deep .login-field .mat-mdc-text-field-wrapper {
+  min-height: 56px;
+  background: #ffffff;
 }
 
-.password-spacing {
-  margin-right: 60px;
-  font-size: 20px;
-  line-height: 1;
-} */
-
-
-/* Fondo de la vista ya lo pone Tailwind con el gradiente en el HTML */
-
-/* Card “glass” (suave, redondeada) */
-:host ::ng-deep .mat-mdc-card {
-  border-radius: 1rem;
+:host ::ng-deep .login-field .mat-mdc-form-field-icon-prefix,
+:host ::ng-deep .login-field .mat-mdc-form-field-icon-suffix {
+  color: #64748b;
 }
 
-/* Inputs redondeados y compactos */
-:host ::ng-deep .mat-mdc-form-field {
-  --mat-form-field-container-height: 52px;    /* un poco más alto */
-}
-:host ::ng-deep .mdc-notched-outline > * {
-  border-radius: 12px;
-}
-:host ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-  margin-top: 4px;
+:host ::ng-deep .login-field .mdc-notched-outline__leading,
+:host ::ng-deep .login-field .mdc-notched-outline__notch,
+:host ::ng-deep .login-field .mdc-notched-outline__trailing {
+  border-color: #cbd5e1;
 }
 
-/* Spinner dentro del botón sin desalinearse */
-:host ::ng-deep .mat-mdc-progress-spinner {
-  --mdc-circular-progress-active-indicator-width: 3px;
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -6px;
 }
 
-/* Pequeños ajustes a los íconos prefix/suffix */
-:host ::ng-deep .mat-mdc-form-field-icon-prefix,
-:host ::ng-deep .mat-mdc-form-field-icon-suffix {
-  color: rgb(100 116 139); /* slate-500 */
+.form-actions a {
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
 }
 
-
-/* para el password*/
-/* “Píldora” + fondo suave para appearance="fill" */
-:host ::ng-deep .mat-input-pill .mat-mdc-text-field-wrapper.mdc-text-field--filled {
-  border-radius: 12px;                 /* esquinas redondeadas */
-  background: #fff;                 /* gris suave como el ejemplo */
-  transition: box-shadow .2s ease, background-color .2s ease;
+.form-actions a:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
 }
 
-/* Altura cómoda y padding interno uniforme */
-:host ::ng-deep .mat-input-pill .mat-mdc-form-field-flex {
-  height: 52px;                         /* 56 si lo quieres más alto */
-}
-:host ::ng-deep .mat-input-pill .mat-mdc-input-element {
-  padding: 0 0.5rem !important;         /* quita espacios raros */
-}
-
-/* Ícono de ojo: color discreto y sin separación extra */
-:host ::ng-deep .mat-input-pill .mat-mdc-form-field-icon-suffix {
-  color: #4b5563;                        /* slate-600 */
-}
-:host ::ng-deep .mat-input-pill .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button {
-  padding: 0 6px;                        /* más pegado al borde */
+.submit-btn {
+  height: 48px;
+  border-radius: 8px !important;
+  background: #1d4ed8 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  letter-spacing: 0;
 }
 
-/* Línea inferior (ripple): tenue; puedes ocultarla si no la quieres */
-:host ::ng-deep .mat-input-pill .mdc-line-ripple::before,
-:host ::ng-deep .mat-input-pill .mdc-line-ripple::after {
-  border-bottom-width: 2px;
-  opacity: .3;                           /* tenue como en el ejemplo */
+.submit-btn mat-icon {
+  margin-right: 8px;
 }
 
-/* En foco: sombra sutil */
-:host ::ng-deep .mat-input-pill.mdc-text-field--focused,
-:host ::ng-deep .mat-input-pill .mdc-text-field--focused {
-  box-shadow: 0 0 0 3px rgba(218, 218, 238, 0.15); /* halo suave */
+.submit-btn[disabled] {
+  background: #cbd5e1 !important;
+  color: #64748b !important;
 }
 
-
-/* Misma “píldora” del password ya aplicada por .mat-input-pill */
-
-/* Correcciones para prefix del icono mail (sin hueco) */
-:host ::ng-deep .mat-input-mail .mat-mdc-form-field-icon-prefix {
-  padding-inline-start: 8px;   /* pegado al borde */
-  padding-inline-end: 4px;     /* mínimo espacio antes del texto */
-}
-:host ::ng-deep .mat-input-mail .mat-mdc-form-field-icon-prefix .mat-icon {
-  margin: 0 !important;        /* sin margen extra */
-  color: #4b5563;              /* slate-600 */
-}
-:host ::ng-deep .mat-input-mail .mat-mdc-input-element {
-  padding-left: 0 !important;  /* quita padding que agrega el prefix */
+.loading-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
-/* (Opcional) ocultar por completo la línea inferior si buscas “solo pastilla” */
-/* :host ::ng-deep .mat-input-pill .mdc-line-ripple { display: none; } */
+:host ::ng-deep .submit-btn .mat-mdc-progress-spinner {
+  --mdc-circular-progress-active-indicator-color: currentColor;
+}
+
+:host-context(.dark-theme) .login-page {
+  background: #0f172a;
+}
+
+:host-context(.dark-theme) .login-card {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+}
+
+:host-context(.dark-theme) .form-header h2 {
+  color: #f1f5f9;
+}
+
+:host-context(.dark-theme) .form-header p {
+  color: #94a3b8;
+}
+
+:host-context(.dark-theme) .form-icon {
+  background: #172554;
+  color: #93c5fd;
+}
+
+:host-context(.dark-theme) ::ng-deep .login-field .mat-mdc-text-field-wrapper {
+  background: #0f172a !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .login-field .mat-mdc-input-element,
+:host-context(.dark-theme) ::ng-deep .login-field .mat-mdc-floating-label {
+  color: #f1f5f9 !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .login-field .mat-mdc-form-field-icon-prefix,
+:host-context(.dark-theme) ::ng-deep .login-field .mat-mdc-form-field-icon-suffix {
+  color: #cbd5e1 !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .login-field .mdc-notched-outline__leading,
+:host-context(.dark-theme) ::ng-deep .login-field .mdc-notched-outline__notch,
+:host-context(.dark-theme) ::ng-deep .login-field .mdc-notched-outline__trailing {
+  border-color: #475569 !important;
+}
+
+@media (max-width: 860px) {
+  .login-page {
+    grid-template-columns: 1fr;
+  }
+
+  .brand-panel {
+    min-height: 320px;
+    padding: 32px 24px;
+  }
+
+  .brand-stats {
+    display: none;
+  }
+
+  .form-panel {
+    align-items: flex-start;
+    padding: 24px;
+  }
+}
+
+@media (max-width: 520px) {
+  .brand-panel {
+    min-height: 260px;
+  }
+
+  .login-card {
+    padding: 24px;
+  }
+
+  .form-header {
+    align-items: flex-start;
+  }
+}

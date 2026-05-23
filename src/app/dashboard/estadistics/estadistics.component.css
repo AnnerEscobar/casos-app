@@ -201,3 +201,63 @@
   width: 15px;
   height: 15px;
 }
+
+:host-context(.dark-theme) .dashboard-title {
+  color: #f1f5f9;
+}
+
+:host-context(.dark-theme) .dashboard-sub {
+  color: #94a3b8;
+}
+
+:host-context(.dark-theme) .overlay-stats {
+  background: rgba(15, 23, 42, 0.78);
+}
+
+:host-context(.dark-theme) .kpi-card,
+:host-context(.dark-theme) .chart-card {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: none;
+}
+
+:host-context(.dark-theme) .kpi-label {
+  color: #cbd5e1;
+}
+
+:host-context(.dark-theme) .forecast-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+:host-context(.dark-theme) .forecast-badge {
+  background: #172554;
+  color: #bfdbfe;
+}
+
+:host-context(.dark-theme) ::ng-deep .apexcharts-title-text,
+:host-context(.dark-theme) ::ng-deep .apexcharts-text,
+:host-context(.dark-theme) ::ng-deep .apexcharts-xaxis text,
+:host-context(.dark-theme) ::ng-deep .apexcharts-yaxis text,
+:host-context(.dark-theme) ::ng-deep .apexcharts-legend-text,
+:host-context(.dark-theme) ::ng-deep .apexcharts-datalabel,
+:host-context(.dark-theme) ::ng-deep .apexcharts-datalabel-label,
+:host-context(.dark-theme) ::ng-deep .apexcharts-datalabel-value,
+:host-context(.dark-theme) ::ng-deep .apexcharts-datalabel-total-label,
+:host-context(.dark-theme) ::ng-deep .apexcharts-datalabel-total-value {
+  fill: #e2e8f0 !important;
+  color: #e2e8f0 !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .apexcharts-gridline,
+:host-context(.dark-theme) ::ng-deep .apexcharts-xaxis-tick,
+:host-context(.dark-theme) ::ng-deep .apexcharts-yaxis-tick {
+  stroke: #334155 !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .apexcharts-tooltip,
+:host-context(.dark-theme) ::ng-deep .apexcharts-tooltip-title {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+}

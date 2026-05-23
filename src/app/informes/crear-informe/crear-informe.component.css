@@ -175,3 +175,108 @@
   justify-content: center;
   height: 300px;
 }
+
+:host-context(.dark-theme) .informe-container {
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+:host-context(.dark-theme) .inicio-panel,
+:host-context(.dark-theme) .secciones-panel {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+:host-context(.dark-theme) .titulo-seccion,
+:host-context(.dark-theme) .seccion-titulo,
+:host-context(.dark-theme) .informe-deic {
+  color: #f1f5f9;
+}
+
+:host-context(.dark-theme) .subtitulo,
+:host-context(.dark-theme) .subtitulo-seccion {
+  color: #94a3b8;
+}
+
+:host-context(.dark-theme) .informe-header,
+:host-context(.dark-theme) .acciones-panel,
+:host-context(.dark-theme) .guardar-bar,
+:host-context(.dark-theme) .subtitulo-seccion {
+  border-color: #334155;
+}
+
+:host-context(.dark-theme) .informe-tipo-badge {
+  background: #172554;
+  color: #bfdbfe;
+}
+
+:host-context(.dark-theme) .estado-borrador {
+  background: rgba(251, 146, 60, 0.16);
+  color: #fdba74;
+}
+
+:host-context(.dark-theme) .estado-pendiente_registro {
+  background: rgba(59, 130, 246, 0.16);
+  color: #93c5fd;
+}
+
+:host-context(.dark-theme) .estado-registrado {
+  background: rgba(34, 197, 94, 0.16);
+  color: #86efac;
+}
+
+:host-context(.dark-theme) .seccion-contenido {
+  background: #0f172a;
+}
+
+:host-context(.dark-theme) .seccion-item {
+  color: #cbd5e1;
+}
+
+:host-context(.dark-theme) .seccion-item:hover {
+  background: #273449;
+}
+
+:host-context(.dark-theme) .seccion-item.activa {
+  background: #172554;
+  color: #93c5fd;
+}
+
+:host-context(.dark-theme) .seccion-item.completada .seccion-label,
+:host-context(.dark-theme) .check-icon {
+  color: #86efac;
+}
+
+:host-context(.dark-theme) .btn-accion {
+  color: #e2e8f0;
+  border-color: #475569;
+}
+
+:host-context(.dark-theme) .cargando-overlay {
+  background: #0f172a;
+}
+
+:host-context(.dark-theme) ::ng-deep .mat-mdc-text-field-wrapper.mdc-text-field--outlined,
+:host-context(.dark-theme) ::ng-deep .mat-mdc-text-field-wrapper {
+  background: #1e293b !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .mat-mdc-input-element,
+:host-context(.dark-theme) ::ng-deep textarea.mat-mdc-input-element,
+:host-context(.dark-theme) ::ng-deep .mat-mdc-select-value,
+:host-context(.dark-theme) ::ng-deep .mat-mdc-select-value-text,
+:host-context(.dark-theme) ::ng-deep .mdc-floating-label {
+  color: #f1f5f9 !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .mat-mdc-form-field-icon-suffix,
+:host-context(.dark-theme) ::ng-deep .mat-datepicker-toggle,
+:host-context(.dark-theme) ::ng-deep .mat-mdc-select-arrow {
+  color: #cbd5e1 !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .mdc-notched-outline__leading,
+:host-context(.dark-theme) ::ng-deep .mdc-notched-outline__notch,
+:host-context(.dark-theme) ::ng-deep .mdc-notched-outline__trailing {
+  border-color: #475569 !important;
+}

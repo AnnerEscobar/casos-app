@@ -242,3 +242,129 @@
 .sidenav.collapsed .avatar {
   margin: 0 auto;
 }
+
+:host-context(.dark-theme) .sidenav {
+  background: #111827;
+  border-color: #1f2937;
+}
+
+:host-context(.dark-theme) .sidenav-header,
+:host-context(.dark-theme) .sidenav-footer {
+  border-color: #1f2937;
+}
+
+:host-context(.dark-theme) .logo-text h1,
+:host-context(.dark-theme) .user-email {
+  color: #f1f5f9;
+}
+
+:host-context(.dark-theme) .logo-text p,
+:host-context(.dark-theme) .user-role,
+:host-context(.dark-theme) .toggle-btn,
+:host-context(.dark-theme) .menu-btn,
+:host-context(.dark-theme) .icon-only-item {
+  color: #cbd5e1;
+}
+
+:host-context(.dark-theme) .toggle-btn:hover,
+:host-context(.dark-theme) .icon-only-item:hover {
+  background: #1f2937;
+  color: #60a5fa;
+}
+
+:host-context(.dark-theme) .icon-only-item.active-link {
+  background: #172554;
+  color: #60a5fa;
+}
+
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .mat-expansion-panel {
+  background: transparent !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .mat-expansion-panel-header:hover {
+  background: #1f2937 !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .mat-expansion-panel-header.mat-expanded {
+  background: #172554 !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .mat-panel-title,
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .mat-panel-title span,
+:host-context(.dark-theme) .panel-icon {
+  color: #f1f5f9 !important;
+}
+
+:host-context(.dark-theme) .submenu-link:hover {
+  background: #1f2937 !important;
+}
+
+:host-context(.dark-theme) .submenu-link.active-link {
+  background: #172554 !important;
+}
+
+:host-context(.dark-theme) .submenu-text {
+  color: #e2e8f0;
+}
+
+:host-context(.dark-theme) .submenu-icon {
+  color: #94a3b8;
+}
+
+:host-context(.dark-theme) .active-link .submenu-text,
+:host-context(.dark-theme) .active-link .submenu-icon {
+  color: #60a5fa;
+}
+
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .mat-mdc-list-base,
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .mat-accordion,
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .mat-expansion-panel-content,
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .mat-expansion-panel-body {
+  background: transparent !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .mat-expansion-indicator::after {
+  color: #cbd5e1 !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .mat-mdc-list-item,
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .mdc-list-item {
+  background: transparent !important;
+  color: #e2e8f0 !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .mat-mdc-list-item:hover,
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .mdc-list-item:hover {
+  background: #1f2937 !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .mat-mdc-list-item .mdc-list-item__primary-text,
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .mat-mdc-list-item .mat-mdc-list-item-title,
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .mat-mdc-list-item .mat-icon,
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .mdc-list-item__primary-text,
+:host-context(.dark-theme) ::ng-deep .sidenav-nav a,
+:host-context(.dark-theme) ::ng-deep .sidenav-nav span {
+  color: #e2e8f0 !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .active-link,
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .active-link.mdc-list-item,
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .active-link.mat-mdc-list-item {
+  background: #172554 !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .active-link .mdc-list-item__primary-text,
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .active-link .mat-icon,
+:host-context(.dark-theme) ::ng-deep .sidenav-nav .active-link span {
+  color: #60a5fa !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .mat-mdc-menu-panel {
+  background: #1e293b !important;
+}
+
+:host-context(.dark-theme) ::ng-deep .mat-mdc-menu-item,
+:host-context(.dark-theme) ::ng-deep .mat-mdc-menu-item .mat-icon,
+:host-context(.dark-theme) ::ng-deep .mat-mdc-menu-item .mdc-list-item__primary-text {
+  color: #e2e8f0 !important;
+}

@@ -36,12 +36,24 @@
           <mat-label>N° DEIC</mat-label>
           <input matInput formControlName="numeroDeic" placeholder="DEIC52-2025-01-02-01">
           <mat-icon matSuffix>folder_shared</mat-icon>
+          <mat-error *ngIf="caratulaForm.get('numeroDeic')?.hasError('required')">
+            El número DEIC es obligatorio
+          </mat-error>
+          <mat-error *ngIf="caratulaForm.get('numeroDeic')?.hasError('numeroDeicFormato')">
+            {{ numeroDeicHelp }}
+          </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>N° Expediente MP</mat-label>
           <input matInput formControlName="numeroMp" placeholder="M0030-2025-100">
           <mat-icon matSuffix>article</mat-icon>
+          <mat-error *ngIf="caratulaForm.get('numeroMp')?.hasError('required')">
+            El numero de expediente MP es obligatorio
+          </mat-error>
+          <mat-error *ngIf="caratulaForm.get('numeroMp')?.hasError('numeroMpFormato')">
+            {{ numeroMpHelp }}
+          </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full" *ngIf="esAlerta">
@@ -60,22 +72,40 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Edad</mat-label>
+          <input matInput formControlName="edad" [placeholder]="esAlerta ? '14' : '12, 15'">
+          <mat-icon matSuffix>cake</mat-icon>
+          <mat-error *ngIf="caratulaForm.get('edad')?.hasError('required')">
+            La edad es obligatoria
+          </mat-error>
+          <mat-error *ngIf="caratulaForm.get('edad')?.hasError('edadFormato')">
+            Ingresa la edad en numeros
+          </mat-error>
+          <mat-error *ngIf="caratulaForm.get('edad')?.hasError('edadCantidad')">
+            Ingresa una edad por cada nombre
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
           <mat-label>Investigador</mat-label>
           <input matInput formControlName="investigador" placeholder="Nombre del investigador">
           <mat-icon matSuffix>badge</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full span-2">
-          <mat-label>Lugar de los hechos / desaparición</mat-label>
+          <mat-label>{{ lugarLabel }}</mat-label>
           <textarea matInput formControlName="lugar" rows="2"
                     placeholder="Descripción del lugar"></textarea>
           <mat-icon matSuffix>location_on</mat-icon>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-full span-2">
-          <mat-label>Observaciones</mat-label>
-          <textarea matInput formControlName="observaciones" rows="3"
-                    placeholder="Detalles adicionales..."></textarea>
+          <mat-label>Estado del caso</mat-label>
+          <mat-select formControlName="observaciones">
+            <mat-option value="Informado">Informado</mat-option>
+            <mat-option value="Concluido">Concluido</mat-option>
+          </mat-select>
+          <mat-icon matSuffix>task_alt</mat-icon>
         </mat-form-field>
       </div>
 

@@ -1,115 +1,108 @@
-<!-- <div class="flex justify-center items-center min-h-screen">
-  <mat-card class="p-8 rounded-xl shadow-lg w-full max-w-lg ">
-    <h2 class="text-2xl font-semibold text-center mb-6">Iniciar Sesión</h2>
-
-    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-5">
-
-      <mat-form-field appearance="outline" floatLabel="always" class="w-full">
-        <mat-label class="label-spacing">email</mat-label>
-        <mat-icon matPrefix class="email-spacing">email</mat-icon>
-        <input matInput formControlName="email" type="email" placeholder="correo@ejemplo.com">
-        <mat-error *ngIf="loginForm.get('email')?.hasError('required')">El correo es obligatorio</mat-error>
-        <mat-error *ngIf="loginForm.get('email')?.hasError('email')">Correo inválido</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" floatLabel="always" class="w-full">
-        <mat-label class="label_spacing">password</mat-label>
-        <mat-icon matPrefix class="password-spacing">lock</mat-icon>
-        <input matInput formControlName="password" type="password" placeholder="••••••••">
-        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">La contraseña es obligatoria</mat-error>
-      </mat-form-field>
-
-      <button mat-flat-button class="w-full" [disabled]="!loginForm.valid">Iniciar Sesión</button>
-    </form>
-    <p class="mt-6 text-center text-sm">
-      ¿No tienes cuenta?
-      <a routerLink="/register" class="text-blue-600 hover:underline" style="cursor: pointer;">Regístrate</a>
-    </p>
-  </mat-card>
-</div>
- -->
-<div class="min-h-screen flex items-center justify-center
-         bg-gradient-to-br from-rose-50 via-fuchsia-50 to-indigo-50
-         dark:from-slate-900 dark:via-slate-950 dark:to-slate-900">
-
-  <mat-card
-    class="w-full max-w-md p-8 rounded-2xl shadow-2xl ring-1 ring-black/5 bg-white/80 dark:bg-slate-900/70 backdrop-blur-md">
-
-    <!-- Header -->
-    <div class="flex flex-col items-center gap-2 mb-6">
-      <div class="h-12 w-12 rounded-2xl grid place-items-center bg-rose-100 text-rose-600 shadow">
-        <mat-icon>lock</mat-icon>
+<main class="login-page">
+  <section class="brand-panel" aria-label="Sistema de Gestion de Casos">
+    <div class="brand-content">
+      <div class="brand-mark">
+        <mat-icon>verified_user</mat-icon>
       </div>
-      <h1 class="text-2xl font-semibold tracking-tight">Iniciar Sesión</h1>
-      <p class="text-sm text-slate-500 text-center">
-        Accede al panel de casos
-      </p>
+      <div>
+        <p class="eyebrow">SGICDB</p>
+        <h1>Control de casos de ninez y adolescencia</h1>
+        <p class="brand-copy">
+          Acceso local para gestion, seguimiento y consulta de expedientes.
+        </p>
+      </div>
     </div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-5">
+    <div class="brand-stats">
+      <div>
+        <span>01</span>
+        <p>Registro centralizado</p>
+      </div>
+      <div>
+        <span>02</span>
+        <p>Seguimiento operativo</p>
+      </div>
+      <div>
+        <span>03</span>
+        <p>Consulta protegida</p>
+      </div>
+    </div>
+  </section>
 
-      <!-- Email -->
-      <!-- EMAIL estilo “fill” con icono a la izquierda -->
-      <mat-form-field appearance="fill" class="w-full mat-input-pill mat-input-mail">
-        <mat-label>Correo electrónico</mat-label>
-        <mat-icon matPrefix>mail</mat-icon>
-        <input matInput formControlName="email" type="email" placeholder="correo@sgic.com" autocomplete="username" />
-
-        <mat-error *ngIf="(email.touched || submitted) && email.hasError('required')">
-          El correo es obligatorio
-        </mat-error>
-        <mat-error *ngIf="(email.touched || submitted) && email.hasError('email')">
-          Correo inválido
-        </mat-error>
-      </mat-form-field>
-
-      <!-- Password -->
-      <mat-form-field appearance="fill" class="w-full mat-input-pill">
-        <mat-icon matPrefix>lock</mat-icon>
-        <mat-label>Contraseña</mat-label>
-
-        <input matInput [type]="hide ? 'password' : 'text'" formControlName="password"
-          placeholder="Ingresa tu contraseña" />
-
-        <button mat-icon-button matSuffix type="button" (click)="hide = !hide"
-          [attr.aria-label]="hide ? 'Mostrar contraseña' : 'Ocultar contraseña'" [attr.aria-pressed]="!hide">
-          <mat-icon>{{ hide ? 'visibility' : 'visibility_off' }}</mat-icon>
-        </button>
-
-        <mat-error *ngIf="(password.touched || submitted) && password.hasError('required')">
-          La contraseña es obligatoria
-        </mat-error>
-      </mat-form-field>
-
-      <!-- Olvidaste tu contraseña -->
-      <div style="text-align:right; margin-top:-8px;">
-        <a routerLink="/recover-password"
-           style="font-size:13px; color:#64748b; text-decoration:none;"
-           onmouseover="this.style.color='#3949ab'"
-           onmouseout="this.style.color='#64748b'">
-          ¿Olvidaste tu contraseña?
-        </a>
+  <section class="form-panel">
+    <div class="login-card">
+      <div class="form-header">
+        <div class="form-icon">
+          <mat-icon>lock</mat-icon>
+        </div>
+        <div>
+          <h2>Iniciar sesion</h2>
+          <p>Ingresa tus credenciales para continuar.</p>
+        </div>
       </div>
 
-      <!-- Submit -->
-      <button mat-flat-button color="primary" class="w-full h-12 rounded-xl font-medium"
-        [disabled]="loginForm.invalid || loading">
-        <ng-container *ngIf="!loading; else loadingTpl">Iniciar Sesión</ng-container>
-      </button>
-      <ng-template #loadingTpl>
-        <span class="inline-flex items-center gap-2">
-          <mat-spinner diameter="20"></mat-spinner>
-          Entrando…
-        </span>
-      </ng-template>
-    </form>
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form">
+        <mat-form-field appearance="outline" class="login-field">
+          <mat-label>Correo electronico</mat-label>
+          <mat-icon matPrefix>mail</mat-icon>
+          <input
+            matInput
+            formControlName="email"
+            type="email"
+            placeholder="correo@institucion.local"
+            autocomplete="username"
+          />
+          <mat-error *ngIf="(email.touched || submitted) && email.hasError('required')">
+            El correo es obligatorio
+          </mat-error>
+          <mat-error *ngIf="(email.touched || submitted) && email.hasError('email')">
+            Correo invalido
+          </mat-error>
+        </mat-form-field>
 
-    <!-- Enlace opcional -->
-    <!--
-    <p class="mt-6 text-center text-sm">
-      ¿No tienes cuenta?
-      <a routerLink="/register" class="text-rose-600 hover:underline">Regístrate</a>
-    </p>
-    -->
-  </mat-card>
-</div>
+        <mat-form-field appearance="outline" class="login-field">
+          <mat-label>Contrasena</mat-label>
+          <mat-icon matPrefix>key</mat-icon>
+          <input
+            matInput
+            [type]="hide ? 'password' : 'text'"
+            formControlName="password"
+            placeholder="Ingresa tu contrasena"
+            autocomplete="current-password"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hide = !hide"
+            [attr.aria-label]="hide ? 'Mostrar contrasena' : 'Ocultar contrasena'"
+            [attr.aria-pressed]="!hide"
+          >
+            <mat-icon>{{ hide ? 'visibility' : 'visibility_off' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="(password.touched || submitted) && password.hasError('required')">
+            La contrasena es obligatoria
+          </mat-error>
+        </mat-form-field>
+
+        <div class="form-actions">
+          <a routerLink="/recover-password">Olvide mi contrasena</a>
+        </div>
+
+        <button mat-flat-button type="submit" class="submit-btn" [disabled]="loginForm.invalid || loading">
+          <ng-container *ngIf="!loading; else loadingTpl">
+            <mat-icon>login</mat-icon>
+            <span>Entrar al sistema</span>
+          </ng-container>
+        </button>
+
+        <ng-template #loadingTpl>
+          <span class="loading-label">
+            <mat-spinner diameter="18"></mat-spinner>
+            Validando acceso
+          </span>
+        </ng-template>
+      </form>
+    </div>
+  </section>
+</main>
