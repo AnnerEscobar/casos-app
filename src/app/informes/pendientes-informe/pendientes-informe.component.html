@@ -52,6 +52,14 @@
         <button mat-flat-button color="accent" (click)="irARegistrarCaso(informe)">
           <mat-icon>upload_file</mat-icon> Registrar
         </button>
+        <button
+          mat-stroked-button
+          color="warn"
+          (click)="eliminarPendiente(informe)"
+          [disabled]="eliminando === informe.numeroDeic">
+          <mat-icon>{{ eliminando === informe.numeroDeic ? 'hourglass_empty' : 'delete' }}</mat-icon>
+          {{ eliminando === informe.numeroDeic ? 'Eliminando...' : 'Quitar' }}
+        </button>
       </div>
 
     </div>

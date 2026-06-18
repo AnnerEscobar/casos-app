@@ -108,6 +108,23 @@
 
   </div>
 
+  <!-- Cantidad mensual total (ancho completo) -->
+  <div class="chart-card chart-full">
+    <apx-chart #monthlyTotalChart
+      [series]="monthlyTotalChartOptions.series"
+      [chart]="monthlyTotalChartOptions.chart"
+      [xaxis]="monthlyTotalChartOptions.xaxis"
+      [yaxis]="monthlyTotalChartOptions.yaxis"
+      [title]="monthlyTotalChartOptions.title"
+      [colors]="monthlyTotalChartOptions.colors"
+      [plotOptions]="monthlyTotalChartOptions.plotOptions"
+      [dataLabels]="monthlyTotalChartOptions.dataLabels"
+      [legend]="monthlyTotalChartOptions.legend"
+      [grid]="monthlyTotalChartOptions.grid"
+      [tooltip]="monthlyTotalChartOptions.tooltip">
+    </apx-chart>
+  </div>
+
   <!-- Area mensual (ancho completo) -->
   <div class="chart-card chart-full">
     <apx-chart #areaChart

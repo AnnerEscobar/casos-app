@@ -48,6 +48,7 @@ export default class EstadisticsComponent implements OnInit {
   @ViewChild('stackedChart')  stackedChart!:  ChartComponent;
   @ViewChild('radialChart')   radialChart!:   ChartComponent;
   @ViewChild('hBarChart')     hBarChart!:     ChartComponent;
+  @ViewChild('monthlyTotalChart') monthlyTotalChart!: ChartComponent;
   @ViewChild('areaChart')     areaChart!:     ChartComponent;
   @ViewChild('donutChart')    donutChart!:    ChartComponent;
   @ViewChild('forecastChart') forecastChart!: ChartComponent;
@@ -72,6 +73,7 @@ export default class EstadisticsComponent implements OnInit {
   barChartOptions:      any;
   donutChartOptions:    any;
   stackedChartOptions:  any;
+  monthlyTotalChartOptions: any;
   areaChartOptions:     any;
   radialChartOptions:   any;
   hBarChartOptions:     any;
@@ -142,6 +144,18 @@ export default class EstadisticsComponent implements OnInit {
     };
 
     // 4. Area mensual
+    this.monthlyTotalChartOptions = {
+      ...baseBar,
+      series: [{ name: 'Casos', data: new Array(12).fill(0) }],
+      colors: ['#2563EB'],
+      plotOptions: { bar: { horizontal: false, columnWidth: '45%', borderRadius: 6, borderRadiusApplication: 'end', dataLabels: { position: 'top' } } },
+      dataLabels: { enabled: true, formatter: (v: number) => `${v}`, offsetY: -14, style: { fontSize: '12px', colors: ['#555'] } },
+      xaxis: { categories: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'] },
+      yaxis: { min: 0, tickAmount: 5 },
+      legend: { show: false },
+      title: { text: 'Cantidad de casos por mes', style: { fontSize: '13px', fontWeight: '600' } },
+    };
+
     this.areaChartOptions = {
       series: [
         { name: 'Alerta',    data: new Array(12).fill(0) },
@@ -325,6 +339,9 @@ export default class EstadisticsComponent implements OnInit {
     };
     this.stackedChart?.updateOptions(this.stackedChartOptions);
 
+    // 4. Total mensual
+    this.actualizarTotalMensual(alertas, maltratos, conflictos, periodo);
+
     // 4. Area mensual
     this.actualizarAreaMensual(alertas, maltratos, conflictos, periodo);
 
@@ -357,6 +374,26 @@ export default class EstadisticsComponent implements OnInit {
       title: { text: `Personas involucradas — ${periodo}`, style: { fontSize: '13px', fontWeight: '600' } },
     };
     this.hBarChart?.updateOptions(this.hBarChartOptions);
+  }
+
+  private actualizarTotalMensual(alertas: any[], maltratos: any[], conflictos: any[], periodo: string) {
+    const total = new Array(12).fill(0);
+    const getMonth = (v: any) => {
+      const d = new Date(v?.fecha || v?.fechaRegistro || v?.createdAt);
+      return isNaN(+d) ? -1 : d.getMonth();
+    };
+
+    [...alertas, ...maltratos, ...conflictos].forEach(caso => {
+      const mes = getMonth(caso);
+      if (mes >= 0) total[mes]++;
+    });
+
+    this.monthlyTotalChartOptions = {
+      ...this.monthlyTotalChartOptions,
+      series: [{ name: 'Casos', data: total }],
+      title: { text: `Cantidad de casos por mes - ${periodo}`, style: { fontSize: '13px', fontWeight: '600' } },
+    };
+    this.monthlyTotalChart?.updateOptions(this.monthlyTotalChartOptions);
   }
 
   private actualizarAreaMensual(alertas: any[], maltratos: any[], conflictos: any[], periodo: string) {

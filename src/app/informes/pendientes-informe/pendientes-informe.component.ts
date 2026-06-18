@@ -21,6 +21,7 @@ export class PendientesInformeComponent implements OnInit {
 
   pendientes: any[] = [];
   cargando = false;
+  eliminando: string | null = null;
 
   constructor(
     private informeService: InformeService,
@@ -61,6 +62,26 @@ export class PendientesInformeComponent implements OnInit {
 
   descargarWord(informe: any) {
     this.informeService.descargarWord(informe.numeroDeic);
+  }
+
+  eliminarPendiente(informe: any) {
+    const confirmado = window.confirm(
+      `¿Eliminar el informe pendiente ${informe.numeroDeic}? Esta accion no se puede deshacer.`
+    );
+    if (!confirmado) return;
+
+    this.eliminando = informe.numeroDeic;
+    this.informeService.eliminar(informe.numeroDeic).subscribe({
+      next: () => {
+        this.pendientes = this.pendientes.filter((item) => item.numeroDeic !== informe.numeroDeic);
+        this.eliminando = null;
+        this.snackBar.open('Informe pendiente eliminado.', 'OK', { duration: 2500 });
+      },
+      error: () => {
+        this.eliminando = null;
+        this.snackBar.open('Error al eliminar el informe pendiente.', 'Cerrar', { duration: 3000 });
+      }
+    });
   }
 
   tipoLabel(tipo: string): string {
