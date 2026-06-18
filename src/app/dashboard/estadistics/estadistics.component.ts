@@ -143,17 +143,21 @@ export default class EstadisticsComponent implements OnInit {
       title: { text: 'Estado de investigación por tipo', style: { fontSize: '13px', fontWeight: '600' } },
     };
 
-    // 4. Area mensual
+    // 4. Barras mensuales por tipo
     this.monthlyTotalChartOptions = {
       ...baseBar,
-      series: [{ name: 'Casos', data: new Array(12).fill(0) }],
-      colors: ['#2563EB'],
-      plotOptions: { bar: { horizontal: false, columnWidth: '45%', borderRadius: 6, borderRadiusApplication: 'end', dataLabels: { position: 'top' } } },
-      dataLabels: { enabled: true, formatter: (v: number) => `${v}`, offsetY: -14, style: { fontSize: '12px', colors: ['#555'] } },
+      series: [
+        { name: 'Alerta', data: new Array(12).fill(0) },
+        { name: 'Maltrato', data: new Array(12).fill(0) },
+        { name: 'Conflicto', data: new Array(12).fill(0) },
+      ],
+      colors: [C.alerta, C.maltrato, C.conflicto],
+      plotOptions: { bar: { horizontal: false, columnWidth: '70%', borderRadius: 4, borderRadiusApplication: 'end' } },
+      dataLabels: { enabled: false },
       xaxis: { categories: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'] },
       yaxis: { min: 0, tickAmount: 5 },
-      legend: { show: false },
-      title: { text: 'Cantidad de casos por mes', style: { fontSize: '13px', fontWeight: '600' } },
+      legend: { position: 'top', horizontalAlign: 'right', fontSize: '12px' },
+      title: { text: 'Cantidad de casos por mes y tipo', style: { fontSize: '13px', fontWeight: '600' } },
     };
 
     this.areaChartOptions = {
@@ -339,8 +343,8 @@ export default class EstadisticsComponent implements OnInit {
     };
     this.stackedChart?.updateOptions(this.stackedChartOptions);
 
-    // 4. Total mensual
-    this.actualizarTotalMensual(alertas, maltratos, conflictos, periodo);
+    // 4. Barras mensuales por tipo
+    this.actualizarBarrasMensualesPorTipo(alertas, maltratos, conflictos, periodo);
 
     // 4. Area mensual
     this.actualizarAreaMensual(alertas, maltratos, conflictos, periodo);
@@ -376,22 +380,29 @@ export default class EstadisticsComponent implements OnInit {
     this.hBarChart?.updateOptions(this.hBarChartOptions);
   }
 
-  private actualizarTotalMensual(alertas: any[], maltratos: any[], conflictos: any[], periodo: string) {
-    const total = new Array(12).fill(0);
+  private actualizarBarrasMensualesPorTipo(alertas: any[], maltratos: any[], conflictos: any[], periodo: string) {
+    const series = {
+      Alerta: new Array(12).fill(0),
+      Maltrato: new Array(12).fill(0),
+      Conflicto: new Array(12).fill(0),
+    };
     const getMonth = (v: any) => {
       const d = new Date(v?.fecha || v?.fechaRegistro || v?.createdAt);
       return isNaN(+d) ? -1 : d.getMonth();
     };
 
-    [...alertas, ...maltratos, ...conflictos].forEach(caso => {
-      const mes = getMonth(caso);
-      if (mes >= 0) total[mes]++;
-    });
+    alertas.forEach(a => { const mes = getMonth(a); if (mes >= 0) series.Alerta[mes]++; });
+    maltratos.forEach(m => { const mes = getMonth(m); if (mes >= 0) series.Maltrato[mes]++; });
+    conflictos.forEach(c => { const mes = getMonth(c); if (mes >= 0) series.Conflicto[mes]++; });
 
     this.monthlyTotalChartOptions = {
       ...this.monthlyTotalChartOptions,
-      series: [{ name: 'Casos', data: total }],
-      title: { text: `Cantidad de casos por mes - ${periodo}`, style: { fontSize: '13px', fontWeight: '600' } },
+      series: [
+        { name: 'Alerta', data: series.Alerta },
+        { name: 'Maltrato', data: series.Maltrato },
+        { name: 'Conflicto', data: series.Conflicto },
+      ],
+      title: { text: `Cantidad de casos por mes y tipo - ${periodo}`, style: { fontSize: '13px', fontWeight: '600' } },
     };
     this.monthlyTotalChart?.updateOptions(this.monthlyTotalChartOptions);
   }
