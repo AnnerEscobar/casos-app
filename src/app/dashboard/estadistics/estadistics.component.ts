@@ -1,6 +1,6 @@
 import { ConflictoService } from './../../casos/services/conflicto.service';
 import { AlertaService } from './../../casos/services/alerta.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MaltratoService } from '../../casos/services/maltrato.service';
@@ -14,6 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { AuthService } from '../../auth/auth-service/auth.service';
 
 type YearOption = number | 'all';
 
@@ -40,9 +41,12 @@ const C = {
   templateUrl: './estadistics.component.html',
   styleUrl: './estadistics.component.css',
 })
-export default class EstadisticsComponent implements OnInit {
+export default class EstadisticsComponent implements OnInit, OnDestroy {
 
   isLoading = false;
+  sessionRemainingLabel = '--:--';
+  sessionWarning = false;
+  private sessionTimerId: ReturnType<typeof setInterval> | null = null;
 
   @ViewChild('barChart')      barChart!:      ChartComponent;
   @ViewChild('stackedChart')  stackedChart!:  ChartComponent;
@@ -84,9 +88,17 @@ export default class EstadisticsComponent implements OnInit {
     private maltratoService: MaltratoService,
     private conflictoService: ConflictoService,
     private dashboardService: DashboardService,
+    private authService: AuthService,
   ) { this.initCharts(); }
 
-  ngOnInit(): void { this.cargarDatos(); }
+  ngOnInit(): void {
+    this.cargarDatos();
+    this.iniciarContadorSesion();
+  }
+
+  ngOnDestroy(): void {
+    if (this.sessionTimerId) clearInterval(this.sessionTimerId);
+  }
 
   // ── Inicialización base de cada gráfico ──────────────────────────────────
   private initCharts() {
@@ -493,6 +505,39 @@ export default class EstadisticsComponent implements OnInit {
       title: { text: `Proyección — ${periodo} + 2 meses`, style: { fontSize: '13px', fontWeight: '600' } },
     };
     this.forecastChart?.updateOptions(this.forecastChartOptions);
+  }
+
+  private iniciarContadorSesion(): void {
+    this.actualizarContadorSesion();
+    this.sessionTimerId = setInterval(() => this.actualizarContadorSesion(), 1000);
+  }
+
+  private actualizarContadorSesion(): void {
+    const expiresAt = this.authService.getSessionExpiresAt();
+    if (!expiresAt) {
+      this.sessionRemainingLabel = '--:--';
+      this.sessionWarning = false;
+      return;
+    }
+
+    const remainingMs = Math.max(0, expiresAt - Date.now());
+    this.sessionWarning = remainingMs <= 5 * 60 * 1000;
+
+    if (remainingMs <= 0) {
+      this.sessionRemainingLabel = 'Expirada';
+      return;
+    }
+
+    const totalSeconds = Math.ceil(remainingMs / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    const mm = String(minutes).padStart(2, '0');
+    const ss = String(seconds).padStart(2, '0');
+    this.sessionRemainingLabel = hours > 0
+      ? `${hours}:${mm}:${ss}`
+      : `${mm}:${ss}`;
   }
 
   private getYear(v: any): number | null {

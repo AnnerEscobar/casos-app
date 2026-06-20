@@ -1,7 +1,7 @@
 /* import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../auth-service/auth.service';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import {MatCardModule} from '@angular/material/card';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
@@ -28,11 +28,12 @@ export default class AuthComponent {
 
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private route: ActivatedRoute) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
     });
+    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/casos';
   }
 
   onLogin() {
@@ -50,7 +51,7 @@ export default class AuthComponent {
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../auth-service/auth.service';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 import { MatCardModule } from '@angular/material/card';
@@ -81,12 +82,16 @@ export default class AuthComponent {
   hide = true;         // ver/ocultar contraseña
   loading = false;     // estado de carga
   submitted = false;   // para mostrar errores al enviar
+  sessionExpired = false;
+  private returnUrl = '/casos';
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private route: ActivatedRoute) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
     });
+    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/casos';
+    this.sessionExpired = this.route.snapshot.queryParamMap.get('sessionExpired') === '1';
   }
 
   get email() { return this.loginForm.get('email')!; }
@@ -102,7 +107,7 @@ export default class AuthComponent {
     this.authService.login(email, password).subscribe({
       next: () => {
         this.loading = false;
-        this.router.navigate(['/casos']);
+        this.router.navigateByUrl(this.returnUrl);
       },
       error: () => {
         this.loading = false;

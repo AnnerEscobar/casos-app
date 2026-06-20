@@ -49,6 +49,7 @@ export default class AddCaseConflictoComponent implements OnInit {
   informeDeic: string | null = null;
   casoYaExiste = false;
   deicDuplicado = '';
+  private readonly draftKey = 'draft:add-case-conflicto';
 
   myForm = this.formBuider.group({
     numeroDeic: ['', [Validators.required]],
@@ -103,6 +104,8 @@ export default class AddCaseConflictoComponent implements OnInit {
         numeroDeic: datos.numeroDeic,
         numeroMp: datos.numeroMp,
       });
+    } else {
+      this.restaurarBorradorLocal();
     }
   }
 
@@ -149,6 +152,7 @@ export default class AddCaseConflictoComponent implements OnInit {
       return;
     }
 
+    this.guardarBorradorLocal();
     this.isLoading = true;
     const formData = new FormData();
     formData.append('numeroDeic', this.myForm.value.numeroDeic?.trim() || '');
@@ -178,6 +182,7 @@ export default class AddCaseConflictoComponent implements OnInit {
         }
         this._snackBar.open('Caso registrado con éxito', 'Cerrar', { duration: 3000, panelClass: ['snack-success'] });
         this.resetFormState(this.myForm);
+        sessionStorage.removeItem(this.draftKey);
         this.selectedFile = null;
         this.isLoading = false;
         this.informeDeic = null;
@@ -213,5 +218,43 @@ export default class AddCaseConflictoComponent implements OnInit {
         control?.setErrors(null);
       }
     });
+  }
+
+  private guardarBorradorLocal(): void {
+    sessionStorage.setItem(this.draftKey, JSON.stringify({
+      value: this.myForm.getRawValue(),
+      fileName: this.fileName,
+    }));
+  }
+
+  private restaurarBorradorLocal(): void {
+    const raw = sessionStorage.getItem(this.draftKey);
+    if (!raw) return;
+
+    try {
+      const draft = JSON.parse(raw);
+      const value = draft.value || {};
+      value.infractores = (value.infractores || []).map((item: any) => ({
+        ...item,
+        fecha_Nac: item.fecha_Nac ? new Date(item.fecha_Nac) : null,
+      }));
+      value.victimas = (value.victimas || []).map((item: any) => ({
+        ...item,
+        fecha_Nac: item.fecha_Nac ? new Date(item.fecha_Nac) : null,
+      }));
+
+      this.infractores.clear();
+      this.victimas.clear();
+      (value.infractores.length ? value.infractores : [{}]).forEach(() => this.agregarInfractor());
+      (value.victimas.length ? value.victimas : [{}]).forEach(() => this.agregarVictima());
+      this.myForm.patchValue(value);
+      this.fileName = draft.fileName ? `${draft.fileName} (selecciona el archivo nuevamente)` : null;
+      this._snackBar.open('Recupere un borrador local. Revisa los datos y selecciona el archivo nuevamente.', 'Cerrar', {
+        duration: 5000,
+        panelClass: ['snack-warning']
+      });
+    } catch {
+      sessionStorage.removeItem(this.draftKey);
+    }
   }
 }

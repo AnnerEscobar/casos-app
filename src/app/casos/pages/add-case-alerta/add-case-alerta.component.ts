@@ -42,6 +42,7 @@ export default class AddCaseAlertaComponent implements OnInit {
   informeDeic: string | null = null;
   casoYaExiste = false;
   deicDuplicado = '';
+  private readonly draftKey = 'draft:add-case-alerta';
 
   estados = [
     { value: 'Informado', viewValue: 'Informado' },
@@ -115,6 +116,8 @@ export default class AddCaseAlertaComponent implements OnInit {
           direccionDetallada: datos.lugar || ''
         }
       });
+    } else {
+      this.restaurarBorradorLocal();
     }
   }
 
@@ -135,6 +138,7 @@ export default class AddCaseAlertaComponent implements OnInit {
       return;
     }
 
+    this.guardarBorradorLocal();
     this.isLoading = true;
     const formData = new FormData();
     formData.append('numeroDeic', this.myForm.value.numeroDeic || '');
@@ -163,6 +167,7 @@ export default class AddCaseAlertaComponent implements OnInit {
         }
         this._snackBar.open('Caso registrado correctamente', 'Cerrar', { duration: 3000, panelClass: ['snack-success'] });
         this.resetFormState(this.myForm);
+        sessionStorage.removeItem(this.draftKey);
         this.selectedFile = null;
         this.isLoading = false;
         this.informeDeic = null;
@@ -198,5 +203,33 @@ export default class AddCaseAlertaComponent implements OnInit {
         control?.setErrors(null);
       }
     });
+  }
+
+  private guardarBorradorLocal(): void {
+    sessionStorage.setItem(this.draftKey, JSON.stringify({
+      value: this.myForm.getRawValue(),
+      fileName: this.fileName,
+    }));
+  }
+
+  private restaurarBorradorLocal(): void {
+    const raw = sessionStorage.getItem(this.draftKey);
+    if (!raw) return;
+
+    try {
+      const draft = JSON.parse(raw);
+      const value = draft.value || {};
+      if (value.fecha_Nac) value.fecha_Nac = new Date(value.fecha_Nac);
+      if (value.fechaLocalizacion) value.fechaLocalizacion = new Date(value.fechaLocalizacion);
+
+      this.myForm.patchValue(value);
+      this.fileName = draft.fileName ? `${draft.fileName} (selecciona el archivo nuevamente)` : null;
+      this._snackBar.open('Recupere un borrador local. Revisa los datos y selecciona el archivo nuevamente.', 'Cerrar', {
+        duration: 5000,
+        panelClass: ['snack-warning']
+      });
+    } catch {
+      sessionStorage.removeItem(this.draftKey);
+    }
   }
 }

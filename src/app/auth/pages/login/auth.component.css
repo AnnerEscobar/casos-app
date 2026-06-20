@@ -173,6 +173,27 @@
   gap: 16px;
 }
 
+.session-expired-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fbbf24;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.session-expired-alert mat-icon {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  color: #b45309;
+}
+
 .login-field {
   width: 100%;
 }
@@ -256,6 +277,16 @@
 
 :host-context(.dark-theme) .form-header p {
   color: #94a3b8;
+}
+
+:host-context(.dark-theme) .session-expired-alert {
+  color: #fde68a;
+  background: rgba(146, 64, 14, 0.22);
+  border-color: rgba(251, 191, 36, 0.45);
+}
+
+:host-context(.dark-theme) .session-expired-alert mat-icon {
+  color: #fbbf24;
 }
 
 :host-context(.dark-theme) .form-icon {

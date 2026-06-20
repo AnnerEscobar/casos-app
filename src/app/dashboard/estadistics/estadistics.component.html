@@ -4,6 +4,15 @@
     <h2 class="dashboard-title">Estadísticas de Casos</h2>
     <p class="dashboard-sub">{{ tituloPeriodo }}</p>
   </div>
+  <div class="header-actions">
+    <div class="session-counter" [class.session-counter--warning]="sessionWarning">
+      <mat-icon>timer</mat-icon>
+      <div>
+        <span>Sesion</span>
+        <strong>{{ sessionRemainingLabel }}</strong>
+      </div>
+    </div>
+
   <mat-form-field appearance="outline" class="year-select">
     <mat-label>Período</mat-label>
     <mat-select [(ngModel)]="selectedYear" (selectionChange)="onYearChange($event.value)">
@@ -15,6 +24,7 @@
       }
     </mat-select>
   </mat-form-field>
+  </div>
 </div>
 
 <div class="stats-container">

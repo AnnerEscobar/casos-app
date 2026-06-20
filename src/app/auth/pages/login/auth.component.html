@@ -42,6 +42,11 @@
       </div>
 
       <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form">
+        <div class="session-expired-alert" *ngIf="sessionExpired">
+          <mat-icon>lock_clock</mat-icon>
+          <span>Tu sesion expiro. Inicia sesion nuevamente antes de continuar.</span>
+        </div>
+
         <mat-form-field appearance="outline" class="login-field">
           <mat-label>Correo electronico</mat-label>
           <mat-icon matPrefix>mail</mat-icon>
