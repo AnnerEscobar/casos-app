@@ -34,7 +34,7 @@ import { FormsModule } from '@angular/forms';
 })
 export default class BusquedaAvanzadaComponent implements AfterViewInit {
 
-  displayedColumns: string[] = ['tipo', 'nombre', 'numeroDeic', 'estadoInvestigacion', 'numeroMp', 'acciones'];
+  displayedColumns: string[] = ['tipo', 'nombre', 'numeroDeic', 'numeroAlerta', 'estadoInvestigacion', 'numeroMp', 'acciones'];
   dataSource = new MatTableDataSource<any>([]);
   isLoading = false;
   busquedaRealizada = false;

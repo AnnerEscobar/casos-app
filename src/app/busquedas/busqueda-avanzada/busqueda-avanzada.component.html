@@ -113,6 +113,12 @@
           <td mat-cell *matCellDef="let row" class="mono-cell">{{ row.numeroDeic }}</td>
         </ng-container>
 
+        <!-- N° Alerta -->
+        <ng-container matColumnDef="numeroAlerta">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>N° Alerta</th>
+          <td mat-cell *matCellDef="let row" class="mono-cell">{{ row.numeroAlerta || '—' }}</td>
+        </ng-container>
+
         <!-- Estado -->
         <ng-container matColumnDef="estadoInvestigacion">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
