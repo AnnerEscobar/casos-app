@@ -107,3 +107,55 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .dark-theme .loading-box  { background: #1e293b !important; border-color: #334155 !important; color: #94a3b8 !important; }
 .dark-theme .empty-hint   { color: #64748b !important; }
 .dark-theme .data-row     { border-color: #1f2937 !important; }
+
+.dark-theme app-search-profile .case-hero,
+.dark-theme app-search-profile .case-panel,
+.dark-theme app-search-profile .case-metrics div {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+.dark-theme app-search-profile .case-hero {
+  background: linear-gradient(135deg, rgba(37,99,235,.22), rgba(126,87,194,.16)), #1e293b !important;
+}
+.dark-theme app-search-profile .type-chip,
+.dark-theme app-search-profile .case-data-grid div,
+.dark-theme app-search-profile .person-item,
+.dark-theme app-search-profile .document-item,
+.dark-theme app-search-profile .panel-empty,
+.dark-theme app-search-profile .timeline-content {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+.dark-theme app-search-profile .case-hero h3,
+.dark-theme app-search-profile .case-metrics span,
+.dark-theme app-search-profile .case-data-grid strong,
+.dark-theme app-search-profile .person-item strong,
+.dark-theme app-search-profile .timeline-head strong,
+.dark-theme app-search-profile .document-item {
+  color: #f8fafc !important;
+}
+.dark-theme app-search-profile .case-hero p,
+.dark-theme app-search-profile .case-metrics small,
+.dark-theme app-search-profile .case-data-grid span,
+.dark-theme app-search-profile .person-item small,
+.dark-theme app-search-profile .timeline-content p,
+.dark-theme app-search-profile .panel-empty {
+  color: #94a3b8 !important;
+}
+.dark-theme app-search-profile .panel-title,
+.dark-theme app-search-profile .result-footer {
+  border-color: #334155 !important;
+}
+.dark-theme app-search-profile .type-chip { color: #cbd5e1 !important; }
+.dark-theme app-search-profile .type-chip:hover { background: rgba(37,99,235,.16) !important; color: #93c5fd !important; border-color: #2563eb !important; }
+.dark-theme app-search-profile .type-chip.active { background: #2563eb !important; color: #fff !important; border-color: #2563eb !important; }
+.dark-theme app-search-profile .field-value.mono { color: #cbd5e1 !important; }
+.dark-theme app-search-profile .document-item:hover { border-color: #60a5fa !important; color: #bfdbfe !important; }
+.dark-theme app-search-profile .person-avatar { background: #172554 !important; color: #bfdbfe !important; }
+.dark-theme app-search-profile .tipo-alerta,
+.dark-theme app-search-profile .estado-informado { background: rgba(59,130,246,.18) !important; color: #bfdbfe !important; }
+.dark-theme app-search-profile .tipo-maltrato { background: rgba(244,114,182,.18) !important; color: #fbcfe8 !important; }
+.dark-theme app-search-profile .tipo-conflicto { background: rgba(167,139,250,.18) !important; color: #ddd6fe !important; }
+.dark-theme app-search-profile .estado-remitido { background: rgba(34,197,94,.18) !important; color: #bbf7d0 !important; }
+.dark-theme app-search-profile .estado-concluido { background: rgba(148,163,184,.18) !important; color: #e2e8f0 !important; }
+.dark-theme app-search-profile .estado-desestimado { background: rgba(248,113,113,.18) !important; color: #fecaca !important; }
