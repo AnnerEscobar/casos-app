@@ -25,6 +25,7 @@ export default class SearchProfileComponent {
   tipoBusqueda = '';
   termino = '';
   resultadosBusqueda: any[] = [];
+  casoPerfil: any | null = null;
   busquedaRealizada = false;
   isLoading = false;
 
@@ -51,6 +52,7 @@ export default class SearchProfileComponent {
     this.termino = '';
     this.busquedaRealizada = false;
     this.resultadosBusqueda = [];
+    this.casoPerfil = null;
   }
 
   ejecutarBusqueda() {
@@ -59,6 +61,7 @@ export default class SearchProfileComponent {
     this.isLoading = true;
     this.busquedaRealizada = true;
     this.resultadosBusqueda = [];
+    this.casoPerfil = null;
     const t = this.termino.trim();
 
     const obs$ = (() => {
@@ -76,9 +79,12 @@ export default class SearchProfileComponent {
 
     obs$.subscribe({
       next: (resultados) => {
-        this.resultadosBusqueda = this.tipoBusqueda === 'nombre'
-          ? this.procesarResultadosPorNombre(t, resultados)
-          : resultados;
+        if (this.esBusquedaDeCaso) {
+          this.casoPerfil = resultados?.[0] ? this.normalizarPerfilCaso(resultados[0]) : null;
+          this.resultadosBusqueda = [];
+        } else {
+          this.resultadosBusqueda = this.procesarResultadosPersona(t, resultados);
+        }
         this.isLoading = false;
       },
       error: () => {
@@ -111,6 +117,15 @@ export default class SearchProfileComponent {
       || '';
   }
 
+  get esBusquedaDeCaso(): boolean {
+    return ['numeroMp', 'numeroDeic', 'numeroAlerta'].includes(this.tipoBusqueda);
+  }
+
+  get totalDocumentosCaso(): number {
+    if (!this.casoPerfil) return 0;
+    return this.casoPerfil.documentos.length + this.casoPerfil.seguimientos.reduce((total: number, seg: any) => total + seg.archivos.length, 0);
+  }
+
   tipoClass(tipo: string): string {
     if (!tipo) return '';
     const t = tipo.toLowerCase();
@@ -130,13 +145,16 @@ export default class SearchProfileComponent {
     return '';
   }
 
-  procesarResultadosPorNombre(nombreBuscado: string, resultados: any[]): any[] {
-    const lowerName = nombreBuscado.trim().toLowerCase();
+  procesarResultadosPersona(terminoBuscado: string, resultados: any[]): any[] {
+    const lowerTerm = terminoBuscado.trim().toLowerCase();
     return resultados
       .map(caso => {
         let rol = '', nombreFinal = '', cui = '', fechaNacimiento = '', direccion = '';
 
-        if (caso.nombreDesaparecido?.toLowerCase().includes(lowerName)) {
+        const alertaCoincidePorNombre = caso.nombreDesaparecido?.toLowerCase().includes(lowerTerm);
+        const alertaCoincidePorCui = this.tipoBusqueda === 'cui' && false;
+
+        if (alertaCoincidePorNombre || alertaCoincidePorCui) {
           rol            = 'Desaparecido';
           nombreFinal    = caso.nombreDesaparecido;
           fechaNacimiento = caso.fecha_Nac || '';
@@ -144,7 +162,7 @@ export default class SearchProfileComponent {
         }
 
         const infractorMatch = caso.infractores?.find((i: any) =>
-          i.nombre.toLowerCase().includes(lowerName)
+          this.coincidePersona(i, lowerTerm)
         );
         if (infractorMatch) {
           rol             = 'Infractor';
@@ -155,7 +173,7 @@ export default class SearchProfileComponent {
         }
 
         const victimaMatch = caso.victimas?.find((v: any) =>
-          v.nombre.toLowerCase().includes(lowerName)
+          this.coincidePersona(v, lowerTerm)
         );
         if (victimaMatch) {
           rol             = 'Víctima';
@@ -181,5 +199,66 @@ export default class SearchProfileComponent {
         };
       })
       .filter(Boolean);
+  }
+
+  private coincidePersona(persona: any, termino: string): boolean {
+    if (!persona) return false;
+    const nombre = String(persona.nombre || '').toLowerCase();
+    const cui = String(persona.cui || persona.dpi || persona.documentoIdentificacion || '').toLowerCase();
+    return nombre.includes(termino) || cui.includes(termino);
+  }
+
+  private normalizarPerfilCaso(caso: any): any {
+    const tipo = caso.tipo || 'Desconocido';
+    const esAlerta = tipo.toLowerCase().includes('alerta');
+    const involucrados = esAlerta
+      ? [{
+          rol: 'Desaparecido',
+          nombre: caso.nombreDesaparecido,
+          cui: '',
+          fechaNacimiento: caso.fecha_Nac,
+          direccion: this.formatearDireccion(caso.direccion),
+        }]
+      : [
+          ...(caso.victimas || []).map((p: any) => ({ ...p, rol: 'Victima', fechaNacimiento: p.fecha_Nac })),
+          ...(caso.infractores || []).map((p: any) => ({ ...p, rol: tipo === 'Conflicto' ? 'Adolescente en conflicto' : 'Sindicado/Infractor', fechaNacimiento: p.fecha_Nac })),
+        ];
+
+    return {
+      ...caso,
+      tipo,
+      involucrados: involucrados.filter((p: any) => p?.nombre),
+      documentos: (caso.fileUrls || []).map((url: string, index: number) => ({
+        nombre: index === 0 ? 'Expediente principal' : `Documento ${index + 1}`,
+        url,
+      })),
+      seguimientos: (caso.seguimientos || []).map((seg: any, index: number) => ({
+        ...seg,
+        titulo: `Seguimiento ${index + 1}`,
+        estado: seg.estado || seg.nuevoEstado || caso.estadoInvestigacion,
+        archivos: (seg.archivos || []).map((url: string, i: number) => ({
+          nombre: `Documento ${i + 1}`,
+          url,
+        })),
+      })),
+      direccionTexto: this.formatearDireccion(caso.direccion),
+    };
+  }
+
+  formatearDireccion(direccion: any): string {
+    if (!direccion) return '';
+    if (typeof direccion === 'string') return direccion;
+    return [direccion.direccionDetallada, direccion.municipio, direccion.departamento].filter(Boolean).join(', ');
+  }
+
+  abrirSeguimiento(caso: any) {
+    const tipo = caso?.tipo?.toLowerCase() || '';
+    if (tipo.includes('alerta')) {
+      this.router.navigate(['/casos/seguimiento-alerta'], { state: { numeroDeic: caso.numeroDeic } });
+    } else if (tipo.includes('maltrato')) {
+      this.router.navigate(['/casos/seguimiento-maltrato'], { state: { numeroDeic: caso.numeroDeic } });
+    } else if (tipo.includes('conflicto')) {
+      this.router.navigate(['/casos/seguimiento-conflicto'], { state: { numeroDeic: caso.numeroDeic } });
+    }
   }
 }

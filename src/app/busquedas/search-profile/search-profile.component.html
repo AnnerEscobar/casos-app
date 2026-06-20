@@ -1,24 +1,21 @@
 <div class="page-container">
 
-  <!-- Header -->
   <div class="page-header">
     <div class="header-icon">
       <mat-icon>manage_search</mat-icon>
     </div>
     <div>
-      <h2 class="page-title">Búsquedas</h2>
-      <p class="page-sub">Encuentra casos registrados por diferentes criterios</p>
+      <h2 class="page-title">Busquedas</h2>
+      <p class="page-sub">Encuentra perfiles de personas o expedientes completos por numero de caso.</p>
     </div>
   </div>
 
-  <!-- Selector de tipo + input -->
   <div class="section-card">
     <div class="section-header">
       <mat-icon class="section-icon">tune</mat-icon>
-      <span class="section-title">Criterio de búsqueda</span>
+      <span class="section-title">Criterio de busqueda</span>
     </div>
 
-    <!-- Chips de tipo -->
     <div class="type-chips">
       <button *ngFor="let t of searchTypes"
               class="type-chip"
@@ -29,7 +26,6 @@
       </button>
     </div>
 
-    <!-- Input dinámico -->
     <ng-container *ngIf="tipoActivo">
       <p class="search-hint-text">{{ tipoActivo.hint }}</p>
       <div class="search-row">
@@ -52,11 +48,10 @@
 
     <div class="empty-hint" *ngIf="!tipoActivo">
       <mat-icon>touch_app</mat-icon>
-      <span>Selecciona un criterio de búsqueda para comenzar</span>
+      <span>Selecciona un criterio de busqueda para comenzar</span>
     </div>
   </div>
 
-  <!-- Resultados -->
   <ng-container *ngIf="busquedaRealizada">
 
     <div class="loading-box" *ngIf="isLoading">
@@ -66,13 +61,148 @@
 
     <ng-container *ngIf="!isLoading">
 
-      <div class="results-header" *ngIf="resultadosBusqueda.length">
+      <div class="case-profile" *ngIf="casoPerfil">
+        <div class="case-hero">
+          <div>
+            <span class="tipo-chip" [ngClass]="tipoClass(casoPerfil.tipo)">{{ casoPerfil.tipo }}</span>
+            <h3>{{ casoPerfil.numeroDeic }}</h3>
+            <p>{{ getNombre(casoPerfil) || 'Caso registrado' }}</p>
+          </div>
+          <span class="estado-chip" [ngClass]="estadoClass(casoPerfil.estadoInvestigacion)">
+            {{ casoPerfil.estadoInvestigacion || 'Sin estado' }}
+          </span>
+        </div>
+
+        <div class="case-metrics">
+          <div>
+            <mat-icon>groups</mat-icon>
+            <span>{{ casoPerfil.involucrados.length }}</span>
+            <small>Involucrados</small>
+          </div>
+          <div>
+            <mat-icon>timeline</mat-icon>
+            <span>{{ casoPerfil.seguimientos.length }}</span>
+            <small>Seguimientos</small>
+          </div>
+          <div>
+            <mat-icon>folder_copy</mat-icon>
+            <span>{{ totalDocumentosCaso }}</span>
+            <small>Documentos</small>
+          </div>
+        </div>
+
+        <div class="case-layout">
+          <section class="case-panel">
+            <div class="panel-title">
+              <mat-icon>assignment</mat-icon>
+              <span>Datos del caso</span>
+            </div>
+            <div class="case-data-grid">
+              <div>
+                <span>DEIC</span>
+                <strong class="mono">{{ casoPerfil.numeroDeic || '-' }}</strong>
+              </div>
+              <div>
+                <span>Expediente MP</span>
+                <strong class="mono">{{ casoPerfil.numeroMp || '-' }}</strong>
+              </div>
+              <div *ngIf="casoPerfil.numeroAlerta">
+                <span>Alerta Alba-Keneth</span>
+                <strong class="mono">{{ casoPerfil.numeroAlerta }}</strong>
+              </div>
+              <div *ngIf="casoPerfil.direccionTexto">
+                <span>{{ casoPerfil.tipo === 'Alerta' ? 'Lugar de desaparicion' : 'Lugar de los hechos' }}</span>
+                <strong>{{ casoPerfil.direccionTexto }}</strong>
+              </div>
+              <div *ngIf="casoPerfil.direccionLocalizacion">
+                <span>Lugar de localizacion</span>
+                <strong>{{ casoPerfil.direccionLocalizacion }}</strong>
+              </div>
+            </div>
+          </section>
+
+          <section class="case-panel">
+            <div class="panel-title">
+              <mat-icon>people_alt</mat-icon>
+              <span>Involucrados</span>
+            </div>
+            <div class="people-list">
+              <article class="person-item" *ngFor="let persona of casoPerfil.involucrados">
+                <div class="person-avatar">{{ (persona.nombre || '?').charAt(0) }}</div>
+                <div>
+                  <strong>{{ persona.nombre }}</strong>
+                  <span>{{ persona.rol }}</span>
+                  <small *ngIf="persona.cui" class="mono">CUI/DPI {{ persona.cui }}</small>
+                  <small *ngIf="persona.fechaNacimiento">Nacimiento {{ persona.fechaNacimiento | date:'dd/MM/yyyy' }}</small>
+                  <small *ngIf="persona.direccion">{{ persona.direccion }}</small>
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
+
+        <section class="case-panel">
+          <div class="panel-title">
+            <mat-icon>description</mat-icon>
+            <span>Documentos del expediente</span>
+          </div>
+          <div class="document-list" *ngIf="casoPerfil.documentos.length; else noDocs">
+            <button class="document-item" *ngFor="let doc of casoPerfil.documentos" (click)="descargarArchivo(doc.url)">
+              <mat-icon>picture_as_pdf</mat-icon>
+              <span>{{ doc.nombre }}</span>
+              <mat-icon>open_in_new</mat-icon>
+            </button>
+          </div>
+          <ng-template #noDocs>
+            <p class="panel-empty">No hay documentos principales asociados.</p>
+          </ng-template>
+        </section>
+
+        <section class="case-panel">
+          <div class="panel-title">
+            <mat-icon>timeline</mat-icon>
+            <span>Seguimientos</span>
+            <button mat-stroked-button class="btn-action panel-action" (click)="abrirSeguimiento(casoPerfil)">
+              <mat-icon>add</mat-icon> Agregar seguimiento
+            </button>
+          </div>
+
+          <div class="timeline" *ngIf="casoPerfil.seguimientos.length; else noSeguimientos">
+            <article class="timeline-item" *ngFor="let seg of casoPerfil.seguimientos">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <div class="timeline-head">
+                  <strong>{{ seg.titulo }}</strong>
+                  <span class="estado-chip" [ngClass]="estadoClass(seg.estado)">{{ seg.estado || 'Sin estado' }}</span>
+                </div>
+                <p>{{ seg.fecha | date:'dd/MM/yyyy HH:mm' }}</p>
+                <div class="case-data-grid compact" *ngIf="seg.direccionLocalizacion || seg.nombreAcompanante || seg.telefono">
+                  <div *ngIf="seg.direccionLocalizacion"><span>Direccion</span><strong>{{ seg.direccionLocalizacion }}</strong></div>
+                  <div *ngIf="seg.nombreAcompanante"><span>Acompanante</span><strong>{{ seg.nombreAcompanante }}</strong></div>
+                  <div *ngIf="seg.telefono"><span>Telefono</span><strong>{{ seg.telefono }}</strong></div>
+                </div>
+                <div class="document-list inline" *ngIf="seg.archivos.length">
+                  <button class="document-item" *ngFor="let doc of seg.archivos" (click)="descargarArchivo(doc.url)">
+                    <mat-icon>attach_file</mat-icon>
+                    <span>{{ doc.nombre }}</span>
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
+          <ng-template #noSeguimientos>
+            <p class="panel-empty">Este caso aun no tiene seguimientos registrados.</p>
+          </ng-template>
+        </section>
+      </div>
+
+      <div class="results-header" *ngIf="!esBusquedaDeCaso && resultadosBusqueda.length">
         <mat-icon class="results-icon">format_list_bulleted</mat-icon>
-        <span class="results-title">Resultados de búsqueda</span>
+        <span class="results-title">Resultados de busqueda</span>
         <span class="results-badge">{{ resultadosBusqueda.length }}</span>
       </div>
 
-      <div class="results-grid" *ngIf="resultadosBusqueda.length">
+      <div class="results-grid" *ngIf="!esBusquedaDeCaso && resultadosBusqueda.length">
         <div class="result-card" *ngFor="let r of resultadosBusqueda">
 
           <div class="result-top">
@@ -93,30 +223,25 @@
             </div>
             <div class="result-field">
               <span class="field-label">DEIC</span>
-              <span class="field-value mono">{{ r.numeroDeic || '—' }}</span>
+              <span class="field-value mono">{{ r.numeroDeic || '-' }}</span>
             </div>
             <div class="result-field">
               <span class="field-label">MP</span>
-              <span class="field-value mono">{{ r.numeroMp || '—' }}</span>
+              <span class="field-value mono">{{ r.numeroMp || '-' }}</span>
             </div>
           </div>
 
           <div class="result-footer">
-            <button *ngIf="tipoBusqueda === 'nombre'" mat-stroked-button class="btn-action"
-                    (click)="verPerfil(r)">
+            <button mat-stroked-button class="btn-action" (click)="verPerfil(r)">
               <mat-icon>account_circle</mat-icon> Ver perfil
-            </button>
-            <button *ngIf="tipoBusqueda !== 'nombre'" mat-stroked-button class="btn-action"
-                    (click)="descargarArchivo(r.fileUrls?.[0])">
-              <mat-icon>download</mat-icon> Descargar
             </button>
           </div>
         </div>
       </div>
 
-      <div class="no-results" *ngIf="!resultadosBusqueda.length">
+      <div class="no-results" *ngIf="!resultadosBusqueda.length && !casoPerfil">
         <mat-icon>search_off</mat-icon>
-        <span>No se encontraron resultados para tu búsqueda</span>
+        <span>No se encontraron resultados para tu busqueda</span>
       </div>
 
     </ng-container>
