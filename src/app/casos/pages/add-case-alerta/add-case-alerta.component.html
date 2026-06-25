@@ -47,6 +47,20 @@
           </mat-select>
           <mat-error>Selecciona un estado</mat-error>
         </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Origen de la alerta</mat-label>
+          <mat-select formControlName="origenAlerta">
+            <mat-option value="">Sin clasificar</mat-option>
+            @for (origen of origenesAlerta; track origen) {
+              <mat-option [value]="origen.value">{{ origen.viewValue }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full" *ngIf="myForm.get('origenAlerta')?.value === 'Casa hogar'">
+          <mat-label>Casa hogar</mat-label>
+          <input matInput placeholder="Ej. Diamante I, Zafiro I" formControlName="casaHogar">
+          <mat-error>Campo requerido para alertas de casa hogar</mat-error>
+        </mat-form-field>
       </div>
     </div>
 
@@ -95,6 +109,10 @@
           <mat-error>Campo requerido</mat-error>
         </mat-form-field>
       </div>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Ubicación GPS</mat-label>
+        <input matInput placeholder="Ej. 14.542032, -90.550425" formControlName="ubicacionGps">
+      </mat-form-field>
     </div>
 
     <!-- Datos de localización (solo si Remitido) -->

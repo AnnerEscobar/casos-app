@@ -26,6 +26,14 @@ export class BusquedaAvanzadaService {
       params = params.set('estado', filtros.estado);
     }
 
+    if (filtros.origenAlerta) {
+      params = params.set('origenAlerta', filtros.origenAlerta);
+    }
+
+    if (filtros.casaHogar) {
+      params = params.set('casaHogar', filtros.casaHogar);
+    }
+
     if (filtros.fechaInicio) {
       params = params.set('fechaInicio', filtros.fechaInicio);
     }

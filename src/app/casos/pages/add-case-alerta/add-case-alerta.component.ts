@@ -50,6 +50,13 @@ export default class AddCaseAlertaComponent implements OnInit {
     { value: 'Remitido', viewValue: 'Remitido' },
   ];
 
+  origenesAlerta = [
+    { value: 'Casa hogar', viewValue: 'Casa hogar' },
+    { value: 'Constatacion PGN', viewValue: 'Constatacion PGN' },
+    { value: 'Desaparicion del hogar', viewValue: 'Desaparicion del hogar' },
+    { value: 'Otro', viewValue: 'Otro' },
+  ];
+
   myForm = this.formBuilder.group({
     numeroDeic: ['', [Validators.required, Validators.pattern(/^DEIC52-\d{4}-\d{2}-\d{2}-\d+$/)]],
     numeroMp: ['', [Validators.required, Validators.pattern(/^M0030-\d{4}-\d+$/)]],
@@ -57,6 +64,9 @@ export default class AddCaseAlertaComponent implements OnInit {
     nombreDesaparecido: ['', [Validators.required]],
     fecha_Nac: [null, [Validators.required]],
     estadoInvestigacion: ['', [Validators.required]],
+    origenAlerta: [''],
+    casaHogar: [''],
+    ubicacionGps: [''],
     direccion: this.formBuilder.group({
       departamento: ['', [Validators.required]],
       municipio: ['', [Validators.required]],
@@ -85,6 +95,17 @@ export default class AddCaseAlertaComponent implements OnInit {
           control?.updateValueAndValidity();
         }
       });
+    });
+
+    this.myForm.get('origenAlerta')?.valueChanges.subscribe((origen) => {
+      const casaHogarControl = this.myForm.get('casaHogar');
+      if (origen === 'Casa hogar') {
+        casaHogarControl?.setValidators(Validators.required);
+      } else {
+        casaHogarControl?.clearValidators();
+        casaHogarControl?.setValue('');
+      }
+      casaHogarControl?.updateValueAndValidity();
     });
 
     const datos = history.state;
@@ -147,6 +168,9 @@ export default class AddCaseAlertaComponent implements OnInit {
     formData.append('nombreDesaparecido', this.myForm.value.nombreDesaparecido || '');
     formData.append('fecha_Nac', this.myForm.value.fecha_Nac || '');
     formData.append('estadoInvestigacion', this.myForm.value.estadoInvestigacion || '');
+    formData.append('origenAlerta', this.myForm.value.origenAlerta || '');
+    formData.append('casaHogar', this.myForm.value.casaHogar || '');
+    formData.append('ubicacionGps', this.myForm.value.ubicacionGps || '');
     formData.append('direccion[departamento]', this.myForm.value.direccion?.departamento || '');
     formData.append('direccion[municipio]', this.myForm.value.direccion?.municipio || '');
     formData.append('direccion[direccionDetallada]', this.myForm.value.direccion?.direccionDetallada || '');

@@ -110,6 +110,18 @@
                 <span>Alerta Alba-Keneth</span>
                 <strong class="mono">{{ casoPerfil.numeroAlerta }}</strong>
               </div>
+              <div *ngIf="casoPerfil.origenAlerta">
+                <span>Origen de la alerta</span>
+                <strong>{{ casoPerfil.origenAlerta }}</strong>
+              </div>
+              <div *ngIf="casoPerfil.casaHogar">
+                <span>Casa hogar</span>
+                <strong>{{ casoPerfil.casaHogar }}</strong>
+              </div>
+              <div *ngIf="casoPerfil.ubicacionGps">
+                <span>Ubicacion GPS</span>
+                <strong class="mono">{{ casoPerfil.ubicacionGps }}</strong>
+              </div>
               <div *ngIf="casoPerfil.direccionTexto">
                 <span>{{ casoPerfil.tipo === 'Alerta' ? 'Lugar de desaparicion' : 'Lugar de los hechos' }}</span>
                 <strong>{{ casoPerfil.direccionTexto }}</strong>

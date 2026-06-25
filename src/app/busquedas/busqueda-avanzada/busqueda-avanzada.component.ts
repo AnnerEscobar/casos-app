@@ -34,7 +34,7 @@ import { FormsModule } from '@angular/forms';
 })
 export default class BusquedaAvanzadaComponent implements AfterViewInit {
 
-  displayedColumns: string[] = ['tipo', 'nombre', 'numeroDeic', 'numeroAlerta', 'estadoInvestigacion', 'numeroMp', 'acciones'];
+  displayedColumns: string[] = ['tipo', 'nombre', 'numeroDeic', 'numeroAlerta', 'origenAlerta', 'estadoInvestigacion', 'numeroMp', 'acciones'];
   dataSource = new MatTableDataSource<any>([]);
   isLoading = false;
   busquedaRealizada = false;
@@ -49,6 +49,7 @@ export default class BusquedaAvanzadaComponent implements AfterViewInit {
   }
 
   estados: string[] = [];
+  origenesAlerta = ['Casa hogar', 'Constatacion PGN', 'Desaparicion del hogar', 'Otro'];
 
   private formBuilder = inject(FormBuilder);
   private busquedaAvanzadaService = inject(BusquedaAvanzadaService);
@@ -57,6 +58,8 @@ export default class BusquedaAvanzadaComponent implements AfterViewInit {
   filtroForm = this.formBuilder.group({
     tipoCaso:    [''],
     estado:      [''],
+    origenAlerta: [''],
+    casaHogar: [''],
     fechaInicio: [''],
     fechaFin:    [''],
   });
@@ -64,6 +67,8 @@ export default class BusquedaAvanzadaComponent implements AfterViewInit {
   onTipoCasoChange() {
     const tipo = this.filtroForm.value.tipoCaso;
     this.filtroForm.get('estado')?.reset();
+    this.filtroForm.get('origenAlerta')?.reset();
+    this.filtroForm.get('casaHogar')?.reset();
 
     if (tipo === 'Maltrato') {
       this.estados = ['Informado', 'Desestimado'];
@@ -116,6 +121,12 @@ export default class BusquedaAvanzadaComponent implements AfterViewInit {
       || row.victimas?.[0]?.nombre
       || row.infractores?.[0]?.nombre
       || '—';
+  }
+
+  getOrigenAlerta(row: any): string {
+    if (!String(row.tipo || '').toLowerCase().includes('alerta')) return '—';
+    if (row.origenAlerta === 'Casa hogar' && row.casaHogar) return `${row.origenAlerta} - ${row.casaHogar}`;
+    return row.origenAlerta || 'Sin clasificar';
   }
 
   estadoClass(estado: string): string {

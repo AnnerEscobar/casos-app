@@ -41,6 +41,19 @@
           </mat-select>
         </mat-form-field>
 
+        <mat-form-field appearance="outline" class="w-full" *ngIf="filtroForm.value.tipoCaso === 'Alerta Alba-Keneth'">
+          <mat-label>Origen de la alerta</mat-label>
+          <mat-select formControlName="origenAlerta">
+            <mat-option value="">Todos los origenes</mat-option>
+            <mat-option *ngFor="let origen of origenesAlerta" [value]="origen">{{ origen }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full" *ngIf="filtroForm.value.tipoCaso === 'Alerta Alba-Keneth' && filtroForm.value.origenAlerta === 'Casa hogar'">
+          <mat-label>Casa hogar</mat-label>
+          <input matInput formControlName="casaHogar" placeholder="Ej. Diamante I">
+        </mat-form-field>
+
         <!-- Rango de fechas -->
         <mat-form-field appearance="outline" class="w-full">
           <mat-label>Fecha desde</mat-label>
@@ -117,6 +130,12 @@
         <ng-container matColumnDef="numeroAlerta">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>N° Alerta</th>
           <td mat-cell *matCellDef="let row" class="mono-cell">{{ row.numeroAlerta || '—' }}</td>
+        </ng-container>
+
+        <!-- Origen -->
+        <ng-container matColumnDef="origenAlerta">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Origen</th>
+          <td mat-cell *matCellDef="let row">{{ getOrigenAlerta(row) }}</td>
         </ng-container>
 
         <!-- Estado -->
