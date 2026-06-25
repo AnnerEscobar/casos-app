@@ -50,6 +50,18 @@ export default class BusquedaAvanzadaComponent implements AfterViewInit {
 
   estados: string[] = [];
   origenesAlerta = ['Casa hogar', 'Constatacion PGN', 'Desaparicion del hogar', 'Otro'];
+  casasHogar = [
+    'Diamante I',
+    'Diamante II',
+    'Diamante III',
+    'Diamante IV',
+    'Diamante V',
+    'Zafiro I',
+    'Zafiro II',
+    'Zafiro III',
+    'Zafiro IV',
+    'Zafiro V',
+  ];
 
   private formBuilder = inject(FormBuilder);
   private busquedaAvanzadaService = inject(BusquedaAvanzadaService);

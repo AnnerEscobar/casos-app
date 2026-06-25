@@ -58,7 +58,11 @@
         </mat-form-field>
         <mat-form-field appearance="outline" class="w-full" *ngIf="myForm.get('origenAlerta')?.value === 'Casa hogar'">
           <mat-label>Casa hogar</mat-label>
-          <input matInput placeholder="Ej. Diamante I, Zafiro I" formControlName="casaHogar">
+          <mat-select formControlName="casaHogar">
+            @for (casa of casasHogar; track casa) {
+              <mat-option [value]="casa">{{ casa }}</mat-option>
+            }
+          </mat-select>
           <mat-error>Campo requerido para alertas de casa hogar</mat-error>
         </mat-form-field>
       </div>

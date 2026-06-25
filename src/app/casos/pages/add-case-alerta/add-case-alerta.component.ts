@@ -57,6 +57,19 @@ export default class AddCaseAlertaComponent implements OnInit {
     { value: 'Otro', viewValue: 'Otro' },
   ];
 
+  casasHogar = [
+    'Diamante I',
+    'Diamante II',
+    'Diamante III',
+    'Diamante IV',
+    'Diamante V',
+    'Zafiro I',
+    'Zafiro II',
+    'Zafiro III',
+    'Zafiro IV',
+    'Zafiro V',
+  ];
+
   myForm = this.formBuilder.group({
     numeroDeic: ['', [Validators.required, Validators.pattern(/^DEIC52-\d{4}-\d{2}-\d{2}-\d+$/)]],
     numeroMp: ['', [Validators.required, Validators.pattern(/^M0030-\d{4}-\d+$/)]],

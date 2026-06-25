@@ -51,7 +51,10 @@
 
         <mat-form-field appearance="outline" class="w-full" *ngIf="filtroForm.value.tipoCaso === 'Alerta Alba-Keneth' && filtroForm.value.origenAlerta === 'Casa hogar'">
           <mat-label>Casa hogar</mat-label>
-          <input matInput formControlName="casaHogar" placeholder="Ej. Diamante I">
+          <mat-select formControlName="casaHogar">
+            <mat-option value="">Todas las casas hogar</mat-option>
+            <mat-option *ngFor="let casa of casasHogar" [value]="casa">{{ casa }}</mat-option>
+          </mat-select>
         </mat-form-field>
 
         <!-- Rango de fechas -->
