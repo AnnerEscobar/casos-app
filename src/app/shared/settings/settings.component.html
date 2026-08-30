@@ -31,52 +31,117 @@
             <span class="setting-desc">Cambia el tema visual de la aplicación</span>
           </div>
         </div>
-        <mat-slide-toggle
-          [checked]="theme.isDark"
-          (change)="toggleDark()">
+        <mat-slide-toggle [checked]="theme.isDark" (change)="toggleDark()">
         </mat-slide-toggle>
       </div>
     </div>
 
     <!-- Cuenta -->
-    <div class="section-card">
-      <div class="section-header">
-        <mat-icon class="section-icon">manage_accounts</mat-icon>
-        <span class="section-title">Cuenta</span>
+    <!-- Cuenta -->
+<div class="section-card">
+
+  <div class="section-header">
+    <mat-icon class="section-icon">manage_accounts</mat-icon>
+    <span class="section-title">Cuenta</span>
+  </div>
+
+  <div class="account-actions">
+
+    <!-- Administración de usuarios - Solo Administrador -->
+    @if (authService.hasRole(UserRole.ADMIN)) {
+
+      <a class="action-row" routerLink="/casos/usuarios">
+
+        <div class="action-left">
+
+          <div class="action-icon-wrap">
+            <mat-icon>group</mat-icon>
+          </div>
+
+          <div>
+            <span class="action-label">
+              Administración de usuarios
+            </span>
+
+            <span class="action-desc">
+              Gestiona usuarios, roles y accesos al sistema
+            </span>
+          </div>
+
+        </div>
+
+        <mat-icon class="action-arrow">
+          chevron_right
+        </mat-icon>
+
+      </a>
+
+      <div class="divider"></div>
+
+    }
+
+    <!-- Cambiar contraseña -->
+    <a class="action-row" routerLink="/change-password">
+
+      <div class="action-left">
+
+        <div class="action-icon-wrap">
+          <mat-icon>lock_reset</mat-icon>
+        </div>
+
+        <div>
+          <span class="action-label">
+            Cambiar contraseña
+          </span>
+
+          <span class="action-desc">
+            Actualiza tu contraseña de acceso
+          </span>
+        </div>
+
       </div>
 
-      <div class="account-actions">
+      <mat-icon class="action-arrow">
+        chevron_right
+      </mat-icon>
 
-        <a class="action-row" routerLink="/change-password">
-          <div class="action-left">
-            <div class="action-icon-wrap">
-              <mat-icon>lock_reset</mat-icon>
-            </div>
-            <div>
-              <span class="action-label">Cambiar contraseña</span>
-              <span class="action-desc">Actualiza tu contraseña de acceso</span>
-            </div>
-          </div>
-          <mat-icon class="action-arrow">chevron_right</mat-icon>
-        </a>
+    </a>
 
-        <div class="divider"></div>
+    <div class="divider"></div>
 
-        <button class="action-row action-danger" (click)="cerrarSesion()">
-          <div class="action-left">
-            <div class="action-icon-wrap danger">
-              <mat-icon>logout</mat-icon>
-            </div>
-            <div>
-              <span class="action-label">Cerrar sesión</span>
-              <span class="action-desc">Salir de la cuenta actual</span>
-            </div>
-          </div>
-          <mat-icon class="action-arrow">chevron_right</mat-icon>
-        </button>
+    <!-- Cerrar sesión -->
+    <button
+      class="action-row action-danger"
+      (click)="cerrarSesion()"
+    >
+
+      <div class="action-left">
+
+        <div class="action-icon-wrap danger">
+          <mat-icon>logout</mat-icon>
+        </div>
+
+        <div>
+          <span class="action-label">
+            Cerrar sesión
+          </span>
+
+          <span class="action-desc">
+            Salir de la cuenta actual
+          </span>
+        </div>
 
       </div>
-    </div>
+
+      <mat-icon class="action-arrow">
+        chevron_right
+      </mat-icon>
+
+    </button>
+
+  </div>
+
+</div>
 
   </div>
 </div>

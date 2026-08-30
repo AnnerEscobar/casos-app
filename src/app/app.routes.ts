@@ -1,4 +1,7 @@
-import { authGuard } from './auth/auth-guards/auth.guard';
+
+import { authGuard } from './auth/guards/auth.guard';
+import { roleGuard } from './auth/guards/role.guard';
+import { UserRole } from './auth/enums/user-role.enum';
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
@@ -92,7 +95,18 @@ export const routes: Routes = [
       },
       {
         path: '', redirectTo: 'estadisticas', pathMatch: 'full'
-      }
+      },
+      {
+        path: 'usuarios',
+        title: 'Administración de Usuarios',
+        canActivate: [roleGuard],
+        data: {
+          roles: [UserRole.ADMIN]
+        },
+        loadComponent: () =>
+          import('./usuarios/pages/lista-usuarios/lista-usuarios.component')
+            .then(m => m.ListaUsuariosComponent)
+      },
     ]
   },
   {

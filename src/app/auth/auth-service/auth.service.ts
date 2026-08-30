@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from '../../../environment.prod';
+import { SessionUser } from '../models/session-user.model';
+import { UserRole } from '../enums/user-role.enum';
 
 const SESSION_DURATION_MS = 60 * 60 * 1000;
 const SESSION_EXPIRES_AT_KEY = 'session_expires_at';
@@ -14,9 +16,11 @@ export class AuthService {
 
   private apiUrl = `${environment.apiUrl}/auth`;
   private loggedIn = new BehaviorSubject<boolean>(false);
+  private currentUser = new BehaviorSubject<SessionUser | null>(null);
   private sessionExpiresAt = new BehaviorSubject<number | null>(this.readStoredSessionExpiresAt());
 
-  constructor(private http: HttpClient, private router: Router) {}
+
+  constructor(private http: HttpClient, private router: Router) { }
 
   hasToken(): boolean {
     return this.loggedIn.value;
@@ -56,6 +60,7 @@ export class AuthService {
 
   expireSession(): void {
     this.loggedIn.next(false);
+    this.currentUser.next(null);
     this.setSessionExpiresAt(null);
   }
 
@@ -63,6 +68,7 @@ export class AuthService {
     return this.http.get(`${this.apiUrl}/session`).pipe(
       tap((response: any) => {
         this.loggedIn.next(true);
+        this.currentUser.next(response.user);
         const expFromJwt = response?.user?.exp ? Number(response.user.exp) * 1000 : null;
         const stored = this.getSessionExpiresAt();
         this.setSessionExpiresAt(expFromJwt ?? (stored && stored > Date.now() ? stored : Date.now() + SESSION_DURATION_MS));
@@ -80,6 +86,7 @@ export class AuthService {
 
   private finishLogout(): void {
     this.loggedIn.next(false);
+    this.currentUser.next(null);
     this.setSessionExpiresAt(null);
     this.router.navigate(['/login']);
   }
@@ -106,5 +113,17 @@ export class AuthService {
     const stored = Number(sessionStorage.getItem(SESSION_EXPIRES_AT_KEY));
     return Number.isFinite(stored) && stored > 0 ? stored : null;
   }
+
+  getCurrentUser(): SessionUser | null {
+    return this.currentUser.value;
+  }
+
+  currentUser$(): Observable<SessionUser | null> {
+    return this.currentUser.asObservable();
+  }
+
+ hasRole(role: UserRole): boolean {
+  return this.currentUser.value?.role === role;
+}
 
 }

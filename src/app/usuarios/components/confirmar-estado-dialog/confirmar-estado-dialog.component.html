@@ -1,0 +1,123 @@
+<div class="w-full p-6">
+
+  <!-- Encabezado -->
+  <div class="flex items-start gap-4">
+
+    <div
+      class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
+      [class.bg-red-50]="data.activo"
+      [class.text-red-600]="data.activo"
+      [class.bg-green-50]="!data.activo"
+      [class.text-green-600]="!data.activo"
+    >
+      <mat-icon>
+        {{ data.activo ? 'person_off' : 'person_check' }}
+      </mat-icon>
+    </div>
+
+    <div>
+
+      <h2 class="text-xl font-semibold text-slate-900">
+
+        {{ data.activo
+          ? 'Desactivar usuario'
+          : 'Activar usuario'
+        }}
+
+      </h2>
+
+      <p class="mt-1 text-sm text-slate-500">
+
+        {{ data.activo
+          ? 'Confirma que deseas restringir el acceso de este usuario.'
+          : 'Confirma que deseas habilitar nuevamente el acceso.'
+        }}
+
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- Mensaje -->
+  <div
+    class="my-6 rounded-xl border border-slate-200
+           bg-slate-50 p-4"
+  >
+
+    <p class="text-sm text-slate-700">
+
+      ¿Deseas
+      <strong>
+        {{ data.activo ? 'desactivar' : 'activar' }}
+      </strong>
+      a
+
+      <strong>
+        {{ data.nombre }}
+      </strong>?
+
+    </p>
+
+    @if (data.activo) {
+
+      <p class="mt-2 text-sm text-slate-500">
+        El usuario no podrá iniciar sesión hasta que vuelva a ser activado.
+      </p>
+
+    } @else {
+
+      <p class="mt-2 text-sm text-slate-500">
+        El usuario podrá iniciar sesión nuevamente en el sistema.
+      </p>
+
+    }
+
+  </div>
+
+
+  <!-- Botones -->
+  <div
+    class="flex justify-end gap-3 border-t
+           border-slate-100 pt-5"
+  >
+
+    <button
+      mat-button
+      type="button"
+      (click)="cancelar()"
+    >
+      Cancelar
+    </button>
+
+
+    @if (data.activo) {
+
+      <button
+        mat-flat-button
+        type="button"
+        class="!bg-red-600 !text-white"
+        (click)="confirmar()"
+      >
+        <mat-icon>person_off</mat-icon>
+        Desactivar
+      </button>
+
+    } @else {
+
+      <button
+        mat-flat-button
+        type="button"
+        class="!bg-green-600 !text-white"
+        (click)="confirmar()"
+      >
+        <mat-icon>person_check</mat-icon>
+        Activar
+      </button>
+
+    }
+
+  </div>
+
+</div>

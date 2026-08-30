@@ -7,6 +7,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ThemeService } from '../theme.service';
 import { AuthService } from '../../auth/auth-service/auth.service';
+import { UserRole } from '../../auth/enums/user-role.enum';
 
 @Component({
   selector: 'app-settings',
@@ -18,11 +19,16 @@ import { AuthService } from '../../auth/auth-service/auth.service';
   styleUrl: './settings.component.css'
 })
 export default class SettingsComponent {
-  theme  = inject(ThemeService);
-  private auth   = inject(AuthService);
+  theme = inject(ThemeService);
+  private auth = inject(AuthService);
   private router = inject(Router);
+  UserRole = UserRole;
 
-  toggleDark()   { this.theme.toggle(); }
-  goBack()       { this.router.navigate(['/casos']); }
+  toggleDark() { this.theme.toggle(); }
+  goBack() { this.router.navigate(['/casos']); }
   cerrarSesion() { this.auth.logout(); }
+
+  constructor(
+    public authService: AuthService
+  ) {}
 }
