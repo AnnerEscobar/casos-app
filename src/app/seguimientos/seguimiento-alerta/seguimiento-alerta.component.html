@@ -1,140 +1,927 @@
-<div class="page-container">
+<div class="v3-page">
 
-  <!-- Header -->
-  <div class="page-header">
-    <div class="header-icon">
+  <!-- =====================================================
+       HEADER
+  ====================================================== -->
+
+  <header class="v3-page-header">
+
+    <div class="v3-header-main">
+
+      <div class="v3-page-icon alerta">
+        <mat-icon>notification_important</mat-icon>
+      </div>
+
+
+      <div class="v3-heading">
+
+        <span class="v3-eyebrow">
+          ALERTA ALBA-KENETH
+        </span>
+
+        <h1>
+          Seguimiento de caso
+        </h1>
+
+        <p>
+          Consulta un expediente registrado y agrega
+          nuevas actuaciones o cambios en la investigación.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <div class="v3-header-badge">
       <mat-icon>assignment_add</mat-icon>
+      Seguimiento
     </div>
+
+  </header>
+
+
+  <!-- =====================================================
+       INFO
+  ====================================================== -->
+
+  <div class="v3-info-banner">
+
+    <mat-icon>info</mat-icon>
+
     <div>
-      <h2 class="page-title">Seguimiento de caso — Alerta Alba-Keneth</h2>
-      <p class="page-sub">Busca el caso por número DEIC para agregar un seguimiento</p>
+
+      <strong>
+        Seguimiento del expediente
+      </strong>
+
+      <p>
+        Busca el caso mediante su número DEIC.
+        Solo los casos oficialmente registrados pueden
+        recibir nuevos seguimientos.
+      </p>
+
     </div>
+
   </div>
 
-  <form [formGroup]="seguimientoForm" (ngSubmit)="enviarSeguimiento()">
 
-    <!-- Búsqueda -->
-    <div class="section-card">
-      <div class="section-header">
-        <mat-icon class="section-icon">search</mat-icon>
-        <span class="section-title">Buscar caso</span>
-      </div>
-      <div class="search-row">
-        <mat-form-field appearance="outline" class="search-field">
-          <mat-label>Número de caso (DEIC)</mat-label>
-          <input matInput formControlName="numeroDeic" placeholder="DEIC52-2025-01-02-01" />
-          <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-        <button mat-flat-button type="button" class="btn-search"
-                [disabled]="!seguimientoForm.get('numeroDeic')?.value || searching"
-                (click)="buscarCaso()">
-          <mat-spinner *ngIf="searching" diameter="18"></mat-spinner>
-          <mat-icon *ngIf="!searching">search</mat-icon>
-          {{ searching ? 'Buscando...' : 'Buscar' }}
-        </button>
-      </div>
-    </div>
+  <form
+    [formGroup]="seguimientoForm"
+    (ngSubmit)="enviarSeguimiento()"
+    class="v3-form">
 
-    <!-- Info del caso encontrado -->
-    <div class="section-card caso-card" *ngIf="casoEncontrado">
-      <div class="section-header">
-        <mat-icon class="section-icon found">check_circle</mat-icon>
-        <span class="section-title">Caso encontrado</span>
-        <span class="deic-badge">{{ casoEncontrado.numeroDeic }}</span>
-      </div>
 
-      <div class="caso-grid">
-        <div class="caso-field">
-          <span class="caso-label">Número MP</span>
-          <span class="caso-value">{{ casoEncontrado.numeroMp || '—' }}</span>
+    <!-- =====================================================
+         BUSCAR CASO
+    ====================================================== -->
+
+    <section class="v3-card">
+
+      <div class="v3-card-header">
+
+        <div class="v3-card-title-group">
+
+          <div class="v3-section-icon">
+            <mat-icon>search</mat-icon>
+          </div>
+
+
+          <div>
+
+            <h2>
+              Buscar expediente
+            </h2>
+
+            <p>
+              Ingresa el número DEIC del caso
+              que deseas actualizar.
+            </p>
+
+          </div>
+
         </div>
-        <div class="caso-field">
-          <span class="caso-label">Estado actual</span>
-          <span class="estado-chip" [class]="'estado-' + (casoEncontrado.estadoInvestigacion | lowercase)">
-            {{ casoEncontrado.estadoInvestigacion }}
+
+      </div>
+
+
+      <div class="v3-card-content">
+
+        <div class="v3-search-row">
+
+          <mat-form-field
+            appearance="outline"
+            class="v3-search-field">
+
+            <mat-label>
+              Número de caso DEIC
+            </mat-label>
+
+
+            <input
+              matInput
+              formControlName="numeroDeic"
+              placeholder="DEIC52-2026-09-04-001">
+
+
+            <mat-icon matSuffix>
+              numbers
+            </mat-icon>
+
+
+            <mat-error>
+              El número DEIC es obligatorio
+            </mat-error>
+
+          </mat-form-field>
+
+
+          <button
+            mat-flat-button
+            type="button"
+            class="v3-search-button"
+            [disabled]="
+              !seguimientoForm
+                .get('numeroDeic')
+                ?.value ||
+              searching
+            "
+            (click)="buscarCaso()">
+
+
+            <mat-spinner
+              *ngIf="searching"
+              diameter="20">
+            </mat-spinner>
+
+
+            <mat-icon
+              *ngIf="!searching">
+              search
+            </mat-icon>
+
+
+            <span>
+              {{
+                searching
+                  ? 'Buscando...'
+                  : 'Buscar caso'
+              }}
+            </span>
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CASO ENCONTRADO
+    ====================================================== -->
+
+    <ng-container
+      *ngIf="casoEncontrado">
+
+
+      <section class="v3-card case-found-card">
+
+        <div class="v3-card-header">
+
+          <div class="v3-card-title-group">
+
+            <div class="v3-section-icon success">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+
+
+            <div>
+
+              <h2>
+                Expediente localizado
+              </h2>
+
+              <p>
+                Información principal del caso seleccionado.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <span class="v3-deic-badge">
+
+            {{
+              casoEncontrado.numeroDeic
+            }}
+
           </span>
-        </div>
-        <div class="caso-field" *ngIf="casoEncontrado.nombreDesaparecido">
-          <span class="caso-label">Desaparecido</span>
-          <span class="caso-value">{{ casoEncontrado.nombreDesaparecido }}</span>
-        </div>
-        <div class="caso-field" *ngIf="casoEncontrado.numeroAlerta">
-          <span class="caso-label">Número de alerta</span>
-          <span class="caso-value">{{ casoEncontrado.numeroAlerta }}</span>
-        </div>
-      </div>
 
-      <!-- Nuevo estado -->
-      <div class="section-header" style="margin-top:8px;">
-        <mat-icon class="section-icon">update</mat-icon>
-        <span class="section-title">Actualizar seguimiento</span>
-      </div>
-
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Nuevo estado de la investigación</mat-label>
-        <mat-select formControlName="nuevoEstado">
-          @for (e of estados; track e.value) {
-            <mat-option [value]="e.value">{{ e.label }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-
-      <!-- Datos extra si Remitido -->
-      <div class="remitido-section" *ngIf="esRemitido">
-        <div class="remitido-section-header">
-          <mat-icon>where_to_vote</mat-icon>
-          <span>Datos de localización</span>
         </div>
-        <div class="fields-grid-3">
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Con quién se encontraba</mat-label>
-            <input matInput formControlName="acompanante" placeholder="Nombre del acompañante" />
-            <mat-error>Campo requerido</mat-error>
+
+
+        <div class="v3-card-content">
+
+          <div class="v3-case-grid">
+
+
+            <div class="v3-case-field">
+
+              <span class="v3-case-label">
+                Número MP
+              </span>
+
+              <strong>
+                {{
+                  casoEncontrado.numeroMp ||
+                  'No registrado'
+                }}
+              </strong>
+
+            </div>
+
+
+            <div class="v3-case-field">
+
+              <span class="v3-case-label">
+                Número de alerta
+              </span>
+
+              <strong>
+                {{
+                  casoEncontrado.numeroAlerta ||
+                  'No registrado'
+                }}
+              </strong>
+
+            </div>
+
+
+            <div class="v3-case-field">
+
+              <span class="v3-case-label">
+                Persona desaparecida
+              </span>
+
+              <strong>
+                {{ nombreDesaparecido }}
+              </strong>
+
+            </div>
+
+
+            <div class="v3-case-field">
+
+              <span class="v3-case-label">
+                Estado actual
+              </span>
+
+
+              <span
+                class="v3-status-chip"
+                [ngClass]="
+                  'estado-' +
+                  (
+                    casoEncontrado
+                      .estadoInvestigacion
+                    | lowercase
+                  )
+                ">
+
+                {{
+                  casoEncontrado
+                    .estadoInvestigacion
+                }}
+
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           HISTORIAL
+      ================================================== -->
+
+      <section class="v3-card">
+
+        <div class="v3-card-header">
+
+          <div class="v3-card-title-group">
+
+            <div class="v3-section-icon history">
+              <mat-icon>history</mat-icon>
+            </div>
+
+
+            <div>
+
+              <h2>
+                Historial de seguimientos
+              </h2>
+
+              <p>
+                Actuaciones registradas previamente
+                en este expediente.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <span class="v3-count">
+
+            {{
+              seguimientos.length
+            }}
+
+          </span>
+
+        </div>
+
+
+        <div class="v3-card-content">
+
+
+          <!-- SIN HISTORIAL -->
+
+          <div
+            class="v3-empty-history"
+            *ngIf="
+              !seguimientos.length
+            ">
+
+            <div class="v3-empty-icon">
+              <mat-icon>history_toggle_off</mat-icon>
+            </div>
+
+            <strong>
+              Aún no existen seguimientos
+            </strong>
+
+            <span>
+              El seguimiento que registres
+              aparecerá aquí.
+            </span>
+
+          </div>
+
+
+          <!-- TIMELINE -->
+
+          <div
+            class="v3-timeline"
+            *ngIf="
+              seguimientos.length
+            ">
+
+
+            <div
+              class="v3-timeline-item"
+              *ngFor="
+                let seguimiento
+                of seguimientos;
+                let i = index
+              ">
+
+
+              <div class="v3-timeline-marker">
+
+                <div class="v3-timeline-dot">
+                </div>
+
+                <div
+                  class="v3-timeline-line"
+                  *ngIf="
+                    i <
+                    seguimientos.length - 1
+                  ">
+                </div>
+
+              </div>
+
+
+              <div class="v3-timeline-content">
+
+                <div class="v3-timeline-header">
+
+                  <div>
+
+                    <strong>
+                      {{
+                        seguimiento.estado ||
+                        'Seguimiento'
+                      }}
+                    </strong>
+
+
+                    <span
+                      *ngIf="
+                        seguimiento.fecha
+                      ">
+
+                      {{
+                        seguimiento.fecha
+                          | date:
+                            'dd/MM/yyyy HH:mm'
+                      }}
+
+                    </span>
+
+                  </div>
+
+
+                  <span
+                    class="v3-file-count"
+                    *ngIf="
+                      seguimiento
+                        .archivos
+                        ?.length
+                    ">
+
+                    <mat-icon>
+                      attach_file
+                    </mat-icon>
+
+                    {{
+                      seguimiento
+                        .archivos
+                        .length
+                    }}
+
+                  </span>
+
+                </div>
+
+
+                <p
+                  *ngIf="
+                    seguimiento
+                      .direccionLocalizacion
+                  ">
+
+                  <mat-icon>
+                    location_on
+                  </mat-icon>
+
+                  {{
+                    seguimiento
+                      .direccionLocalizacion
+                  }}
+
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           NUEVO SEGUIMIENTO
+      ================================================== -->
+
+      <section class="v3-card">
+
+        <div class="v3-card-header">
+
+          <div class="v3-card-title-group">
+
+            <div class="v3-section-icon update">
+              <mat-icon>update</mat-icon>
+            </div>
+
+
+            <div>
+
+              <h2>
+                Nuevo seguimiento
+              </h2>
+
+              <p>
+                Actualiza el estado y registra
+                información relacionada con la investigación.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="v3-card-content">
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>
+              Estado de la investigación
+            </mat-label>
+
+
+            <mat-select
+              formControlName="nuevoEstado">
+
+              @for (
+                estado of estados;
+                track estado.value
+              ) {
+
+                <mat-option
+                  [value]="estado.value">
+
+                  {{
+                    estado.label
+                  }}
+
+                </mat-option>
+
+              }
+
+            </mat-select>
+
+
+            <mat-icon matSuffix>
+              fact_check
+            </mat-icon>
+
+
+            <mat-error>
+              Selecciona un estado
+            </mat-error>
+
           </mat-form-field>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Número de teléfono</mat-label>
-            <input matInput formControlName="telefono" placeholder="45678901" type="tel" />
-            <mat-error>Campo requerido</mat-error>
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-label>Dirección de localización</mat-label>
-            <input matInput formControlName="direccion" placeholder="Dirección donde fue localizado" />
-            <mat-error>Campo requerido</mat-error>
-          </mat-form-field>
+
+
+          <!-- ===============================================
+               LOCALIZACIÓN
+          ================================================ -->
+
+          <div
+            class="v3-location-box"
+            *ngIf="esRemitido">
+
+
+            <div class="v3-location-header">
+
+              <div class="v3-location-icon">
+                <mat-icon>person_pin_circle</mat-icon>
+              </div>
+
+
+              <div>
+
+                <strong>
+                  Datos de localización
+                </strong>
+
+                <span>
+                  Completa la información sobre
+                  dónde y con quién fue localizada
+                  la persona.
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="v3-grid-3">
+
+
+              <mat-form-field
+                appearance="outline"
+                class="w-full">
+
+                <mat-label>
+                  Persona con quien se encontraba
+                </mat-label>
+
+                <input
+                  matInput
+                  formControlName="acompanante"
+                  placeholder="Nombre completo">
+
+                <mat-icon matSuffix>
+                  person
+                </mat-icon>
+
+                <mat-error>
+                  Campo requerido
+                </mat-error>
+
+              </mat-form-field>
+
+
+              <mat-form-field
+                appearance="outline"
+                class="w-full">
+
+                <mat-label>
+                  Teléfono
+                </mat-label>
+
+                <input
+                  matInput
+                  type="tel"
+                  formControlName="telefono"
+                  placeholder="00000000">
+
+                <mat-icon matSuffix>
+                  phone
+                </mat-icon>
+
+                <mat-error>
+                  Campo requerido
+                </mat-error>
+
+              </mat-form-field>
+
+
+              <mat-form-field
+                appearance="outline"
+                class="w-full">
+
+                <mat-label>
+                  Dirección de localización
+                </mat-label>
+
+                <input
+                  matInput
+                  formControlName="direccion"
+                  placeholder="Dirección donde fue localizada">
+
+                <mat-icon matSuffix>
+                  location_on
+                </mat-icon>
+
+                <mat-error>
+                  Campo requerido
+                </mat-error>
+
+              </mat-form-field>
+
+            </div>
+
+          </div>
+
         </div>
+
+      </section>
+
+
+      <!-- =================================================
+           ARCHIVOS
+      ================================================== -->
+
+      <section class="v3-card">
+
+        <div class="v3-card-header">
+
+          <div class="v3-card-title-group">
+
+            <div class="v3-section-icon file">
+              <mat-icon>upload_file</mat-icon>
+            </div>
+
+
+            <div>
+
+              <h2>
+                Documentos del seguimiento
+              </h2>
+
+              <p>
+                Puedes adjuntar documentación
+                relacionada con la actuación realizada.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <span class="v3-optional-badge">
+            Opcional
+          </span>
+
+        </div>
+
+
+        <div class="v3-card-content">
+
+
+          <input
+            #fileInput
+            id="seg-file-alerta"
+            type="file"
+            hidden
+            multiple
+            accept=".pdf,.doc,.docx"
+            (change)="onFileChange($event)">
+
+
+          <label
+            for="seg-file-alerta"
+            class="v3-upload-zone"
+            [class.has-file]="
+              files.length
+            ">
+
+
+            <ng-container
+              *ngIf="
+                !files.length
+              ">
+
+
+              <div class="v3-upload-icon">
+                <mat-icon>
+                  cloud_upload
+                </mat-icon>
+              </div>
+
+
+              <div class="v3-upload-text">
+
+                <strong>
+                  Selecciona uno o varios documentos
+                </strong>
+
+                <span>
+                  Haz clic para buscar archivos
+                  en tu equipo
+                </span>
+
+                <small>
+                  PDF, DOC o DOCX
+                </small>
+
+              </div>
+
+            </ng-container>
+
+
+            <ng-container
+              *ngIf="
+                files.length
+              ">
+
+
+              <div class="v3-upload-icon ready">
+                <mat-icon>
+                  check_circle
+                </mat-icon>
+              </div>
+
+
+              <div class="v3-upload-text">
+
+                <strong>
+                  {{
+                    files.length
+                  }}
+                  archivo{{
+                    files.length > 1
+                      ? 's'
+                      : ''
+                  }}
+                  seleccionado{{
+                    files.length > 1
+                      ? 's'
+                      : ''
+                  }}
+                </strong>
+
+
+                <span class="v3-selected-files">
+                  {{ fileName }}
+                </span>
+
+
+                <small>
+                  Haz clic para cambiar
+                  la selección
+                </small>
+
+              </div>
+
+            </ng-container>
+
+          </label>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           ACCIONES
+      ================================================== -->
+
+      <div class="v3-actions">
+
+        <div class="v3-action-info">
+
+          <mat-icon>
+            info
+          </mat-icon>
+
+          <span>
+            El nuevo seguimiento quedará
+            asociado al expediente
+            <strong>
+              {{
+                casoEncontrado.numeroDeic
+              }}
+            </strong>.
+          </span>
+
+        </div>
+
+
+        <button
+          mat-flat-button
+          type="submit"
+          class="v3-submit-button"
+          [disabled]="
+            seguimientoForm.invalid ||
+            submitting
+          ">
+
+
+          <mat-spinner
+            *ngIf="submitting"
+            diameter="20">
+          </mat-spinner>
+
+
+          <mat-icon
+            *ngIf="!submitting">
+            send
+          </mat-icon>
+
+
+          <span>
+
+            {{
+              submitting
+                ? 'Registrando...'
+                : 'Registrar seguimiento'
+            }}
+
+          </span>
+
+        </button>
+
       </div>
 
-      <!-- Upload -->
-      <div class="upload-section">
-        <p class="upload-section-label">
-          <mat-icon>upload_file</mat-icon>
-          Adjuntar archivo(s) de seguimiento
-        </p>
-        <input id="seg-file-alerta" type="file" hidden (change)="onFileChange($event)"
-               accept=".pdf,.doc,.docx" multiple />
-        <label for="seg-file-alerta" class="upload-zone" [class.has-file]="files.length">
-          <ng-container *ngIf="!files.length">
-            <mat-icon class="upload-icon">cloud_upload</mat-icon>
-            <span class="upload-label">Haz clic para seleccionar archivo(s)</span>
-            <span class="upload-hint">PDF, DOC o DOCX — puedes seleccionar varios</span>
-          </ng-container>
-          <ng-container *ngIf="files.length">
-            <mat-icon class="upload-icon done">check_circle</mat-icon>
-            <span class="upload-label done">{{ fileName }}</span>
-            <span class="upload-hint">Haz clic para cambiar</span>
-          </ng-container>
-        </label>
-      </div>
-
-      <!-- Submit -->
-      <button mat-flat-button class="btn-submit" type="submit"
-              [disabled]="!seguimientoForm.valid || submitting">
-        <mat-spinner *ngIf="submitting" diameter="18" style="display:inline-block;margin-right:8px;"></mat-spinner>
-        <mat-icon *ngIf="!submitting">send</mat-icon>
-        {{ submitting ? 'Enviando...' : 'Registrar seguimiento' }}
-      </button>
-    </div>
+    </ng-container>
 
   </form>
+
+
+  <!-- =====================================================
+       LOADING GENERAL
+  ====================================================== -->
+
+  <div
+    class="v3-overlay"
+    *ngIf="submitting">
+
+    <div class="v3-loading-card">
+
+      <mat-spinner
+        diameter="46">
+      </mat-spinner>
+
+      <strong>
+        Registrando seguimiento
+      </strong>
+
+      <span>
+        Guardando la actuación y
+        subiendo los documentos...
+      </span>
+
+    </div>
+
+  </div>
 
 </div>

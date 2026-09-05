@@ -309,7 +309,7 @@ export class SidenavComponent implements OnDestroy {
         }
       ]
     },
-    {
+    /* {
       title: 'Generar Caratulas', icon: 'autorenew',
       children: [
         { title: 'Generar Caratula', path: 'caratulas' },
@@ -323,7 +323,7 @@ export class SidenavComponent implements OnDestroy {
         { title: 'Crear Informe', path: 'crear-informe' },
         { title: 'Pendientes de Registro', path: 'pendientes-informe' },
       ]
-    },
+    }, */
   ];
 
 
