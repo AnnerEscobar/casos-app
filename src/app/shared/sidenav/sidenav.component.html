@@ -1,176 +1,281 @@
-<!--<div id="menu" class="flex flex-col h-screen overflow-y-auto z-10 text-slate-300 md:w-full sm:2/4" >
+<div class="sidebar" [class.sidebar-collapsed]="collapsed">
 
+  <!-- =====================================================
+       BRAND
+  ====================================================== -->
+  <div class="sidebar-brand">
 
-  <div id="logo" class="my-2 p-5">
-    <h1 class="text-lg md:text-2xl font-bold text-black">Niñez y Adolescencia<span class="text-blue-500"> V2</span>.
-    </h1>
-    <p class="text-slate-500 text-sm">Sistema de Administracion de casos</p>
-  </div>
+    <div class="brand-main">
 
-  <div id="nav" class="flex-1 w-full px-6">
-
-    <mat-nav-list>
-      @for (item of menuItems; track $index) {
-      <mat-expansion-panel class="mat-elevation-z0" [expanded]="false">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon class="mr-2">{{ item.icon }}</mat-icon>
-            {{ item.title }}
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-
-        <ng-container *ngFor="let sub of item.children">
-          <a mat-list-item [routerLink]="sub.path" routerLinkActive="active-link"
-            class="submenu-link flex items-center justify-between">
-            <mat-icon class="submenu-icon mr-2">chevron_right</mat-icon>
-            <span class="flex items-center">
-              {{ sub.title }}
-              <span *ngIf="sub.badge" class="ml-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5 inline-block">
-                {{ sub.badge }}
-              </span>
-            </span>
-          </a>
-        </ng-container>
-
-      </mat-expansion-panel>
-      }
-    </mat-nav-list>
-  </div>
-
-
-  <div class="p-4 flex items-center ">
-    <img
-      src="https://img.freepik.com/psd-gratis/ilustracion-3d-avatar-o-perfil-humano_23-2150671122.jpg?semt=ais_hybrid"
-      alt="Fotografia del perfil"
-      class="w-10 h-10 rounded-full object-cover"
-    />
-      <ng-container *ngIf="error">
-    <span class="text-red-500 text-sm">{{ error }}</span>
-  </ng-container>
-    <div class="flex-1 ml-3">
-      <div class="text-gray-900 font-medium text-sm">{{user.email}}</div>
-      <div class="text-gray-500 text-xs truncate">
-        {{user.role}}
+      <div class="brand-icon">
+        <mat-icon>shield</mat-icon>
       </div>
+
+      <div class="brand-text" *ngIf="!collapsed">
+
+        <div class="brand-title">
+          SGIC
+          <span class="brand-version">V3</span>
+        </div>
+
+        <span class="brand-subtitle">
+          Niñez y Adolescencia
+        </span>
+
+      </div>
+
     </div>
+
+
     <button
-      mat-icon-button
-      [matMenuTriggerFor]="settingsMenu"
-      aria-label="Abrir configuraciones"
-      class="text-gray-400 hover:text-gray-700"
-    >
-      <mat-icon>more_vert</mat-icon>
+      type="button"
+      class="collapse-button"
+      (click)="toggleCollapsed()"
+      [matTooltip]="collapsed ? 'Expandir menú' : 'Colapsar menú'"
+      matTooltipPosition="right">
+
+      <mat-icon>
+        {{ collapsed ? 'menu' : 'keyboard_double_arrow_left' }}
+      </mat-icon>
+
     </button>
-    <mat-menu #settingsMenu="matMenu" class="!bg-white">
+
+  </div>
+
+
+  <!-- =====================================================
+       NAVEGACIÓN
+  ====================================================== -->
+  <div class="sidebar-content">
+
+    <div class="nav-label" *ngIf="!collapsed">
+      MENÚ PRINCIPAL
+    </div>
+
+
+    <mat-nav-list class="nav-list">
+
+      <mat-accordion multi="false">
+
+        @for (item of menuItems; track $index) {
+
+          @if (puedeVerItem(item)) {
+
+
+            <!-- =============================================
+                 SIDEBAR COLAPSADO
+            ============================================== -->
+            <a
+              *ngIf="collapsed"
+              class="collapsed-nav-item"
+              [routerLink]="item.children[0].path"
+              routerLinkActive="collapsed-nav-active"
+              [matTooltip]="item.title"
+              matTooltipPosition="right">
+
+              <mat-icon>
+                {{ item.icon }}
+              </mat-icon>
+
+
+              <!-- Badge cuando esté colapsado -->
+              @for (sub of item.children; track $index) {
+
+                @if (
+                  sub.badge !== undefined &&
+                  sub.badge > 0
+                ) {
+
+                  <span class="collapsed-badge">
+                    {{ sub.badge }}
+                  </span>
+
+                }
+
+              }
+
+            </a>
+
+
+            <!-- =============================================
+                 SIDEBAR EXPANDIDO
+            ============================================== -->
+            <mat-expansion-panel
+              *ngIf="!collapsed"
+              class="nav-panel mat-elevation-z0">
+
+              <mat-expansion-panel-header
+                class="nav-panel-header">
+
+                <mat-panel-title>
+
+                  <div class="nav-panel-title">
+
+                    <div class="nav-icon">
+                      <mat-icon>
+                        {{ item.icon }}
+                      </mat-icon>
+                    </div>
+
+                    <span>
+                      {{ item.title }}
+                    </span>
+
+                  </div>
+
+                </mat-panel-title>
+
+              </mat-expansion-panel-header>
+
+
+              <!-- SUBMENÚ -->
+              <div class="submenu">
+
+                @for (sub of item.children; track $index) {
+
+                  <a
+                    mat-list-item
+                    [routerLink]="sub.path"
+                    routerLinkActive="submenu-active"
+                    class="submenu-item">
+
+                    <span class="submenu-indicator"></span>
+
+                    <span class="submenu-title">
+                      {{ sub.title }}
+                    </span>
+
+
+                    <span
+                      *ngIf="
+                        sub.badge !== undefined &&
+                        sub.badge > 0
+                      "
+                      class="nav-badge">
+
+                      {{ sub.badge }}
+
+                    </span>
+
+                  </a>
+
+                }
+
+              </div>
+
+            </mat-expansion-panel>
+
+          }
+
+        }
+
+      </mat-accordion>
+
+    </mat-nav-list>
+
+  </div>
+
+
+  <!-- =====================================================
+       USUARIO
+  ====================================================== -->
+  <div class="sidebar-footer">
+
+    <div class="user-avatar">
+
+      <mat-icon>
+        person
+      </mat-icon>
+
+    </div>
+
+
+    <div
+      class="user-information"
+      *ngIf="!collapsed">
+
+      <span
+        *ngIf="error"
+        class="user-error">
+
+        {{ error }}
+
+      </span>
+
+
+      <ng-container *ngIf="!error">
+
+        <span class="user-email">
+          {{ user.email }}
+        </span>
+
+        <span class="user-role">
+          {{ user.role }}
+        </span>
+
+      </ng-container>
+
+    </div>
+
+
+    <button
+      *ngIf="!collapsed"
+      mat-icon-button
+      class="user-menu-button"
+      [matMenuTriggerFor]="settingsMenu">
+
+      <mat-icon>
+        more_vert
+      </mat-icon>
+
+    </button>
+
+
+    <mat-menu
+      #settingsMenu="matMenu"
+      class="user-menu">
+
+
       <button
         mat-menu-item
-        routerLink="/settings"
-        class="flex items-center space-x-2 px-4 py-2 hover:bg-gray-50"
-      >
-        <mat-icon class="text-gray-600">settings</mat-icon>
-        <span class="text-gray-800 text-sm">Configuraciones</span>
+        routerLink="/settings">
+
+        <mat-icon>settings</mat-icon>
+
+        <span>
+          Configuraciones
+        </span>
+
       </button>
-           <button
+
+
+      <button
         mat-menu-item
-        routerLink="/change-password"
-        class="flex items-center space-x-2 px-4 py-2 hover:bg-gray-50"
-      >
-        <mat-icon class="text-gray-600">password</mat-icon>
-        <span class="text-gray-800 text-sm">Cambiar contraseña</span>
+        routerLink="/change-password">
+
+        <mat-icon>password</mat-icon>
+
+        <span>
+          Cambiar contraseña
+        </span>
+
       </button>
-               <button
+
+
+      <button
         mat-menu-item
-        (click)="closeSession()"
-        class="flex items-center space-x-2 px-4 py-2 hover:bg-gray-50"
-      >
-        <mat-icon class="text-gray-600">close_sesion</mat-icon>
-        <span class="text-gray-800 text-sm">Cerrar Sesion</span>
+        (click)="closeSession()">
+
+        <mat-icon>logout</mat-icon>
+
+        <span>
+          Cerrar sesión
+        </span>
+
       </button>
+
     </mat-menu>
-  </div>
 
-</div>
-
- -->
-
- <div class="sidenav" [class.collapsed]="collapsed">
-
-  <!-- Header / Logo -->
-  <div class="sidenav-header">
-    <div class="logo-text" *ngIf="!collapsed">
-      <h1>Niñez y Adolescencia<span class="accent"> V2</span>.</h1>
-      <p>Sistema de Administracion de casos</p>
-    </div>
-    <button class="toggle-btn" (click)="toggleCollapsed()" [matTooltip]="collapsed ? 'Expandir' : 'Colapsar'">
-      <mat-icon>{{ collapsed ? 'menu' : 'menu_open' }}</mat-icon>
-    </button>
-  </div>
-
-  <!-- Nav -->
-  <div class="sidenav-nav">
-    <mat-nav-list>
-      <mat-accordion>
-      @for (item of menuItems; track $index) {
-
-        <!-- Colapsado: solo icono, navega al primer hijo sin expandir -->
-        <a *ngIf="collapsed" class="icon-only-item"
-           [routerLink]="item.children[0].path"
-           [matTooltip]="item.title" matTooltipPosition="right">
-          <mat-icon>{{ item.icon }}</mat-icon>
-        </a>
-
-        <!-- Expandido: panel completo -->
-        <mat-expansion-panel *ngIf="!collapsed" class="mat-elevation-z0" [expanded]="false">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              <mat-icon class="panel-icon">{{ item.icon }}</mat-icon>
-              <span>{{ item.title }}</span>
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-
-          <ng-container *ngFor="let sub of item.children">
-            <a mat-list-item [routerLink]="sub.path" routerLinkActive="active-link" class="submenu-link">
-              <mat-icon class="submenu-icon">chevron_right</mat-icon>
-              <span class="submenu-text">
-                {{ sub.title }}
-               <span *ngIf="sub.badge" class="badge">{{ sub.badge }}</span>
-              </span>
-            </a>
-          </ng-container>
-        </mat-expansion-panel>
-      }
-      </mat-accordion>
-    </mat-nav-list>
-  </div>
-
-  <!-- Footer usuario -->
-  <div class="sidenav-footer">
-    <img
-      src="https://img.freepik.com/psd-gratis/ilustracion-3d-avatar-o-perfil-humano_23-2150671122.jpg?semt=ais_hybrid"
-      alt="Avatar" class="avatar"
-    />
-    <div class="user-info" *ngIf="!collapsed">
-      <span *ngIf="error" class="user-error">{{ error }}</span>
-      <ng-container *ngIf="!error">
-        <div class="user-email">{{ user.email }}</div>
-        <div class="user-role">{{ user.role }}</div>
-      </ng-container>
-    </div>
-    <button *ngIf="!collapsed" mat-icon-button [matMenuTriggerFor]="settingsMenu" class="menu-btn">
-      <mat-icon>more_vert</mat-icon>
-    </button>
-
-    <mat-menu #settingsMenu="matMenu">
-      <button mat-menu-item routerLink="/settings">
-        <mat-icon>settings</mat-icon><span>Configuraciones</span>
-      </button>
-      <button mat-menu-item routerLink="/change-password">
-        <mat-icon>password</mat-icon><span>Cambiar contraseña</span>
-      </button>
-      <button mat-menu-item (click)="closeSession()">
-        <mat-icon>logout</mat-icon><span>Cerrar Sesión</span>
-      </button>
-    </mat-menu>
   </div>
 
 </div>

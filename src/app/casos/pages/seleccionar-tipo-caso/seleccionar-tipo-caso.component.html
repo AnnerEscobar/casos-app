@@ -1,0 +1,213 @@
+<div class="selector-page">
+
+  <header class="selector-header">
+
+    <div class="header-content">
+
+      <div class="header-icon">
+        <mat-icon>add_box</mat-icon>
+      </div>
+
+      <div>
+        <span class="eyebrow">
+          GESTIÓN DE CASOS
+        </span>
+
+        <h1>
+          Registrar nuevo caso
+        </h1>
+
+        <p>
+          Selecciona el tipo de expediente que deseas registrar
+          en el sistema.
+        </p>
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <div class="info-banner">
+
+    <mat-icon>info</mat-icon>
+
+    <div>
+      <strong>
+        Selecciona una categoría
+      </strong>
+
+      <p>
+        Cada tipo de caso posee información y requisitos
+        específicos.
+      </p>
+    </div>
+
+  </div>
+
+
+  <div class="case-grid">
+
+
+    <!-- ALERTA -->
+    <article
+      class="case-card alerta"
+      (click)="seleccionar('alerta')">
+
+      <div class="case-icon alerta-icon">
+        <mat-icon>person_search</mat-icon>
+      </div>
+
+      <div class="case-content">
+
+        <span class="case-type">
+          ALERTA ALBA-KENETH
+        </span>
+
+        <h2>
+          Alerta Alba-Keneth
+        </h2>
+
+        <p>
+          Registro de casos relacionados con la desaparición
+          de niñas, niños y adolescentes.
+        </p>
+
+        <div class="case-details">
+
+          <span>
+            <mat-icon>person</mat-icon>
+            Persona desaparecida
+          </span>
+
+          <span>
+            <mat-icon>contact_page</mat-icon>
+            Denunciante
+          </span>
+
+          <span>
+            <mat-icon>location_on</mat-icon>
+            Lugar de desaparición
+          </span>
+
+        </div>
+
+      </div>
+
+      <div class="case-action">
+        <span>Registrar alerta</span>
+        <mat-icon>arrow_forward</mat-icon>
+      </div>
+
+    </article>
+
+
+    <!-- MALTRATO -->
+    <article
+      class="case-card maltrato"
+      (click)="seleccionar('maltrato')">
+
+      <div class="case-icon maltrato-icon">
+        <mat-icon>health_and_safety</mat-icon>
+      </div>
+
+      <div class="case-content">
+
+        <span class="case-type">
+          PROTECCIÓN DE NNA
+        </span>
+
+        <h2>
+          Maltrato
+        </h2>
+
+        <p>
+          Registro de casos relacionados con posibles
+          situaciones de maltrato contra niñas, niños
+          o adolescentes.
+        </p>
+
+        <div class="case-details">
+
+          <span>
+            <mat-icon>personal_injury</mat-icon>
+            Víctimas
+          </span>
+
+          <span>
+            <mat-icon>person_alert</mat-icon>
+            Sindicados
+          </span>
+
+          <span>
+            <mat-icon>location_on</mat-icon>
+            Lugar de los hechos
+          </span>
+
+        </div>
+
+      </div>
+
+      <div class="case-action">
+        <span>Registrar maltrato</span>
+        <mat-icon>arrow_forward</mat-icon>
+      </div>
+
+    </article>
+
+
+    <!-- CONFLICTO -->
+    <article
+      class="case-card conflicto"
+      (click)="seleccionar('conflicto')">
+
+      <div class="case-icon conflicto-icon">
+        <mat-icon>gavel</mat-icon>
+      </div>
+
+      <div class="case-content">
+
+        <span class="case-type">
+          ADOLESCENTES EN CONFLICTO
+        </span>
+
+        <h2>
+          Conflicto con la ley
+        </h2>
+
+        <p>
+          Registro de hechos relacionados con adolescentes
+          presuntamente involucrados en conflicto con la ley.
+        </p>
+
+        <div class="case-details">
+
+          <span>
+            <mat-icon>groups</mat-icon>
+            Infractores
+          </span>
+
+          <span>
+            <mat-icon>personal_injury</mat-icon>
+            Víctimas
+          </span>
+
+          <span>
+            <mat-icon>location_on</mat-icon>
+            Lugar de los hechos
+          </span>
+
+        </div>
+
+      </div>
+
+      <div class="case-action">
+        <span>Registrar conflicto</span>
+        <mat-icon>arrow_forward</mat-icon>
+      </div>
+
+    </article>
+
+  </div>
+
+</div>

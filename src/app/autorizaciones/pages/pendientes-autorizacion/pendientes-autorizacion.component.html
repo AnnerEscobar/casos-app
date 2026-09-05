@@ -1,0 +1,429 @@
+<div class="min-h-full bg-slate-50 p-6 lg:p-8">
+
+  <!-- Encabezado -->
+
+  <div
+    class="mb-6 flex flex-col gap-4
+           md:flex-row md:items-center
+           md:justify-between"
+  >
+
+    <div>
+
+      <div class="flex items-center gap-3">
+
+        <div
+          class="flex h-11 w-11 items-center
+                 justify-center rounded-xl
+                 border border-slate-200
+                 bg-white"
+        >
+          <mat-icon class="text-slate-600">
+            fact_check
+          </mat-icon>
+        </div>
+
+        <div>
+
+          <h1
+            class="text-2xl font-semibold
+                   text-slate-900"
+          >
+            Registros pendientes
+          </h1>
+
+          <p
+            class="mt-1 text-sm
+                   text-slate-500"
+          >
+            Revisa los casos registrados por
+            investigadores antes de incorporarlos
+            oficialmente al sistema.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="cargarPendientes()"
+    >
+      <mat-icon>refresh</mat-icon>
+      Actualizar
+    </button>
+
+  </div>
+
+
+  <!-- Filtros -->
+
+  <div
+    class="mb-5 flex flex-wrap gap-2"
+  >
+
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="cambiarFiltro('Todos')"
+      [class.!bg-slate-900]="filtro === 'Todos'"
+      [class.!text-white]="filtro === 'Todos'"
+    >
+      Todos
+      <span class="ml-2">
+        {{ registros.length }}
+      </span>
+    </button>
+
+
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="cambiarFiltro('Maltrato')"
+      [class.!bg-slate-900]="filtro === 'Maltrato'"
+      [class.!text-white]="filtro === 'Maltrato'"
+    >
+      Maltrato
+    </button>
+
+
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="cambiarFiltro('Alerta')"
+      [class.!bg-slate-900]="filtro === 'Alerta'"
+      [class.!text-white]="filtro === 'Alerta'"
+    >
+      Alerta
+    </button>
+
+
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="cambiarFiltro('Conflicto')"
+      [class.!bg-slate-900]="filtro === 'Conflicto'"
+      [class.!text-white]="filtro === 'Conflicto'"
+    >
+      Conflicto
+    </button>
+
+  </div>
+
+
+  <!-- Tabla -->
+
+  <div
+    class="overflow-hidden rounded-2xl
+           border border-slate-200
+           bg-white"
+  >
+
+    @if (cargando) {
+
+      <div
+        class="flex min-h-64 flex-col
+               items-center justify-center
+               gap-3 text-slate-500"
+      >
+
+        <mat-icon>
+          sync
+        </mat-icon>
+
+        <p class="text-sm">
+          Cargando registros pendientes...
+        </p>
+
+      </div>
+
+    } @else if (error) {
+
+      <div
+        class="flex min-h-64 flex-col
+               items-center justify-center
+               gap-3 p-6"
+      >
+
+        <mat-icon class="text-red-500">
+          error_outline
+        </mat-icon>
+
+        <p class="text-sm text-slate-600">
+          {{ error }}
+        </p>
+
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="cargarPendientes()"
+        >
+          Reintentar
+        </button>
+
+      </div>
+
+    } @else if (
+      registrosFiltrados.length === 0
+    ) {
+
+      <div
+        class="flex min-h-64 flex-col
+               items-center justify-center
+               p-6 text-center"
+      >
+
+        <div
+          class="mb-4 flex h-14 w-14
+                 items-center justify-center
+                 rounded-full bg-slate-100"
+        >
+          <mat-icon class="text-slate-500">
+            task_alt
+          </mat-icon>
+        </div>
+
+        <h3
+          class="font-medium text-slate-800"
+        >
+          No hay registros pendientes
+        </h3>
+
+        <p
+          class="mt-1 max-w-md text-sm
+                 text-slate-500"
+        >
+          Los casos enviados por investigadores
+          aparecerán aquí para su revisión.
+        </p>
+
+      </div>
+
+    } @else {
+
+      <div class="overflow-x-auto">
+
+        <table
+          mat-table
+          [dataSource]="registrosFiltrados"
+          class="w-full"
+        >
+
+          <!-- Caso -->
+
+          <ng-container matColumnDef="caso">
+
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+            >
+              Caso
+            </th>
+
+            <td
+              mat-cell
+              *matCellDef="let registro"
+            >
+
+              <div class="py-2">
+
+                <p
+                  class="font-medium
+                         text-slate-800"
+                >
+                  {{ registro.numeroDeic }}
+                </p>
+
+                <p
+                  class="mt-1 text-xs
+                         text-slate-500"
+                >
+                  {{ registro.numeroMp }}
+                </p>
+
+              </div>
+
+            </td>
+
+          </ng-container>
+
+
+          <!-- Tipo -->
+
+          <ng-container matColumnDef="tipo">
+
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+            >
+              Tipo
+            </th>
+
+            <td
+              mat-cell
+              *matCellDef="let registro"
+            >
+
+              <span
+                class="inline-flex rounded-full
+                       border border-slate-200
+                       bg-slate-50 px-3 py-1
+                       text-xs font-medium
+                       text-slate-600"
+              >
+                {{ registro.tipoCaso }}
+              </span>
+
+            </td>
+
+          </ng-container>
+
+
+          <!-- Registrado por -->
+
+          <ng-container
+            matColumnDef="investigador"
+          >
+
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+            >
+              Registrado por
+            </th>
+
+            <td
+              mat-cell
+              *matCellDef="let registro"
+            >
+              {{ obtenerNombreRegistrador(registro) }}
+            </td>
+
+          </ng-container>
+
+
+          <!-- Fecha -->
+
+          <ng-container matColumnDef="fecha">
+
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+            >
+              Fecha
+            </th>
+
+            <td
+              mat-cell
+              *matCellDef="let registro"
+            >
+              {{
+                registro.createdAt
+                  ? (registro.createdAt
+                      | date:'dd/MM/yyyy HH:mm')
+                  : '—'
+              }}
+            </td>
+
+          </ng-container>
+
+
+          <!-- Estado -->
+
+          <ng-container matColumnDef="estado">
+
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+            >
+              Estado
+            </th>
+
+            <td
+              mat-cell
+              *matCellDef="let registro"
+            >
+
+              <span
+                class="inline-flex items-center
+                       gap-1.5 rounded-full
+                       bg-amber-50 px-3 py-1
+                       text-xs font-medium
+                       text-amber-700"
+              >
+
+                <span
+                  class="h-1.5 w-1.5
+                         rounded-full
+                         bg-amber-500"
+                ></span>
+
+                Pendiente
+
+              </span>
+
+            </td>
+
+          </ng-container>
+
+
+          <!-- Acciones -->
+
+          <ng-container
+            matColumnDef="acciones"
+          >
+
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+            ></th>
+
+            <td
+              mat-cell
+              *matCellDef="let registro"
+              class="text-right"
+            >
+
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="revisar(registro)"
+              >
+                <mat-icon>
+                  visibility
+                </mat-icon>
+
+                Revisar
+              </button>
+
+            </td>
+
+          </ng-container>
+
+
+          <tr
+            mat-header-row
+            *matHeaderRowDef="displayedColumns"
+          ></tr>
+
+          <tr
+            mat-row
+            *matRowDef="
+              let row;
+              columns: displayedColumns
+            "
+          ></tr>
+
+        </table>
+
+      </div>
+
+    }
+
+  </div>
+
+</div>

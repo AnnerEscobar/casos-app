@@ -1,200 +1,1033 @@
-<div class="page-container">
+<div class="v3-page">
 
-  <!-- Page header -->
-  <div class="page-header">
-    <div class="header-icon maltrato">
-      <mat-icon>volunteer_activism</mat-icon>
+  <!-- =========================================================
+       HEADER
+  ========================================================== -->
+  <header class="v3-page-header">
+
+    <div class="v3-page-header__main">
+
+      <div class="v3-page-icon maltrato">
+        <mat-icon>health_and_safety</mat-icon>
+      </div>
+
+      <div class="v3-page-heading">
+
+        <span class="v3-eyebrow">
+          CASO DE MALTRATO
+        </span>
+
+        <h1>
+          Registrar nuevo caso
+        </h1>
+
+        <p>
+          Ingresa la información del expediente, las personas
+          relacionadas y adjunta el documento correspondiente.
+        </p>
+
+      </div>
+
     </div>
+
+
+    <div class="v3-header-badge">
+
+      <mat-icon>description</mat-icon>
+
+      <span>
+        Nuevo registro
+      </span>
+
+    </div>
+
+  </header>
+
+
+  <!-- =========================================================
+       INFORMACIÓN
+  ========================================================== -->
+  <div class="v3-info-banner">
+
+    <mat-icon>info</mat-icon>
+
     <div>
-      <h2 class="page-title">Registro de caso de Maltrato</h2>
-      <p class="page-sub">Completa todos los campos para registrar el caso en el sistema</p>
+
+      <strong>
+        Información del registro
+      </strong>
+
+      <p>
+        Puedes registrar uno o varios sindicados y víctimas.
+        El expediente debe adjuntarse únicamente en formato PDF.
+      </p>
+
     </div>
+
   </div>
 
-  <form [formGroup]="myForm" (ngSubmit)="registrarCaso()">
 
-    <!-- Identificadores -->
-    <div class="section-card">
-      <div class="section-header">
-        <mat-icon class="section-icon">badge</mat-icon>
-        <span class="section-title">Identificadores del caso</span>
-      </div>
-      <div class="fields-grid-3">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Número de caso (DEIC)</mat-label>
-          <input matInput placeholder="DEIC52-2025-01-02-01" formControlName="numeroDeic">
-          <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Número de caso (MP)</mat-label>
-          <input matInput placeholder="M0030-2025-100" formControlName="numeroMp">
-          <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Estado de la investigación</mat-label>
-          <mat-select formControlName="estadoInvestigacion">
-            @for (estado of estados; track estado) {
-              <mat-option [value]="estado.value">{{ estado.viewValue }}</mat-option>
-            }
-          </mat-select>
-          <mat-error>Selecciona un estado</mat-error>
-        </mat-form-field>
-      </div>
-    </div>
+  <form
+    [formGroup]="myForm"
+    (ngSubmit)="registrarCaso()"
+    class="v3-form">
 
-    <!-- Sindicados -->
-    <div class="section-card">
-      <div class="section-header">
-        <mat-icon class="section-icon sindicado">person_off</mat-icon>
-        <span class="section-title">Datos de los Sindicados</span>
-        <span class="section-count sindicado">{{ infractores.length }}</span>
+
+    <!-- =========================================================
+         IDENTIFICADORES
+    ========================================================== -->
+    <section class="v3-card">
+
+      <div class="v3-card-header">
+
+        <div class="v3-card-title-group">
+
+          <div class="v3-section-icon">
+            <mat-icon>badge</mat-icon>
+          </div>
+
+          <div>
+
+            <h2>
+              Identificadores del caso
+            </h2>
+
+            <p>
+              Números oficiales y estado actual del expediente.
+            </p>
+
+          </div>
+
+        </div>
+
       </div>
 
-      <div *ngFor="let infractor of infractores.controls; let i = index"
-           [formGroup]="infractor" class="person-card sindicado">
-        <div class="person-card-header sindicado">
-          <span class="person-label">Sindicado {{ i + 1 }}</span>
-          <button mat-icon-button type="button" (click)="eliminarInfractor(i)"
-                  [disabled]="infractores.length === 1" class="btn-remove"
-                  matTooltip="Eliminar sindicado">
-            <mat-icon>delete_outline</mat-icon>
+
+      <div class="v3-card-content">
+
+        <div class="v3-grid v3-grid-3">
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>
+              Número de caso DEIC
+            </mat-label>
+
+            <input
+              matInput
+              placeholder="DEIC51-2026-09-03-001"
+              formControlName="numeroDeic">
+
+            <mat-icon matSuffix>
+              numbers
+            </mat-icon>
+
+            <mat-hint>
+              Formato: DEIC51-AAAA-MM-DD-XXX
+            </mat-hint>
+
+            <mat-error>
+              Ingresa un número DEIC válido
+            </mat-error>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>
+              Número de expediente MP
+            </mat-label>
+
+            <input
+              matInput
+              placeholder="M0030-2026-100"
+              formControlName="numeroMp">
+
+            <mat-icon matSuffix>
+              folder_open
+            </mat-icon>
+
+            <mat-hint>
+              Formato: M0030-AAAA-XXX
+            </mat-hint>
+
+            <mat-error>
+              Ingresa un número MP válido
+            </mat-error>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>
+              Estado de la investigación
+            </mat-label>
+
+            <mat-select
+              formControlName="estadoInvestigacion">
+
+              @for (estado of estados; track estado.value) {
+
+                <mat-option
+                  [value]="estado.value">
+
+                  {{ estado.viewValue }}
+
+                </mat-option>
+
+              }
+
+            </mat-select>
+
+            <mat-icon matSuffix>
+              fact_check
+            </mat-icon>
+
+            <mat-error>
+              Selecciona un estado
+            </mat-error>
+
+          </mat-form-field>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         SINDICADOS
+    ========================================================== -->
+    <section class="v3-card">
+
+      <div class="v3-card-header">
+
+        <div class="v3-card-title-group">
+
+          <div class="v3-section-icon soft-red">
+            <mat-icon>person_alert</mat-icon>
+          </div>
+
+          <div>
+
+            <h2>
+              Sindicados
+            </h2>
+
+            <p>
+              Personas señaladas como presuntas responsables
+              de los hechos.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <span class="v3-counter red">
+          {{ infractores.length }}
+        </span>
+
+      </div>
+
+
+      <div class="v3-card-content">
+
+        <div
+          *ngFor="
+            let infractor of infractores.controls;
+            let i = index
+          "
+          [formGroup]="infractor"
+          class="v3-person-card">
+
+          <div class="v3-person-header">
+
+            <div class="v3-person-title">
+
+              <div class="v3-person-number red">
+                {{ i + 1 }}
+              </div>
+
+              <div>
+
+                <strong>
+                  Sindicado {{ i + 1 }}
+                </strong>
+
+                <span>
+                  Información personal
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <button
+              mat-icon-button
+              type="button"
+              class="v3-remove-button"
+              matTooltip="Eliminar sindicado"
+              [disabled]="infractores.length === 1"
+              (click)="eliminarInfractor(i)">
+
+              <mat-icon>
+                delete_outline
+              </mat-icon>
+
+            </button>
+
+          </div>
+
+
+          <div class="v3-grid v3-grid-2">
+
+            <mat-form-field
+              appearance="outline"
+              class="w-full">
+
+              <mat-label>
+                Nombre completo
+              </mat-label>
+
+              <input
+                matInput
+                placeholder="Nombres y apellidos"
+                formControlName="nombre">
+
+              <mat-icon matSuffix>
+                person_outline
+              </mat-icon>
+
+              <mat-error>
+                Campo requerido
+              </mat-error>
+
+            </mat-form-field>
+
+
+            <mat-form-field
+              appearance="outline"
+              class="w-full">
+
+              <mat-label>
+                CUI
+              </mat-label>
+
+              <input
+                matInput
+                placeholder="Número de CUI"
+                formControlName="cui">
+
+              <mat-icon matSuffix>
+                badge
+              </mat-icon>
+
+              <mat-error>
+                Campo requerido
+              </mat-error>
+
+            </mat-form-field>
+
+
+            <mat-form-field
+              appearance="outline"
+              class="w-full">
+
+              <mat-label>
+                Fecha de nacimiento
+              </mat-label>
+
+              <input
+                matInput
+                [matDatepicker]="pickerInf"
+                formControlName="fecha_Nac">
+
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="pickerInf">
+              </mat-datepicker-toggle>
+
+              <mat-datepicker
+                #pickerInf>
+              </mat-datepicker>
+
+              <mat-error>
+                Campo requerido
+              </mat-error>
+
+            </mat-form-field>
+
+
+            <mat-form-field
+              appearance="outline"
+              class="w-full">
+
+              <mat-label>
+                Dirección de residencia
+              </mat-label>
+
+              <input
+                matInput
+                placeholder="Dirección de residencia"
+                formControlName="direccion">
+
+              <mat-icon matSuffix>
+                home
+              </mat-icon>
+
+              <mat-error>
+                Campo requerido
+              </mat-error>
+
+            </mat-form-field>
+
+          </div>
+
+        </div>
+
+
+        <div class="v3-section-actions">
+
+          <button
+            mat-stroked-button
+            type="button"
+            class="v3-add-button red"
+            (click)="agregarInfractor()">
+
+            <mat-icon>
+              person_add
+            </mat-icon>
+
+            Añadir sindicado
+
           </button>
+
         </div>
-        <div class="fields-grid-2">
-          <mat-form-field appearance="outline">
-            <mat-label>Nombre completo</mat-label>
-            <input matInput formControlName="nombre" placeholder="Nombre completo" />
-            <mat-error>Campo requerido</mat-error>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>CUI</mat-label>
-            <input matInput formControlName="cui" placeholder="Número de CUI" />
-            <mat-error>Campo requerido</mat-error>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Fecha de nacimiento</mat-label>
-            <input matInput [matDatepicker]="pickerInf" formControlName="fecha_Nac" />
-            <mat-datepicker-toggle matSuffix [for]="pickerInf"></mat-datepicker-toggle>
-            <mat-datepicker #pickerInf></mat-datepicker>
-            <mat-error>Campo requerido</mat-error>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Dirección de residencia</mat-label>
-            <input matInput formControlName="direccion" placeholder="Dirección" />
-            <mat-error>Campo requerido</mat-error>
-          </mat-form-field>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         VÍCTIMAS
+    ========================================================== -->
+    <section class="v3-card">
+
+      <div class="v3-card-header">
+
+        <div class="v3-card-title-group">
+
+          <div class="v3-section-icon soft-blue">
+            <mat-icon>personal_injury</mat-icon>
+          </div>
+
+          <div>
+
+            <h2>
+              Víctimas
+            </h2>
+
+            <p>
+              Niñas, niños o adolescentes afectados
+              por los hechos investigados.
+            </p>
+
+          </div>
+
         </div>
+
+
+        <span class="v3-counter blue">
+          {{ victimas.length }}
+        </span>
+
       </div>
 
-      <div class="section-footer">
-        <button mat-stroked-button type="button" (click)="agregarInfractor()" class="btn-add sindicado">
-          <mat-icon>person_add</mat-icon> Añadir sindicado
-        </button>
-      </div>
-    </div>
 
-    <!-- Víctimas -->
-    <div class="section-card">
-      <div class="section-header">
-        <mat-icon class="section-icon victima">child_care</mat-icon>
-        <span class="section-title">Datos de las Víctimas</span>
-        <span class="section-count victima">{{ victimas.length }}</span>
-      </div>
+      <div class="v3-card-content">
 
-      <div *ngFor="let victima of victimas.controls; let i = index"
-           [formGroup]="victima" class="person-card victima">
-        <div class="person-card-header victima">
-          <span class="person-label">Víctima {{ i + 1 }}</span>
-          <button mat-icon-button type="button" (click)="eliminarVictima(i)"
-                  [disabled]="victimas.length === 1" class="btn-remove"
-                  matTooltip="Eliminar víctima">
-            <mat-icon>delete_outline</mat-icon>
+        <div
+          *ngFor="
+            let victima of victimas.controls;
+            let i = index
+          "
+          [formGroup]="victima"
+          class="v3-person-card">
+
+          <div class="v3-person-header">
+
+            <div class="v3-person-title">
+
+              <div class="v3-person-number blue">
+                {{ i + 1 }}
+              </div>
+
+              <div>
+
+                <strong>
+                  Víctima {{ i + 1 }}
+                </strong>
+
+                <span>
+                  Información personal
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <button
+              mat-icon-button
+              type="button"
+              class="v3-remove-button"
+              matTooltip="Eliminar víctima"
+              [disabled]="victimas.length === 1"
+              (click)="eliminarVictima(i)">
+
+              <mat-icon>
+                delete_outline
+              </mat-icon>
+
+            </button>
+
+          </div>
+
+
+          <div class="v3-grid v3-grid-2">
+
+            <mat-form-field
+              appearance="outline"
+              class="w-full">
+
+              <mat-label>
+                Nombre completo
+              </mat-label>
+
+              <input
+                matInput
+                placeholder="Nombres y apellidos"
+                formControlName="nombre">
+
+              <mat-icon matSuffix>
+                person_outline
+              </mat-icon>
+
+              <mat-error>
+                Campo requerido
+              </mat-error>
+
+            </mat-form-field>
+
+
+            <mat-form-field
+              appearance="outline"
+              class="w-full">
+
+              <mat-label>
+                CUI
+              </mat-label>
+
+              <input
+                matInput
+                placeholder="Número de CUI"
+                formControlName="cui">
+
+              <mat-icon matSuffix>
+                badge
+              </mat-icon>
+
+              <mat-error>
+                Campo requerido
+              </mat-error>
+
+            </mat-form-field>
+
+
+            <mat-form-field
+              appearance="outline"
+              class="w-full">
+
+              <mat-label>
+                Fecha de nacimiento
+              </mat-label>
+
+              <input
+                matInput
+                [matDatepicker]="pickerVic"
+                formControlName="fecha_Nac">
+
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="pickerVic">
+              </mat-datepicker-toggle>
+
+              <mat-datepicker
+                #pickerVic>
+              </mat-datepicker>
+
+              <mat-error>
+                Campo requerido
+              </mat-error>
+
+            </mat-form-field>
+
+
+            <mat-form-field
+              appearance="outline"
+              class="w-full">
+
+              <mat-label>
+                Dirección de residencia
+              </mat-label>
+
+              <input
+                matInput
+                placeholder="Dirección de residencia"
+                formControlName="direccion">
+
+              <mat-icon matSuffix>
+                home
+              </mat-icon>
+
+              <mat-error>
+                Campo requerido
+              </mat-error>
+
+            </mat-form-field>
+
+          </div>
+
+        </div>
+
+
+        <div class="v3-section-actions">
+
+          <button
+            mat-stroked-button
+            type="button"
+            class="v3-add-button blue"
+            (click)="agregarVictima()">
+
+            <mat-icon>
+              person_add
+            </mat-icon>
+
+            Añadir víctima
+
           </button>
+
         </div>
-        <div class="fields-grid-2">
-          <mat-form-field appearance="outline">
-            <mat-label>Nombre completo</mat-label>
-            <input matInput formControlName="nombre" placeholder="Nombre completo" />
-            <mat-error>Campo requerido</mat-error>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>CUI</mat-label>
-            <input matInput formControlName="cui" placeholder="Número de CUI" />
-            <mat-error>Campo requerido</mat-error>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Fecha de nacimiento</mat-label>
-            <input matInput [matDatepicker]="pickerVic" formControlName="fecha_Nac" />
-            <mat-datepicker-toggle matSuffix [for]="pickerVic"></mat-datepicker-toggle>
-            <mat-datepicker #pickerVic></mat-datepicker>
-            <mat-error>Campo requerido</mat-error>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Dirección de residencia</mat-label>
-            <input matInput formControlName="direccion" placeholder="Dirección" />
-            <mat-error>Campo requerido</mat-error>
-          </mat-form-field>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         LUGAR DE LOS HECHOS
+    ========================================================== -->
+    <section class="v3-card">
+
+      <div class="v3-card-header">
+
+        <div class="v3-card-title-group">
+
+          <div class="v3-section-icon soft-green">
+            <mat-icon>location_on</mat-icon>
+          </div>
+
+          <div>
+
+            <h2>
+              Lugar de los hechos
+            </h2>
+
+            <p>
+              Ubicación donde ocurrieron los hechos
+              relacionados con el caso.
+            </p>
+
+          </div>
+
         </div>
+
       </div>
 
-      <div class="section-footer">
-        <button mat-stroked-button type="button" (click)="agregarVictima()" class="btn-add victima">
-          <mat-icon>person_add</mat-icon> Añadir víctima
-        </button>
+
+      <div
+        class="v3-card-content"
+        formGroupName="lugarHechos">
+
+        <div class="v3-grid v3-grid-3">
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>
+              Departamento
+            </mat-label>
+
+            <input
+              matInput
+              placeholder="Ej. Jutiapa"
+              formControlName="departamento">
+
+            <mat-error>
+              Campo requerido
+            </mat-error>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>
+              Municipio
+            </mat-label>
+
+            <input
+              matInput
+              placeholder="Ej. Jutiapa"
+              formControlName="municipio">
+
+            <mat-error>
+              Campo requerido
+            </mat-error>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>
+              Dirección de los hechos
+            </mat-label>
+
+            <input
+              matInput
+              placeholder="Aldea, calle, referencia..."
+              formControlName="direccionDetallada">
+
+            <mat-error>
+              Campo requerido
+            </mat-error>
+
+          </mat-form-field>
+
+        </div>
+
       </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         PDF
+    ========================================================== -->
+    <section class="v3-card">
+
+      <div class="v3-card-header">
+
+        <div class="v3-card-title-group">
+
+          <div class="v3-section-icon soft-orange">
+            <mat-icon>picture_as_pdf</mat-icon>
+          </div>
+
+          <div>
+
+            <h2>
+              Documento del expediente
+            </h2>
+
+            <p>
+              Adjunta el informe o documento correspondiente
+              al registro.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <span class="v3-required-badge">
+          Requerido
+        </span>
+
+      </div>
+
+
+      <div class="v3-card-content">
+
+        <input
+          #fileInput
+          type="file"
+          hidden
+          accept="application/pdf,.pdf"
+          (change)="onFileSelected($event)">
+
+
+        <div
+          class="v3-upload-zone"
+          [class.has-file]="selectedFile"
+          (click)="fileInput.click()">
+
+
+          <ng-container *ngIf="!selectedFile">
+
+            <div class="v3-upload-icon">
+
+              <mat-icon>
+                cloud_upload
+              </mat-icon>
+
+            </div>
+
+
+            <div class="v3-upload-content">
+
+              <strong>
+                Selecciona el PDF del expediente
+              </strong>
+
+              <span>
+                Haz clic aquí para buscar el archivo
+                en tu equipo
+              </span>
+
+              <small>
+                Únicamente se permiten documentos PDF
+              </small>
+
+            </div>
+
+
+            <button
+              mat-stroked-button
+              type="button">
+
+              <mat-icon>
+                attach_file
+              </mat-icon>
+
+              Seleccionar archivo
+
+            </button>
+
+          </ng-container>
+
+
+          <ng-container *ngIf="selectedFile">
+
+            <div class="v3-upload-icon file-ready">
+
+              <mat-icon>
+                picture_as_pdf
+              </mat-icon>
+
+            </div>
+
+
+            <div class="v3-upload-content">
+
+              <strong>
+                {{ fileName }}
+              </strong>
+
+              <span class="file-success">
+
+                <mat-icon>
+                  check_circle
+                </mat-icon>
+
+                Archivo listo para subir
+
+              </span>
+
+              <small>
+                Haz clic para seleccionar otro archivo
+              </small>
+
+            </div>
+
+
+            <button
+              mat-stroked-button
+              type="button">
+
+              Cambiar archivo
+
+            </button>
+
+          </ng-container>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         ACTIONS
+    ========================================================== -->
+    <div class="v3-form-actions">
+
+      <div class="v3-form-state">
+
+        <mat-icon>
+          {{
+            myForm.valid && selectedFile
+              ? 'check_circle'
+              : 'info'
+          }}
+        </mat-icon>
+
+        <span>
+          {{
+            myForm.valid && selectedFile
+              ? 'El formulario está listo para registrarse'
+              : 'Completa los campos obligatorios y adjunta el PDF'
+          }}
+        </span>
+
+      </div>
+
+
+      <button
+        mat-flat-button
+        type="submit"
+        class="v3-submit-button"
+        [disabled]="
+          myForm.invalid ||
+          !selectedFile ||
+          isLoading
+        ">
+
+        <mat-icon>
+          save
+        </mat-icon>
+
+        <span *ngIf="!isLoading">
+          Registrar caso
+        </span>
+
+        <span *ngIf="isLoading">
+          Registrando...
+        </span>
+
+      </button>
+
     </div>
-
-    <!-- Upload -->
-    <div class="section-card">
-      <div class="section-header">
-        <mat-icon class="section-icon">upload_file</mat-icon>
-        <span class="section-title">Archivo de investigación</span>
-      </div>
-      <input #fileInput type="file" hidden (change)="onFileSelected($event)" accept=".pdf,.doc,.docx" />
-      <div class="upload-zone" [class.has-file]="selectedFile" (click)="fileInput.click()">
-        <ng-container *ngIf="!selectedFile">
-          <mat-icon class="upload-icon">cloud_upload</mat-icon>
-          <p class="upload-label">Haz clic para seleccionar el archivo</p>
-          <p class="upload-hint">PDF, DOC o DOCX</p>
-        </ng-container>
-        <ng-container *ngIf="selectedFile">
-          <mat-icon class="upload-icon done">check_circle</mat-icon>
-          <p class="upload-label done">{{ fileName }}</p>
-          <p class="upload-hint">Archivo listo — haz clic para cambiar</p>
-        </ng-container>
-      </div>
-    </div>
-
-    <!-- Submit -->
-    <button mat-flat-button class="btn-submit" type="submit"
-            [disabled]="myForm.invalid || !selectedFile || isLoading">
-      <mat-icon>save</mat-icon>
-      Registrar caso
-    </button>
 
   </form>
 
-  <!-- Loading overlay -->
-  <div class="overlay" *ngIf="isLoading">
-    <mat-spinner diameter="50"></mat-spinner>
+
+  <!-- LOADING -->
+  <div
+    class="v3-overlay"
+    *ngIf="isLoading">
+
+    <div class="v3-loading-card">
+
+      <mat-spinner
+        diameter="46">
+      </mat-spinner>
+
+      <strong>
+        Registrando caso
+      </strong>
+
+      <span>
+        Guardando información y subiendo
+        el documento a Google Drive...
+      </span>
+
+    </div>
+
   </div>
 
-  <!-- Overlay: caso ya existe -->
-  <div class="overlay duplicate-overlay" *ngIf="casoYaExiste">
-    <div class="duplicate-card">
-      <mat-icon class="duplicate-icon">warning_amber</mat-icon>
-      <h3 class="duplicate-title">Caso ya registrado</h3>
-      <p class="duplicate-msg">
-        El caso <strong>{{ deicDuplicado }}</strong> ya existe en el sistema.<br>
-        Puedes agregar un seguimiento desde la opción correspondiente.
-      </p>
-      <div class="duplicate-actions">
-        <button mat-stroked-button (click)="casoYaExiste = false">Cerrar</button>
-        <button mat-flat-button color="primary" (click)="irASeguimiento()">
-          <mat-icon>assignment_add</mat-icon> Ir a Seguimiento
-        </button>
+
+  <!-- DUPLICADO -->
+  <div
+    class="v3-overlay"
+    *ngIf="casoYaExiste">
+
+    <div class="v3-dialog-card">
+
+      <div class="v3-dialog-icon warning">
+
+        <mat-icon>
+          warning_amber
+        </mat-icon>
+
       </div>
+
+
+      <h3>
+        Caso ya registrado
+      </h3>
+
+      <p>
+        El caso
+        <strong>{{ deicDuplicado }}</strong>
+        ya se encuentra registrado en el sistema.
+      </p>
+
+      <p class="v3-dialog-secondary">
+        Si necesitas agregar información nueva,
+        puedes continuar desde el módulo de seguimientos.
+      </p>
+
+
+      <div class="v3-dialog-actions">
+
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="casoYaExiste = false">
+
+          Cerrar
+
+        </button>
+
+
+        <button
+          mat-flat-button
+          type="button"
+          class="v3-primary-button"
+          (click)="irASeguimiento()">
+
+          <mat-icon>
+            assignment_add
+          </mat-icon>
+
+          Ir a seguimiento
+
+        </button>
+
+      </div>
+
     </div>
+
   </div>
 
 </div>

@@ -24,6 +24,49 @@ export const routes: Routes = [
     loadComponent: () => import('./casos/dashboard-case.component'),
     children: [
       {
+        path: 'registrar',
+        title: 'Registrar caso',
+
+        canActivate: [roleGuard],
+
+        data: {
+          roles: [
+            UserRole.ANALISTA,
+            UserRole.INVESTIGADOR
+          ]
+        },
+
+        loadComponent: () =>
+          import(
+            './casos/pages/seleccionar-tipo-caso/seleccionar-tipo-caso.component'
+          )
+            .then(
+              m => m.SeleccionarTipoCasoComponent
+            )
+      },
+      {
+        path: 'seleccionar-seguimiento',
+
+        title: 'Agregar seguimiento',
+
+        canActivate: [roleGuard],
+
+        data: {
+          roles: [
+            UserRole.ANALISTA,
+            UserRole.INVESTIGADOR
+          ]
+        },
+
+        loadComponent: () =>
+          import(
+            './casos/pages/seleccionar-tipo-seguimiento/seleccionar-tipo-seguimiento.component'
+          )
+            .then(
+              m => m.SeleccionarTipoSeguimientoComponent
+            )
+      },
+      {
         path: 'add-case-alerta',
         title: 'Alerta Alba-Keneth',
         loadComponent: () => import('./casos/pages/add-case-alerta/add-case-alerta.component')
@@ -107,6 +150,45 @@ export const routes: Routes = [
           import('./usuarios/pages/lista-usuarios/lista-usuarios.component')
             .then(m => m.ListaUsuariosComponent)
       },
+      {
+        path: 'autorizaciones',
+        title: 'Registros pendientes',
+        canActivate: [roleGuard],
+
+        data: {
+          roles: [
+            UserRole.ANALISTA
+          ]
+        },
+
+        loadComponent: () =>
+          import(
+            './autorizaciones/pages/pendientes-autorizacion/pendientes-autorizacion.component'
+          )
+            .then(
+              m => m.PendientesAutorizacionComponent
+            )
+      },
+      {
+        path: 'mis-registros',
+        title: 'Mis registros',
+
+        canActivate: [roleGuard],
+
+        data: {
+          roles: [
+            UserRole.INVESTIGADOR
+          ]
+        },
+
+        loadComponent: () =>
+          import(
+            './autorizaciones/pages/mis-registros/mis-registros.component'
+          )
+            .then(
+              m => m.MisRegistrosComponent
+            )
+      }
     ]
   },
   {

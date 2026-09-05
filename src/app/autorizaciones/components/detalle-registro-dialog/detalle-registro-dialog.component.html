@@ -1,0 +1,590 @@
+<div class="w-full max-w-3xl">
+
+  <!-- CABECERA -->
+
+  <div
+    class="flex items-start justify-between
+           border-b border-slate-200 p-6"
+  >
+
+    <div class="flex items-start gap-4">
+
+      <div
+        class="flex h-11 w-11 items-center
+               justify-center rounded-xl
+               bg-slate-100"
+      >
+        <mat-icon class="text-slate-600">
+          assignment
+        </mat-icon>
+      </div>
+
+
+      <div>
+
+        <div class="flex flex-wrap items-center gap-2">
+
+          <h2
+            class="text-xl font-semibold
+                   text-slate-900"
+          >
+            Detalle del registro
+          </h2>
+
+
+          <span
+            class="rounded-full
+                   bg-slate-100 px-3 py-1
+                   text-xs font-medium
+                   text-slate-600"
+          >
+            {{ registro.tipoCaso }}
+          </span>
+
+        </div>
+
+
+        <p class="mt-1 text-sm text-slate-500">
+          {{ registro.numeroDeic }}
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <button
+      mat-icon-button
+      type="button"
+      (click)="cerrar()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+
+  </div>
+
+
+  <!-- CONTENIDO -->
+
+  <div
+    class="max-h-[65vh]
+           overflow-y-auto p-6"
+  >
+
+    <!-- INFORMACIÓN -->
+
+    <div
+      class="grid grid-cols-1 gap-4
+             rounded-xl border
+             border-slate-200
+             bg-slate-50 p-4
+             md:grid-cols-2"
+    >
+
+      <div>
+
+        <p class="text-xs text-slate-500">
+          Número DEIC
+        </p>
+
+        <p
+          class="mt-1 font-medium
+                 text-slate-800"
+        >
+          {{ registro.numeroDeic }}
+        </p>
+
+      </div>
+
+
+      <div>
+
+        <p class="text-xs text-slate-500">
+          Número MP
+        </p>
+
+        <p
+          class="mt-1 font-medium
+                 text-slate-800"
+        >
+          {{ registro.numeroMp }}
+        </p>
+
+      </div>
+
+
+      <div>
+
+        <p class="text-xs text-slate-500">
+          Estado
+        </p>
+
+        <p
+          class="mt-1 font-medium"
+          [class.text-red-600]="
+            registro.estadoRegistro === 'Rechazado'
+          "
+          [class.text-amber-600]="
+            registro.estadoRegistro === 'Pendiente'
+          "
+        >
+          {{ registro.estadoRegistro }}
+        </p>
+
+      </div>
+
+
+      <div>
+
+        <p class="text-xs text-slate-500">
+          Fecha de registro
+        </p>
+
+        <p
+          class="mt-1 font-medium
+                 text-slate-800"
+        >
+          {{
+            registro.createdAt
+              ? (registro.createdAt
+                  | date:'dd/MM/yyyy HH:mm')
+              : '—'
+          }}
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <!-- MOTIVO DEL RECHAZO -->
+
+    @if (
+      registro.estadoRegistro === 'Rechazado'
+    ) {
+
+      <section
+        class="mt-6 rounded-xl
+               border border-red-200
+               bg-red-50 p-5"
+      >
+
+        <div class="flex gap-3">
+
+          <mat-icon class="text-red-600">
+            error_outline
+          </mat-icon>
+
+
+          <div class="min-w-0">
+
+            <h3
+              class="font-semibold
+                     text-slate-900"
+            >
+              Corrección solicitada
+            </h3>
+
+            <p
+              class="mt-2 text-sm
+                     leading-6 text-slate-700"
+            >
+              {{
+                registro.caso.motivoRechazo
+                  || 'No se indicó una observación.'
+              }}
+            </p>
+
+
+            <div
+              class="mt-4 flex flex-wrap
+                     gap-x-5 gap-y-1
+                     text-xs text-slate-500"
+            >
+
+              <span>
+                Revisado por:
+                <strong>
+                  {{ nombreRevisor() }}
+                </strong>
+              </span>
+
+
+              @if (
+                registro.caso.fechaRevision
+              ) {
+
+                <span>
+
+                  {{
+                    registro.caso.fechaRevision
+                      | date:'dd/MM/yyyy HH:mm'
+                  }}
+
+                </span>
+
+              }
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    }
+
+
+    <!-- DOCUMENTOS -->
+
+    @if (
+      registro.caso.fileUrls?.length
+    ) {
+
+      <section class="mt-7">
+
+        <h3
+          class="mb-3 text-sm
+                 font-semibold uppercase
+                 tracking-wide
+                 text-slate-500"
+        >
+          Documentos
+        </h3>
+
+
+        <div class="flex flex-wrap gap-2">
+
+          @for (
+            archivo of registro.caso.fileUrls;
+            track archivo;
+            let i = $index
+          ) {
+
+            <a
+              mat-stroked-button
+              [href]="archivo"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+
+              <mat-icon>
+                picture_as_pdf
+              </mat-icon>
+
+              Documento {{ i + 1 }}
+
+            </a>
+
+          }
+
+        </div>
+
+      </section>
+
+    }
+
+
+    <!-- HISTORIAL -->
+
+    @if (
+      registro.caso.historialRevisiones?.length
+    ) {
+
+      <section class="mt-7">
+
+        <h3
+          class="mb-4 text-sm
+                 font-semibold uppercase
+                 tracking-wide
+                 text-slate-500"
+        >
+          Historial de revisiones
+        </h3>
+
+
+        <div
+          class="border-l-2
+                 border-slate-200 pl-5"
+        >
+
+          @for (
+            revision of
+              registro.caso.historialRevisiones;
+            track $index
+          ) {
+
+            <div
+              class="relative mb-5
+                     last:mb-0"
+            >
+
+              <span
+                class="absolute -left-[27px]
+                       top-1 h-3 w-3
+                       rounded-full
+                       border-2 border-white
+                       bg-slate-400"
+              ></span>
+
+
+              <div
+                class="rounded-xl border
+                       border-slate-200 p-4"
+              >
+
+                <div
+                  class="flex flex-wrap
+                         items-center
+                         justify-between gap-2"
+                >
+
+                  <p
+                    class="font-medium
+                           text-slate-800"
+                  >
+                    {{ revision.tipo }}
+                  </p>
+
+
+                  <span
+                    class="text-xs
+                           text-slate-500"
+                  >
+                    {{
+                      revision.fecha
+                        | date:'dd/MM/yyyy HH:mm'
+                    }}
+                  </span>
+
+                </div>
+
+
+                @if (revision.observacion) {
+
+                  <p
+                    class="mt-2 text-sm
+                           text-slate-600"
+                  >
+                    {{ revision.observacion }}
+                  </p>
+
+                }
+
+
+                @if (revision.archivoUrl) {
+
+                  <a
+                    mat-button
+                    [href]="revision.archivoUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="mt-2"
+                  >
+                    <mat-icon>
+                      description
+                    </mat-icon>
+
+                    Ver archivo enviado
+                  </a>
+
+                }
+
+              </div>
+
+            </div>
+
+          }
+
+        </div>
+
+      </section>
+
+    }
+
+
+    <!-- SUBIR CORRECCIÓN -->
+
+    @if (
+      registro.estadoRegistro === 'Rechazado'
+    ) {
+
+      <section
+        class="mt-7 rounded-xl border
+               border-slate-200 p-5"
+      >
+
+        <h3
+          class="font-semibold
+                 text-slate-900"
+        >
+          Enviar documento corregido
+        </h3>
+
+
+        <p
+          class="mt-1 text-sm
+                 text-slate-500"
+        >
+          Realiza la corrección indicada por
+          el Analista y adjunta nuevamente
+          el documento.
+        </p>
+
+
+        @if (!archivoSeleccionado) {
+
+          <label
+            class="mt-5 flex cursor-pointer
+                   flex-col items-center
+                   justify-center rounded-xl
+                   border-2 border-dashed
+                   border-slate-300
+                   p-6 text-center
+                   transition hover:bg-slate-50"
+          >
+
+            <mat-icon
+              class="mb-2 text-slate-500"
+            >
+              upload_file
+            </mat-icon>
+
+
+            <span
+              class="text-sm font-medium
+                     text-slate-700"
+            >
+              Seleccionar PDF corregido
+            </span>
+
+
+            <span
+              class="mt-1 text-xs
+                     text-slate-500"
+            >
+              Haz clic para seleccionar
+              el documento
+            </span>
+
+
+            <input
+              type="file"
+              accept="application/pdf"
+              class="hidden"
+              (change)="seleccionarArchivo($event)"
+            >
+
+          </label>
+
+        } @else {
+
+          <div
+            class="mt-5 flex items-center
+                   justify-between gap-4
+                   rounded-xl
+                   border border-slate-200
+                   bg-slate-50 p-4"
+          >
+
+            <div
+              class="flex min-w-0
+                     items-center gap-3"
+            >
+
+              <mat-icon class="text-red-500">
+                picture_as_pdf
+              </mat-icon>
+
+
+              <div class="min-w-0">
+
+                <p
+                  class="truncate text-sm
+                         font-medium
+                         text-slate-800"
+                >
+                  {{ archivoSeleccionado.name }}
+                </p>
+
+                <p
+                  class="text-xs
+                         text-slate-500"
+                >
+                  Documento corregido
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <button
+              mat-icon-button
+              type="button"
+              (click)="quitarArchivo()"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+
+          </div>
+
+        }
+
+      </section>
+
+    }
+
+  </div>
+
+
+  <!-- ACCIONES -->
+
+  <div
+    class="flex justify-end gap-3
+           border-t border-slate-200
+           p-5"
+  >
+
+    <button
+      mat-button
+      type="button"
+      [disabled]="procesando"
+      (click)="cerrar()"
+    >
+      Cerrar
+    </button>
+
+
+    @if (
+      registro.estadoRegistro === 'Rechazado'
+    ) {
+
+      <button
+        mat-flat-button
+        type="button"
+        [disabled]="
+          !archivoSeleccionado ||
+          procesando
+        "
+        (click)="reenviar()"
+      >
+
+        <mat-icon>
+          send
+        </mat-icon>
+
+        {{
+          procesando
+            ? 'Enviando...'
+            : 'Enviar para revisión'
+        }}
+
+      </button>
+
+    }
+
+  </div>
+
+</div>

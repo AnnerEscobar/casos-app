@@ -153,7 +153,7 @@ export class SidenavComponent {
 
 }   */
 
-  import { Component, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -168,6 +168,22 @@ import { SharedService } from '../shared.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../auth/auth-service/auth.service';
 import { Subscription } from 'rxjs';
+import { UserRole } from '../../auth/enums/user-role.enum';
+
+
+interface SubMenuItem {
+  title: string;
+  path: string;
+  badge?: number;
+}
+
+interface MenuItem {
+  title: string;
+  icon: string;
+  children: SubMenuItem[];
+  roles?: UserRole[];
+}
+
 
 @Component({
   selector: 'app-sidenav',
@@ -195,7 +211,7 @@ export class SidenavComponent implements OnDestroy {
     private router: Router,
     private shared: SharedService,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.pendientesSubscription = this.caratulaService.pendientesCount$.subscribe((count) => {
@@ -238,26 +254,25 @@ export class SidenavComponent implements OnDestroy {
     });
   }
 
-  public menuItems = [
+  public menuItems: MenuItem[] = [
     {
-      title: 'Alerta Alba-Keneth', icon: 'warning',
+      title: 'Casos',
+      icon: 'folder_open',
+
+      roles: [
+        UserRole.ANALISTA,
+        UserRole.INVESTIGADOR
+      ],
+
       children: [
-        { title: 'Agregar Alerta', path: 'add-case-alerta' },
-        { title: 'Agregar Seguimiento', path: 'seguimiento-alerta' }
-      ]
-    },
-    {
-      title: 'Maltrato', icon: 'report',
-      children: [
-        { title: 'Agregar Maltrato', path: 'add-case-maltrato' },
-        { title: 'Agregar Seguimiento', path: 'seguimiento-maltrato' }
-      ]
-    },
-    {
-      title: 'Conflicto', icon: 'gavel',
-      children: [
-        { title: 'Agregar Conflicto', path: 'add-case-conflicto' },
-        { title: 'Agregar Seguimiento', path: 'seguimiento-conflicto' }
+        {
+          title: 'Registrar caso',
+          path: 'registrar'
+        },
+        {
+          title: 'Agregar seguimiento',
+          path: 'seleccionar-seguimiento'
+        }
       ]
     },
     {
@@ -272,6 +287,29 @@ export class SidenavComponent implements OnDestroy {
       ]
     },
     {
+      title: 'Autorizaciones',
+      icon: 'fact_check',
+      roles: [UserRole.ANALISTA],
+      children: [
+        {
+          title: 'Registros pendientes',
+          path: 'autorizaciones'
+        }
+      ]
+    },
+
+    {
+      title: 'Mis registros',
+      icon: 'assignment',
+      roles: [UserRole.INVESTIGADOR],
+      children: [
+        {
+          title: 'Mis registros',
+          path: 'mis-registros'
+        }
+      ]
+    },
+    {
       title: 'Generar Caratulas', icon: 'autorenew',
       children: [
         { title: 'Generar Caratula', path: 'caratulas' },
@@ -279,14 +317,29 @@ export class SidenavComponent implements OnDestroy {
       ]
     },
     {
-  title: 'Informes',
-  icon: 'article',
-  children: [
-    { title: 'Crear Informe', path: 'crear-informe' },
-    { title: 'Pendientes de Registro', path: 'pendientes-informe' },
-  ]
-},
+      title: 'Informes',
+      icon: 'article',
+      children: [
+        { title: 'Crear Informe', path: 'crear-informe' },
+        { title: 'Pendientes de Registro', path: 'pendientes-informe' },
+      ]
+    },
   ];
+
+
+  puedeVerItem(item: any): boolean {
+
+    if (!item.roles || item.roles.length === 0) {
+      return true;
+    }
+
+    if (!this.user.role) {
+      return false;
+    }
+
+    return item.roles.includes(this.user.role);
+  }
+
 
   closeSession() {
     this.authService.logout();

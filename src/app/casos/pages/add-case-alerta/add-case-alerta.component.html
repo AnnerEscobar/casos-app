@@ -1,214 +1,961 @@
-<div class="page-container">
+<div class="v3-page">
 
-  <!-- Page header -->
-  <div class="page-header">
-    <div class="header-icon alerta">
-      <mat-icon>person_search</mat-icon>
+  <!-- =========================================================
+       HEADER
+  ========================================================== -->
+  <header class="v3-page-header">
+
+    <div class="v3-page-header__main">
+
+      <div class="v3-page-icon alerta">
+        <mat-icon>person_search</mat-icon>
+      </div>
+
+      <div class="v3-page-heading">
+        <span class="v3-eyebrow">ALERTA ALBA-KENETH</span>
+
+        <h1>Registrar nuevo caso</h1>
+
+        <p>
+          Ingresa la información del expediente y adjunta el documento
+          correspondiente para completar el registro.
+        </p>
+      </div>
+
     </div>
+
+    <div class="v3-header-badge">
+      <mat-icon>description</mat-icon>
+      <span>Nuevo registro</span>
+    </div>
+
+  </header>
+
+
+  <!-- =========================================================
+       INFORMACIÓN
+  ========================================================== -->
+  <div class="v3-info-banner">
+
+    <mat-icon>info</mat-icon>
+
     <div>
-      <h2 class="page-title">Registro de caso de Alerta Alba-Keneth</h2>
-      <p class="page-sub">Completa todos los campos para registrar el caso en el sistema</p>
+      <strong>Información del registro</strong>
+
+      <p>
+        Los campos marcados como obligatorios deben completarse.
+        El expediente debe adjuntarse únicamente en formato PDF.
+      </p>
     </div>
+
   </div>
 
-  <form [formGroup]="myForm" (ngSubmit)="registrarCaso()">
 
-    <!-- Identificadores -->
-    <div class="section-card">
-      <div class="section-header">
-        <mat-icon class="section-icon">badge</mat-icon>
-        <span class="section-title">Identificadores del caso</span>
+  <form
+    [formGroup]="myForm"
+    (ngSubmit)="registrarCaso()"
+    class="v3-form">
+
+
+    <!-- =========================================================
+         IDENTIFICADORES
+    ========================================================== -->
+    <section class="v3-card">
+
+      <div class="v3-card-header">
+
+        <div class="v3-card-title-group">
+
+          <div class="v3-section-icon">
+            <mat-icon>badge</mat-icon>
+          </div>
+
+          <div>
+            <h2>Identificadores del caso</h2>
+            <p>Números oficiales asociados al expediente.</p>
+          </div>
+
+        </div>
+
       </div>
-      <div class="fields-grid-2">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Número de caso (DEIC)</mat-label>
-          <input matInput placeholder="DEIC52-2025-01-02-01" formControlName="numeroDeic">
-          <mat-error *ngIf="myForm.get('numeroDeic')?.hasError('required')">Campo requerido</mat-error>
-          <mat-error *ngIf="myForm.get('numeroDeic')?.hasError('pattern')">Formato: DEIC52-AAAA-MM-DD-XXX</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Número de caso (MP)</mat-label>
-          <input matInput placeholder="M0030-2025-100" formControlName="numeroMp">
-          <mat-error *ngIf="myForm.get('numeroMp')?.hasError('required')">Campo requerido</mat-error>
-          <mat-error *ngIf="myForm.get('numeroMp')?.hasError('pattern')">Formato: M0030-AAAA-XXX</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Número de alerta</mat-label>
-          <input matInput placeholder="2664-2025" formControlName="numeroAlerta">
-          <mat-error *ngIf="myForm.get('numeroAlerta')?.hasError('required')">Campo requerido</mat-error>
-          <mat-error *ngIf="myForm.get('numeroAlerta')?.hasError('pattern')">Formato: XXXX-AAAA</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Estado de la investigación</mat-label>
-          <mat-select formControlName="estadoInvestigacion">
-            @for (estado of estados; track estado) {
-              <mat-option [value]="estado.value">{{ estado.viewValue }}</mat-option>
-            }
-          </mat-select>
-          <mat-error>Selecciona un estado</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Origen de la alerta</mat-label>
-          <mat-select formControlName="origenAlerta">
-            <mat-option value="">Sin clasificar</mat-option>
-            @for (origen of origenesAlerta; track origen) {
-              <mat-option [value]="origen.value">{{ origen.viewValue }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full" *ngIf="myForm.get('origenAlerta')?.value === 'Casa hogar'">
-          <mat-label>Casa hogar</mat-label>
-          <mat-select formControlName="casaHogar">
-            @for (casa of casasHogar; track casa) {
-              <mat-option [value]="casa">{{ casa }}</mat-option>
-            }
-          </mat-select>
-          <mat-error>Campo requerido para alertas de casa hogar</mat-error>
-        </mat-form-field>
+
+
+      <div class="v3-card-content">
+
+        <div class="v3-grid v3-grid-2">
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>Número de caso DEIC</mat-label>
+
+            <input
+              matInput
+              placeholder="DEIC52-2026-09-03-001"
+              formControlName="numeroDeic">
+
+            <mat-icon matSuffix>numbers</mat-icon>
+
+            <mat-hint>
+              Formato: DEIC52-AAAA-MM-DD-XXX
+            </mat-hint>
+
+            <mat-error
+              *ngIf="myForm.get('numeroDeic')?.hasError('required')">
+              El número DEIC es obligatorio
+            </mat-error>
+
+            <mat-error
+              *ngIf="myForm.get('numeroDeic')?.hasError('pattern')">
+              El formato del número DEIC no es válido
+            </mat-error>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>Número de expediente MP</mat-label>
+
+            <input
+              matInput
+              placeholder="M0030-2026-100"
+              formControlName="numeroMp">
+
+            <mat-icon matSuffix>folder_open</mat-icon>
+
+            <mat-hint>
+              Formato: M0030-AAAA-XXX
+            </mat-hint>
+
+            <mat-error
+              *ngIf="myForm.get('numeroMp')?.hasError('required')">
+              El número MP es obligatorio
+            </mat-error>
+
+            <mat-error
+              *ngIf="myForm.get('numeroMp')?.hasError('pattern')">
+              El formato del número MP no es válido
+            </mat-error>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>Número de alerta</mat-label>
+
+            <input
+              matInput
+              placeholder="2664-2026"
+              formControlName="numeroAlerta">
+
+            <mat-icon matSuffix>notifications_active</mat-icon>
+
+            <mat-hint>
+              Formato: XXXX-AAAA
+            </mat-hint>
+
+            <mat-error
+              *ngIf="myForm.get('numeroAlerta')?.hasError('required')">
+              El número de alerta es obligatorio
+            </mat-error>
+
+            <mat-error
+              *ngIf="myForm.get('numeroAlerta')?.hasError('pattern')">
+              El formato del número de alerta no es válido
+            </mat-error>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>Estado de la investigación</mat-label>
+
+            <mat-select
+              formControlName="estadoInvestigacion">
+
+              @for (estado of estados; track estado.value) {
+                <mat-option [value]="estado.value">
+                  {{ estado.viewValue }}
+                </mat-option>
+              }
+
+            </mat-select>
+
+            <mat-icon matSuffix>fact_check</mat-icon>
+
+            <mat-error>
+              Selecciona un estado
+            </mat-error>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>Origen de la alerta</mat-label>
+
+            <mat-select
+              formControlName="origenAlerta">
+
+              <mat-option value="">
+                Sin clasificar
+              </mat-option>
+
+              @for (origen of origenesAlerta; track origen.value) {
+                <mat-option [value]="origen.value">
+                  {{ origen.viewValue }}
+                </mat-option>
+              }
+
+            </mat-select>
+
+            <mat-icon matSuffix>source</mat-icon>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full"
+            *ngIf="
+              myForm.get('origenAlerta')?.value === 'Casa hogar'
+            ">
+
+            <mat-label>Casa hogar</mat-label>
+
+            <mat-select
+              formControlName="casaHogar">
+
+              @for (casa of casasHogar; track casa) {
+                <mat-option [value]="casa">
+                  {{ casa }}
+                </mat-option>
+              }
+
+            </mat-select>
+
+            <mat-icon matSuffix>home_work</mat-icon>
+
+            <mat-error>
+              Selecciona la casa hogar
+            </mat-error>
+
+          </mat-form-field>
+
+        </div>
+
       </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         DESAPARECIDO
+    ========================================================== -->
+    <section class="v3-card">
+
+      <div class="v3-card-header">
+
+        <div class="v3-card-title-group">
+
+          <div class="v3-section-icon soft-blue">
+            <mat-icon>person</mat-icon>
+          </div>
+
+          <div>
+            <h2>Persona desaparecida</h2>
+            <p>
+              Información principal de la persona relacionada con la alerta.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="v3-card-content">
+
+        <div class="v3-grid v3-grid-2">
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>Nombre completo</mat-label>
+
+            <input
+              matInput
+              placeholder="Nombres y apellidos"
+              formControlName="nombreDesaparecido">
+
+            <mat-icon matSuffix>person_outline</mat-icon>
+
+            <mat-error>
+              El nombre es obligatorio
+            </mat-error>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>Fecha de nacimiento</mat-label>
+
+            <input
+              matInput
+              [matDatepicker]="pickerNacimiento"
+              formControlName="fecha_Nac">
+
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="pickerNacimiento">
+            </mat-datepicker-toggle>
+
+            <mat-datepicker
+              #pickerNacimiento>
+            </mat-datepicker>
+
+            <mat-error>
+              La fecha de nacimiento es obligatoria
+            </mat-error>
+
+          </mat-form-field>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         DENUNCIANTE
+    ========================================================== -->
+    <section
+      class="v3-card"
+      formGroupName="denunciante">
+
+      <div class="v3-card-header">
+
+        <div class="v3-card-title-group">
+
+          <div class="v3-section-icon soft-purple">
+            <mat-icon>contact_page</mat-icon>
+          </div>
+
+          <div>
+            <h2>Datos del denunciante</h2>
+            <p>
+              Persona que realizó o proporcionó la información de la denuncia.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="v3-card-content">
+
+        <div class="v3-grid v3-grid-3">
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>Nombre completo</mat-label>
+
+            <input
+              matInput
+              placeholder="Nombre del denunciante"
+              formControlName="nombre">
+
+            <mat-icon matSuffix>person_outline</mat-icon>
+
+            <mat-error>
+              El nombre del denunciante es obligatorio
+            </mat-error>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>CUI</mat-label>
+
+            <input
+              matInput
+              placeholder="Número de CUI"
+              formControlName="cui">
+
+            <mat-icon matSuffix>badge</mat-icon>
+
+            <mat-hint>Opcional</mat-hint>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>Número telefónico</mat-label>
+
+            <input
+              matInput
+              type="tel"
+              placeholder="Ej. 55555555"
+              formControlName="telefono">
+
+            <mat-icon matSuffix>phone</mat-icon>
+
+            <mat-hint>Opcional</mat-hint>
+
+          </mat-form-field>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         LUGAR DE DESAPARICIÓN
+    ========================================================== -->
+    <section class="v3-card">
+
+      <div class="v3-card-header">
+
+        <div class="v3-card-title-group">
+
+          <div class="v3-section-icon soft-green">
+            <mat-icon>location_on</mat-icon>
+          </div>
+
+          <div>
+            <h2>Lugar de desaparición</h2>
+            <p>
+              Ubicación donde ocurrió o fue reportada la desaparición.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="v3-card-content">
+
+        <div
+          class="v3-grid v3-grid-3"
+          formGroupName="lugarDesaparicion">
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>Departamento</mat-label>
+
+            <input
+              matInput
+              placeholder="Ej. Jutiapa"
+              formControlName="departamento">
+
+            <mat-error>
+              El departamento es obligatorio
+            </mat-error>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>Municipio</mat-label>
+
+            <input
+              matInput
+              placeholder="Ej. Jutiapa"
+              formControlName="municipio">
+
+            <mat-error>
+              El municipio es obligatorio
+            </mat-error>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>Dirección de la desaparición</mat-label>
+
+            <input
+              matInput
+              placeholder="Aldea, calle, referencia..."
+              formControlName="direccionDetallada">
+
+            <mat-error>
+              La dirección es obligatoria
+            </mat-error>
+
+          </mat-form-field>
+
+        </div>
+
+
+        <mat-form-field
+          appearance="outline"
+          class="w-full v3-gps-field">
+
+          <mat-label>Ubicación GPS</mat-label>
+
+          <input
+            matInput
+            placeholder="Ej. 14.542032, -90.550425"
+            formControlName="ubicacionGps">
+
+          <mat-icon matSuffix>my_location</mat-icon>
+
+          <mat-hint>
+            Coordenadas opcionales para identificar con mayor precisión el lugar.
+          </mat-hint>
+
+        </mat-form-field>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         LOCALIZACIÓN
+    ========================================================== -->
+    <section
+      class="v3-card v3-card-success"
+      formGroupName="datosLocalizacion"
+      *ngIf="
+        myForm.get('estadoInvestigacion')?.value === 'Remitido'
+      ">
+
+      <div class="v3-card-header">
+
+        <div class="v3-card-title-group">
+
+          <div class="v3-section-icon success">
+            <mat-icon>person_pin_circle</mat-icon>
+          </div>
+
+          <div>
+            <h2>Datos de localización</h2>
+            <p>
+              Información obtenida al momento de localizar a la persona.
+            </p>
+          </div>
+
+        </div>
+
+
+        <span class="v3-status-badge success">
+          <mat-icon>check_circle</mat-icon>
+          Localizado
+        </span>
+
+      </div>
+
+
+      <div class="v3-card-content">
+
+        <div class="v3-grid v3-grid-3">
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>Dirección de localización</mat-label>
+
+            <input
+              matInput
+              placeholder="Lugar donde fue localizado"
+              formControlName="direccionLocalizacion">
+
+            <mat-icon matSuffix>location_on</mat-icon>
+
+            <mat-error>
+              Campo requerido
+            </mat-error>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>
+              Persona con quien fue localizado
+            </mat-label>
+
+            <input
+              matInput
+              placeholder="Nombre completo"
+              formControlName="nombrePersonaConQuienEstaba">
+
+            <mat-icon matSuffix>group</mat-icon>
+
+            <mat-error>
+              Campo requerido
+            </mat-error>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>Número telefónico</mat-label>
+
+            <input
+              matInput
+              placeholder="Ej. 55555555"
+              type="tel"
+              formControlName="telefono">
+
+            <mat-icon matSuffix>phone</mat-icon>
+
+            <mat-error>
+              Campo requerido
+            </mat-error>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>Fecha de localización</mat-label>
+
+            <input
+              matInput
+              [matDatepicker]="fechaLocalizacionPicker"
+              formControlName="fechaLocalizacion">
+
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="fechaLocalizacionPicker">
+            </mat-datepicker-toggle>
+
+            <mat-datepicker
+              #fechaLocalizacionPicker>
+            </mat-datepicker>
+
+            <mat-error>
+              Campo requerido
+            </mat-error>
+
+          </mat-form-field>
+
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full">
+
+            <mat-label>Hora de localización</mat-label>
+
+            <input
+              matInput
+              type="time"
+              formControlName="horaLocalizacion">
+
+            <mat-icon matSuffix>schedule</mat-icon>
+
+            <mat-error>
+              Campo requerido
+            </mat-error>
+
+          </mat-form-field>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         DOCUMENTO PDF
+    ========================================================== -->
+    <section class="v3-card">
+
+      <div class="v3-card-header">
+
+        <div class="v3-card-title-group">
+
+          <div class="v3-section-icon soft-orange">
+            <mat-icon>picture_as_pdf</mat-icon>
+          </div>
+
+          <div>
+            <h2>Documento del expediente</h2>
+            <p>
+              Adjunta el documento correspondiente al registro del caso.
+            </p>
+          </div>
+
+        </div>
+
+
+        <span class="v3-required-badge">
+          Requerido
+        </span>
+
+      </div>
+
+
+      <div class="v3-card-content">
+
+        <input
+          #fileInput
+          type="file"
+          hidden
+          accept="application/pdf,.pdf"
+          (change)="onFileSelected($event)">
+
+
+        <div
+          class="v3-upload-zone"
+          [class.has-file]="selectedFile"
+          (click)="fileInput.click()">
+
+
+          <ng-container *ngIf="!selectedFile">
+
+            <div class="v3-upload-icon">
+              <mat-icon>cloud_upload</mat-icon>
+            </div>
+
+            <div class="v3-upload-content">
+
+              <strong>
+                Selecciona el PDF del expediente
+              </strong>
+
+              <span>
+                Haz clic aquí para buscar el archivo en tu equipo
+              </span>
+
+              <small>
+                Únicamente se permiten documentos PDF
+              </small>
+
+            </div>
+
+            <button
+              type="button"
+              mat-stroked-button
+              class="v3-select-file-btn">
+
+              <mat-icon>attach_file</mat-icon>
+              Seleccionar archivo
+
+            </button>
+
+          </ng-container>
+
+
+          <ng-container *ngIf="selectedFile">
+
+            <div class="v3-upload-icon file-ready">
+              <mat-icon>picture_as_pdf</mat-icon>
+            </div>
+
+            <div class="v3-upload-content">
+
+              <strong>
+                {{ fileName }}
+              </strong>
+
+              <span class="file-success">
+                <mat-icon>check_circle</mat-icon>
+                Archivo listo para subir
+              </span>
+
+              <small>
+                Haz clic para seleccionar un archivo diferente
+              </small>
+
+            </div>
+
+            <button
+              type="button"
+              mat-stroked-button
+              class="v3-change-file-btn">
+
+              Cambiar archivo
+
+            </button>
+
+          </ng-container>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         ACTION BAR
+    ========================================================== -->
+    <div class="v3-form-actions">
+
+      <div class="v3-form-state">
+
+        <mat-icon>
+          {{ myForm.valid && selectedFile
+            ? 'check_circle'
+            : 'info'
+          }}
+        </mat-icon>
+
+        <span>
+          {{
+            myForm.valid && selectedFile
+              ? 'El formulario está listo para registrarse'
+              : 'Completa los campos obligatorios y adjunta el PDF'
+          }}
+        </span>
+
+      </div>
+
+
+      <button
+        mat-flat-button
+        type="submit"
+        class="v3-submit-button"
+        [disabled]="
+          myForm.invalid ||
+          !selectedFile ||
+          isLoading
+        ">
+
+        <mat-icon>save</mat-icon>
+
+        <span *ngIf="!isLoading">
+          Registrar caso
+        </span>
+
+        <span *ngIf="isLoading">
+          Registrando...
+        </span>
+
+      </button>
+
     </div>
-
-    <!-- Datos del desaparecido -->
-    <div class="section-card">
-      <div class="section-header">
-        <mat-icon class="section-icon desaparecido">child_care</mat-icon>
-        <span class="section-title">Datos del desaparecido</span>
-      </div>
-      <div class="fields-grid-2">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Nombre completo</mat-label>
-          <input matInput placeholder="Nombre completo" formControlName="nombreDesaparecido">
-          <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Fecha de nacimiento</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="fecha_Nac">
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-          <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-      </div>
-    </div>
-
-    <!-- Lugar de desaparición -->
-    <div class="section-card" formGroupName="direccion">
-      <div class="section-header">
-        <mat-icon class="section-icon">location_on</mat-icon>
-        <span class="section-title">Lugar de desaparición</span>
-      </div>
-      <div class="fields-grid-3">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Departamento</mat-label>
-          <input matInput placeholder="Departamento" formControlName="departamento">
-          <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Municipio</mat-label>
-          <input matInput placeholder="Municipio" formControlName="municipio">
-          <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Dirección del hecho</mat-label>
-          <input matInput placeholder="Dirección completa" formControlName="direccionDetallada">
-          <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-      </div>
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Ubicación GPS</mat-label>
-        <input matInput placeholder="Ej. 14.542032, -90.550425" formControlName="ubicacionGps">
-      </mat-form-field>
-    </div>
-
-    <!-- Datos de localización (solo si Remitido) -->
-    <div class="section-card remitido-card"
-         *ngIf="myForm.get('estadoInvestigacion')?.value === 'Remitido'">
-      <div class="section-header">
-        <mat-icon class="section-icon remitido">where_to_vote</mat-icon>
-        <span class="section-title">Datos de localización</span>
-        <span class="remitido-badge">Remitido</span>
-      </div>
-      <div class="fields-grid-3">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Dirección de localización</mat-label>
-          <input matInput placeholder="Dirección donde fue localizado" formControlName="direccionLocalizacion">
-          <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Nombre del acompañante</mat-label>
-          <input matInput placeholder="Ej. Juan Pérez" formControlName="nombreAcompanante">
-          <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Número telefónico</mat-label>
-          <input matInput placeholder="45678901" type="tel" formControlName="telefono">
-          <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Fecha de localización</mat-label>
-          <input matInput [matDatepicker]="fechaPicker" formControlName="fechaLocalizacion">
-          <mat-datepicker-toggle matSuffix [for]="fechaPicker"></mat-datepicker-toggle>
-          <mat-datepicker #fechaPicker></mat-datepicker>
-          <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Hora de localización</mat-label>
-          <input matInput type="time" formControlName="horaLocalizacion">
-          <mat-error>Campo requerido</mat-error>
-        </mat-form-field>
-      </div>
-    </div>
-
-    <!-- Upload -->
-    <div class="section-card">
-      <div class="section-header">
-        <mat-icon class="section-icon">upload_file</mat-icon>
-        <span class="section-title">Archivo de investigación</span>
-      </div>
-      <input #fileInput type="file" hidden (change)="onFileSelected($event)" accept=".pdf,.doc,.docx" />
-      <div class="upload-zone" [class.has-file]="selectedFile" (click)="fileInput.click()">
-        <ng-container *ngIf="!selectedFile">
-          <mat-icon class="upload-icon">cloud_upload</mat-icon>
-          <p class="upload-label">Haz clic para seleccionar el archivo</p>
-          <p class="upload-hint">PDF, DOC o DOCX</p>
-        </ng-container>
-        <ng-container *ngIf="selectedFile">
-          <mat-icon class="upload-icon done">check_circle</mat-icon>
-          <p class="upload-label done">{{ fileName }}</p>
-          <p class="upload-hint">Archivo listo — haz clic para cambiar</p>
-        </ng-container>
-      </div>
-    </div>
-
-    <!-- Submit -->
-    <button mat-flat-button class="btn-submit" type="submit"
-            [disabled]="myForm.invalid || !selectedFile || isLoading">
-      <mat-icon>save</mat-icon>
-      Registrar caso
-    </button>
 
   </form>
 
-  <!-- Loading overlay -->
-  <div class="overlay" *ngIf="isLoading">
-    <mat-spinner diameter="50"></mat-spinner>
+
+  <!-- =========================================================
+       LOADING
+  ========================================================== -->
+  <div
+    class="v3-overlay"
+    *ngIf="isLoading">
+
+    <div class="v3-loading-card">
+
+      <mat-spinner diameter="46"></mat-spinner>
+
+      <strong>
+        Registrando caso
+      </strong>
+
+      <span>
+        Estamos guardando la información y subiendo el PDF...
+      </span>
+
+    </div>
+
   </div>
 
-  <!-- Overlay: caso ya existe -->
-  <div class="overlay duplicate-overlay" *ngIf="casoYaExiste">
-    <div class="duplicate-card">
-      <mat-icon class="duplicate-icon">warning_amber</mat-icon>
-      <h3 class="duplicate-title">Caso ya registrado</h3>
-      <p class="duplicate-msg">
-        El caso <strong>{{ deicDuplicado }}</strong> ya existe en el sistema.<br>
-        Puedes agregar un seguimiento desde la opción correspondiente.
-      </p>
-      <div class="duplicate-actions">
-        <button mat-stroked-button (click)="casoYaExiste = false">Cerrar</button>
-        <button mat-flat-button color="primary" (click)="irASeguimiento()">
-          <mat-icon>assignment_add</mat-icon> Ir a Seguimiento
-        </button>
+
+  <!-- =========================================================
+       CASO DUPLICADO
+  ========================================================== -->
+  <div
+    class="v3-overlay"
+    *ngIf="casoYaExiste">
+
+    <div class="v3-dialog-card">
+
+      <div class="v3-dialog-icon warning">
+        <mat-icon>warning_amber</mat-icon>
       </div>
+
+      <h3>
+        Caso ya registrado
+      </h3>
+
+      <p>
+        El caso
+        <strong>{{ deicDuplicado }}</strong>
+        ya se encuentra registrado en el sistema.
+      </p>
+
+      <p class="v3-dialog-secondary">
+        Si necesitas agregar información nueva, puedes continuar desde
+        el módulo de seguimientos.
+      </p>
+
+      <div class="v3-dialog-actions">
+
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="casoYaExiste = false">
+
+          Cerrar
+
+        </button>
+
+        <button
+          mat-flat-button
+          type="button"
+          class="v3-primary-button"
+          (click)="irASeguimiento()">
+
+          <mat-icon>assignment_add</mat-icon>
+          Ir a seguimiento
+
+        </button>
+
+      </div>
+
     </div>
+
   </div>
 
 </div>

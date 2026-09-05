@@ -1,0 +1,653 @@
+<div class="w-full max-w-3xl">
+
+  <!-- CABECERA -->
+
+  <div
+    class="flex items-start justify-between
+           border-b border-slate-200 p-6"
+  >
+
+    <div class="flex items-start gap-4">
+
+      <div
+        class="flex h-11 w-11
+               items-center justify-center
+               rounded-xl bg-slate-100"
+      >
+        <mat-icon class="text-slate-600">
+          fact_check
+        </mat-icon>
+      </div>
+
+
+      <div>
+
+        <div class="flex items-center gap-2">
+
+          <h2
+            class="text-xl font-semibold
+                   text-slate-900"
+          >
+            Revisar registro
+          </h2>
+
+          <span
+            class="rounded-full bg-slate-100
+                   px-3 py-1 text-xs
+                   font-medium text-slate-600"
+          >
+            {{ registro.tipoCaso }}
+          </span>
+
+        </div>
+
+        <p class="mt-1 text-sm text-slate-500">
+          Verifica la información antes de aprobar
+          el registro.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <button
+      mat-icon-button
+      type="button"
+      (click)="cerrar()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+
+  </div>
+
+
+  <!-- CONTENIDO -->
+
+  <div
+    class="max-h-[65vh] overflow-y-auto p-6"
+  >
+
+    <!-- INFORMACIÓN GENERAL -->
+
+    <section>
+
+      <h3
+        class="mb-4 text-sm font-semibold
+               uppercase tracking-wide
+               text-slate-500"
+      >
+        Información del expediente
+      </h3>
+
+
+      <div
+        class="grid grid-cols-1 gap-4
+               rounded-xl border
+               border-slate-200
+               bg-slate-50 p-4 md:grid-cols-2"
+      >
+
+        <div>
+
+          <p class="text-xs text-slate-500">
+            Número DEIC
+          </p>
+
+          <p class="mt-1 font-medium text-slate-800">
+            {{ registro.numeroDeic }}
+          </p>
+
+        </div>
+
+
+        <div>
+
+          <p class="text-xs text-slate-500">
+            Número MP
+          </p>
+
+          <p class="mt-1 font-medium text-slate-800">
+            {{ registro.numeroMp }}
+          </p>
+
+        </div>
+
+
+        <div>
+
+          <p class="text-xs text-slate-500">
+            Registrado por
+          </p>
+
+          <p class="mt-1 font-medium text-slate-800">
+            {{ nombreRegistrador() }}
+          </p>
+
+        </div>
+
+
+        <div>
+
+          <p class="text-xs text-slate-500">
+            Fecha de registro
+          </p>
+
+          <p class="mt-1 font-medium text-slate-800">
+            {{
+              registro.createdAt
+                ? (registro.createdAt
+                    | date:'dd/MM/yyyy HH:mm')
+                : '—'
+            }}
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================================= -->
+    <!-- MALTRATO -->
+    <!-- ================================= -->
+
+    @if (registro.tipoCaso === 'Maltrato') {
+
+      <section class="mt-7">
+
+        <h3
+          class="mb-4 text-sm font-semibold
+                 uppercase tracking-wide
+                 text-slate-500"
+        >
+          Víctimas
+        </h3>
+
+
+        @for (
+          victima of registro.caso.victimas;
+          track $index
+        ) {
+
+          <div
+            class="mb-3 rounded-xl border
+                   border-slate-200 p-4"
+          >
+
+            <p class="font-medium text-slate-800">
+              {{ victima.nombre }}
+            </p>
+
+            <p class="mt-1 text-sm text-slate-500">
+              CUI: {{ victima.cui || '—' }}
+            </p>
+
+          </div>
+
+        }
+
+
+        <h3
+          class="mb-4 mt-6 text-sm font-semibold
+                 uppercase tracking-wide
+                 text-slate-500"
+        >
+          Sindicados
+        </h3>
+
+        <!--
+          En Mongo V2 todavía se guarda como
+          "infractores", pero en Maltrato
+          mostramos la terminología correcta.
+        -->
+
+        @for (
+          sindicado of registro.caso.infractores;
+          track $index
+        ) {
+
+          <div
+            class="mb-3 rounded-xl border
+                   border-slate-200 p-4"
+          >
+
+            <p class="font-medium text-slate-800">
+              {{ sindicado.nombre }}
+            </p>
+
+            <p class="mt-1 text-sm text-slate-500">
+              CUI: {{ sindicado.cui || '—' }}
+            </p>
+
+          </div>
+
+        }
+
+      </section>
+
+    }
+
+
+    <!-- ================================= -->
+    <!-- ALERTA -->
+    <!-- ================================= -->
+
+    @if (registro.tipoCaso === 'Alerta') {
+
+      <section class="mt-7">
+
+        <h3
+          class="mb-4 text-sm font-semibold
+                 uppercase tracking-wide
+                 text-slate-500"
+        >
+          Persona desaparecida
+        </h3>
+
+
+        <div
+          class="rounded-xl border
+                 border-slate-200 p-4"
+        >
+
+          <p class="font-medium text-slate-800">
+            {{ registro.caso.nombreDesaparecido }}
+          </p>
+
+          <p class="mt-1 text-sm text-slate-500">
+            Alerta:
+            {{ registro.caso.numeroAlerta }}
+          </p>
+
+        </div>
+
+
+        @if (registro.caso.denunciante) {
+
+          <h3
+            class="mb-4 mt-6 text-sm font-semibold
+                   uppercase tracking-wide
+                   text-slate-500"
+          >
+            Denunciante
+          </h3>
+
+
+          <div
+            class="rounded-xl border
+                   border-slate-200 p-4"
+          >
+
+            <p class="font-medium text-slate-800">
+              {{ registro.caso.denunciante.nombre }}
+            </p>
+
+            <p class="mt-1 text-sm text-slate-500">
+              CUI:
+              {{
+                registro.caso.denunciante.cui
+                  || '—'
+              }}
+            </p>
+
+            <p class="mt-1 text-sm text-slate-500">
+              Teléfono:
+              {{
+                registro.caso.denunciante.telefono
+                  || '—'
+              }}
+            </p>
+
+          </div>
+
+        }
+
+
+        @if (registro.caso.direccion) {
+
+          <h3
+            class="mb-4 mt-6 text-sm font-semibold
+                   uppercase tracking-wide
+                   text-slate-500"
+          >
+            Lugar de la desaparición
+          </h3>
+
+
+          <div
+            class="rounded-xl border
+                   border-slate-200 p-4"
+          >
+
+            <p class="text-sm text-slate-700">
+              {{
+                registro.caso.direccion
+                  .direccionDetallada
+              }}
+            </p>
+
+            <p class="mt-1 text-sm text-slate-500">
+
+              {{
+                registro.caso.direccion.municipio
+              }},
+              {{
+                registro.caso.direccion.departamento
+              }}
+
+            </p>
+
+          </div>
+
+        }
+
+      </section>
+
+    }
+
+
+    <!-- ================================= -->
+    <!-- CONFLICTO -->
+    <!-- ================================= -->
+
+    @if (registro.tipoCaso === 'Conflicto') {
+
+      <section class="mt-7">
+
+        <h3
+          class="mb-4 text-sm font-semibold
+                 uppercase tracking-wide
+                 text-slate-500"
+        >
+          Infractores
+        </h3>
+
+
+        @for (
+          infractor of registro.caso.infractores;
+          track $index
+        ) {
+
+          <div
+            class="mb-3 rounded-xl
+                   border border-slate-200 p-4"
+          >
+
+            <p class="font-medium text-slate-800">
+              {{ infractor.nombre }}
+            </p>
+
+            <p class="mt-1 text-sm text-slate-500">
+              CUI: {{ infractor.cui || '—' }}
+            </p>
+
+          </div>
+
+        }
+
+
+        <h3
+          class="mb-4 mt-6 text-sm font-semibold
+                 uppercase tracking-wide
+                 text-slate-500"
+        >
+          Víctimas
+        </h3>
+
+
+        @for (
+          victima of registro.caso.victimas;
+          track $index
+        ) {
+
+          <div
+            class="mb-3 rounded-xl
+                   border border-slate-200 p-4"
+          >
+
+            <p class="font-medium text-slate-800">
+              {{ victima.nombre }}
+            </p>
+
+            <p class="mt-1 text-sm text-slate-500">
+              CUI: {{ victima.cui || '—' }}
+            </p>
+
+          </div>
+
+        }
+
+
+        @if (registro.caso.lugarHechos) {
+
+          <h3
+            class="mb-4 mt-6 text-sm font-semibold
+                   uppercase tracking-wide
+                   text-slate-500"
+          >
+            Lugar de los hechos
+          </h3>
+
+
+          <div
+            class="rounded-xl border
+                   border-slate-200 p-4"
+          >
+
+            <p class="text-sm text-slate-700">
+              {{
+                registro.caso.lugarHechos
+                  .direccionDetallada
+              }}
+            </p>
+
+            <p class="mt-1 text-sm text-slate-500">
+
+              {{
+                registro.caso.lugarHechos.municipio
+              }},
+              {{
+                registro.caso.lugarHechos.departamento
+              }}
+
+            </p>
+
+          </div>
+
+        }
+
+      </section>
+
+    }
+
+
+    <!-- DOCUMENTOS -->
+
+    @if (
+      registro.caso.fileUrls?.length
+    ) {
+
+      <section class="mt-7">
+
+        <h3
+          class="mb-4 text-sm font-semibold
+                 uppercase tracking-wide
+                 text-slate-500"
+        >
+          Documentos
+        </h3>
+
+
+        @for (
+          archivo of registro.caso.fileUrls;
+          track archivo
+        ) {
+
+          <a
+            mat-stroked-button
+            [href]="archivo"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mr-2 mb-2"
+          >
+            <mat-icon>description</mat-icon>
+            Ver documento
+          </a>
+
+        }
+
+      </section>
+
+    }
+
+
+    <!-- RECHAZO -->
+
+    @if (mostrandoRechazo) {
+
+      <section
+        class="mt-7 rounded-xl border
+               border-red-200 bg-red-50 p-5"
+      >
+
+        <h3
+          class="font-semibold text-slate-900"
+        >
+          Motivo del rechazo
+        </h3>
+
+        <p class="mt-1 text-sm text-slate-600">
+          Indica claramente qué debe corregir
+          el investigador.
+        </p>
+
+
+        <form
+          [formGroup]="rechazoForm"
+          class="mt-4"
+        >
+
+          <mat-form-field
+            appearance="outline"
+            class="w-full"
+          >
+
+            <mat-label>
+              Observación
+            </mat-label>
+
+            <textarea
+              matInput
+              rows="4"
+              formControlName="motivo"
+              placeholder="Ej. Corregir el número de expediente consignado en la carátula..."
+            ></textarea>
+
+
+            @if (
+              rechazoForm.controls.motivo
+                .hasError('required')
+            ) {
+
+              <mat-error>
+                Debes indicar el motivo
+              </mat-error>
+
+            }
+
+
+            @if (
+              rechazoForm.controls.motivo
+                .hasError('minlength')
+            ) {
+
+              <mat-error>
+                Escribe una observación más detallada
+              </mat-error>
+
+            }
+
+          </mat-form-field>
+
+        </form>
+
+      </section>
+
+    }
+
+  </div>
+
+
+  <!-- ACCIONES -->
+
+  <div
+    class="flex justify-end gap-3
+           border-t border-slate-200
+           bg-white p-5"
+  >
+
+    @if (!mostrandoRechazo) {
+
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="procesando"
+        (click)="mostrarRechazo()"
+      >
+        <mat-icon>close</mat-icon>
+        Rechazar
+      </button>
+
+
+      <button
+        mat-flat-button
+        type="button"
+        [disabled]="procesando"
+        (click)="aprobar()"
+      >
+        <mat-icon>check</mat-icon>
+
+        {{
+          procesando
+            ? 'Procesando...'
+            : 'Aprobar registro'
+        }}
+
+      </button>
+
+    } @else {
+
+      <button
+        mat-button
+        type="button"
+        [disabled]="procesando"
+        (click)="cancelarRechazo()"
+      >
+        Cancelar
+      </button>
+
+
+      <button
+        mat-flat-button
+        type="button"
+        class="!bg-red-600 !text-white"
+        [disabled]="procesando"
+        (click)="rechazar()"
+      >
+        <mat-icon>block</mat-icon>
+
+        {{
+          procesando
+            ? 'Procesando...'
+            : 'Confirmar rechazo'
+        }}
+
+      </button>
+
+    }
+
+  </div>
+
+</div>

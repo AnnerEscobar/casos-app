@@ -1,6 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+
+import {
+  Component,
+  inject,
+  OnInit
+} from '@angular/core';
+
+import {
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
+
 import { MatButtonModule } from '@angular/material/button';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -9,252 +23,1036 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ConflictoService } from '../../services/conflicto.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+
 import { Router } from '@angular/router';
+
+import { ConflictoService } from '../../services/conflicto.service';
 import { InformeService } from '../../../informes/services/informe.service';
+
 
 @Component({
   selector: 'app-add-case-conflicto',
-  providers: [provideNativeDateAdapter()],
-  imports: [
-    MatFormFieldModule, MatSelectModule, ReactiveFormsModule,
-    MatSlideToggleModule, MatInputModule, MatIconModule,
-    MatButtonModule, MatDatepickerModule, CommonModule,
-    FormsModule, MatProgressSpinnerModule, MatCardModule, MatProgressBarModule, MatTooltipModule
-  ],
-  templateUrl: './add-case-conflicto.component.html',
-  styleUrl: './add-case-conflicto.component.css'
-})
-export default class AddCaseConflictoComponent implements OnInit {
 
-  private formBuider = inject(FormBuilder);
-  private conflictoService = inject(ConflictoService);
-  private informeService = inject(InformeService);
-  private _snackBar = inject(MatSnackBar);
-  private router = inject(Router);
+  providers: [
+    provideNativeDateAdapter()
+  ],
+
+  imports: [
+    MatFormFieldModule,
+    MatSelectModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatIconModule,
+    MatButtonModule,
+    MatDatepickerModule,
+    CommonModule,
+    FormsModule,
+    MatProgressSpinnerModule,
+    MatCardModule,
+    MatProgressBarModule,
+    MatTooltipModule
+  ],
+
+  templateUrl:
+    './add-case-conflicto.component.html',
+
+  styleUrl:
+    './add-case-conflicto.component.css'
+})
+export default class AddCaseConflictoComponent
+  implements OnInit {
+
+  private formBuilder =
+    inject(FormBuilder);
+
+  private conflictoService =
+    inject(ConflictoService);
+
+  private informeService =
+    inject(InformeService);
+
+  private _snackBar =
+    inject(MatSnackBar);
+
+  private router =
+    inject(Router);
+
 
   estados = [
-    { value: 'Informado', viewValue: 'Informado' },
-    { value: 'Concluido', viewValue: 'Concluido' },
+    {
+      value: 'Informado',
+      viewValue: 'Informado'
+    },
+    {
+      value: 'Concluido',
+      viewValue: 'Concluido'
+    }
   ];
 
-  isLoading = false;
-  fileName: string | null = null;
-  selectedFile: File | null = null;
-  informeDeic: string | null = null;
-  casoYaExiste = false;
-  deicDuplicado = '';
-  private readonly draftKey = 'draft:add-case-conflicto';
 
-  myForm = this.formBuider.group({
-    numeroDeic: ['', [Validators.required]],
-    numeroMp: ['', [Validators.required]],
-    estadoInvestigacion: ['', [Validators.required]],
-    infractores: this.formBuider.array([]),
-    victimas: this.formBuider.array([]),
-    fileUrls: this.formBuider.array([]),
+  isLoading = false;
+
+  fileName: string | null =
+    null;
+
+  selectedFile: File | null =
+    null;
+
+  informeDeic: string | null =
+    null;
+
+  casoYaExiste = false;
+
+  deicDuplicado = '';
+
+  private readonly draftKey =
+    'draft:add-case-conflicto';
+
+
+  /* =====================================================
+     FORMULARIO
+  ===================================================== */
+
+  myForm = this.formBuilder.group({
+
+    numeroDeic: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern(
+          /^DEIC53-\d{4}-\d{2}-\d{2}-\d+$/
+        )
+      ]
+    ],
+
+    numeroMp: [
+      '',
+      Validators.required
+    ],
+
+    estadoInvestigacion: [
+      '',
+      Validators.required
+    ],
+
+    infractores:
+      this.formBuilder.array([]),
+
+    victimas:
+      this.formBuilder.array([]),
+
+    lugarHechos:
+      this.formBuilder.group({
+
+        departamento: [
+          '',
+          Validators.required
+        ],
+
+        municipio: [
+          '',
+          Validators.required
+        ],
+
+        direccionDetallada: [
+          '',
+          Validators.required
+        ]
+
+      })
+
   });
 
-  get infractores(): FormArray<FormGroup> {
-    return this.myForm.get('infractores') as FormArray;
+
+  /* =====================================================
+     GETTERS
+  ===================================================== */
+
+  get infractores():
+    FormArray<FormGroup> {
+
+    return this.myForm.get(
+      'infractores'
+    ) as FormArray<FormGroup>;
+
   }
 
-  get victimas(): FormArray<FormGroup> {
-    return this.myForm.get('victimas') as FormArray;
+
+  get victimas():
+    FormArray<FormGroup> {
+
+    return this.myForm.get(
+      'victimas'
+    ) as FormArray<FormGroup>;
+
   }
+
+
+  /* =====================================================
+     INIT
+  ===================================================== */
 
   ngOnInit(): void {
+
     this.agregarInfractor();
+
     this.agregarVictima();
 
-    const datos = history.state;
+
+    const datos =
+      history.state;
+
 
     if (datos?.informe) {
-      const inf = datos.informe;
-      this.informeDeic = inf.numeroDeic;
+
+      const inf =
+        datos.informe;
+
+      this.informeDeic =
+        inf.numeroDeic;
+
 
       this.myForm.patchValue({
-        numeroDeic: inf.numeroDeic,
-        numeroMp: inf.numeroMp,
+
+        numeroDeic:
+          inf.numeroDeic,
+
+        numeroMp:
+          inf.numeroMp
+
       });
 
-      const s = inf.perfilSecundario || {};
-      (this.infractores.at(0) as FormGroup).patchValue({
-        nombre: s.nombre || '',
-        cui: s.cui || s.documentoIdentificacion || '',
-        fecha_Nac: s.fechaNacimiento ? new Date(s.fechaNacimiento) : null,
-        direccion: s.residencia || '',
+
+      const s =
+        inf.perfilSecundario || {};
+
+
+      (this.infractores.at(0) as FormGroup
+      ).patchValue({
+
+        nombre:
+          s.nombre || '',
+
+        cui:
+          s.cui ||
+          s.documentoIdentificacion ||
+          '',
+
+        fecha_Nac:
+          s.fechaNacimiento
+            ? new Date(
+                s.fechaNacimiento
+              )
+            : null,
+
+        direccion:
+          s.residencia || ''
+
       });
 
-      const v = inf.perfilVictima || {};
-      (this.victimas.at(0) as FormGroup).patchValue({
-        nombre: v.nombre || '',
-        fecha_Nac: v.fechaNacimiento ? new Date(v.fechaNacimiento) : null,
-        direccion: v.residencia || '',
-        cui: '',
+
+      const v =
+        inf.perfilVictima || {};
+
+
+      (
+        this.victimas.at(0) as FormGroup
+      ).patchValue({
+
+        nombre:
+          v.nombre || '',
+
+        fecha_Nac:
+          v.fechaNacimiento
+            ? new Date(
+                v.fechaNacimiento
+              )
+            : null,
+
+        direccion:
+          v.residencia || '',
+
+        cui:
+          v.cui ||
+          v.documentoIdentificacion ||
+          ''
+
       });
 
-    } else if (datos?.numeroDeic) {
+
+    } else if (
+      datos?.numeroDeic
+    ) {
+
       this.myForm.patchValue({
-        numeroDeic: datos.numeroDeic,
-        numeroMp: datos.numeroMp,
+
+        numeroDeic:
+          datos.numeroDeic,
+
+        numeroMp:
+          datos.numeroMp
+
       });
+
+
     } else {
+
       this.restaurarBorradorLocal();
+
     }
+
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
-      this.fileName = this.selectedFile.name;
-    } else {
+
+  /* =====================================================
+     ARCHIVO PDF
+  ===================================================== */
+
+  onFileSelected(
+    event: Event
+  ): void {
+
+    const input =
+      event.target as HTMLInputElement;
+
+    const file =
+      input.files?.[0];
+
+
+    if (!file) {
+
       this.selectedFile = null;
+
       this.fileName = null;
+
+      return;
+
     }
+
+
+    const esPdf =
+      file.type ===
+        'application/pdf' ||
+      file.name
+        .toLowerCase()
+        .endsWith('.pdf');
+
+
+    if (!esPdf) {
+
+      this._snackBar.open(
+        'Solo se permiten archivos PDF',
+        'Cerrar',
+        {
+          duration: 3000,
+          panelClass: [
+            'snack-warning'
+          ]
+        }
+      );
+
+
+      input.value = '';
+
+      this.selectedFile = null;
+
+      this.fileName = null;
+
+      return;
+
+    }
+
+
+    this.selectedFile =
+      file;
+
+    this.fileName =
+      file.name;
+
   }
 
-  agregarInfractor() {
-    this.infractores.push(this.formBuider.group({
-      nombre: ['', Validators.required],
-      cui: ['', Validators.required],
-      fecha_Nac: ['', Validators.required],
-      direccion: ['', Validators.required],
-    }));
+
+  /* =====================================================
+     INFRACTORES
+  ===================================================== */
+
+  agregarInfractor(): void {
+
+    this.infractores.push(
+
+      this.formBuilder.group({
+
+        nombre: [
+          '',
+          Validators.required
+        ],
+
+        cui: [
+          '',
+          Validators.required
+        ],
+
+        fecha_Nac: [
+          null,
+          Validators.required
+        ],
+
+        direccion: [
+          '',
+          Validators.required
+        ]
+
+      })
+
+    );
+
   }
 
-  eliminarInfractor(index: number) {
-    this.infractores.removeAt(index);
+
+  eliminarInfractor(
+    index: number
+  ): void {
+
+    if (
+      this.infractores.length > 1
+    ) {
+
+      this.infractores.removeAt(
+        index
+      );
+
+    }
+
   }
 
-  agregarVictima() {
-    this.victimas.push(this.formBuider.group({
-      nombre: ['', Validators.required],
-      fecha_Nac: ['', Validators.required],
-      direccion: ['', Validators.required],
-      cui: ['', Validators.required],
-    }));
+
+  /* =====================================================
+     VÍCTIMAS
+  ===================================================== */
+
+  agregarVictima(): void {
+
+    this.victimas.push(
+
+      this.formBuilder.group({
+
+        nombre: [
+          '',
+          Validators.required
+        ],
+
+        cui: [
+          '',
+          Validators.required
+        ],
+
+        fecha_Nac: [
+          null,
+          Validators.required
+        ],
+
+        direccion: [
+          '',
+          Validators.required
+        ]
+
+      })
+
+    );
+
   }
 
-  eliminarVictima(index: number) {
-    this.victimas.removeAt(index);
+
+  eliminarVictima(
+    index: number
+  ): void {
+
+    if (
+      this.victimas.length > 1
+    ) {
+
+      this.victimas.removeAt(
+        index
+      );
+
+    }
+
   }
 
-  registrarCaso() {
-    if (!this.myForm.valid || !this.selectedFile) {
-      this._snackBar.open('Debes completar todos los campos y seleccionar un archivo', 'Cerrar', { duration: 3000, panelClass: ['snack-warning'] });
+
+  /* =====================================================
+     REGISTRAR CASO
+  ===================================================== */
+
+  registrarCaso(): void {
+
+    if (
+      this.myForm.invalid
+    ) {
+
+      this.myForm.markAllAsTouched();
+
+
+      this._snackBar.open(
+        'Debes completar todos los campos obligatorios',
+        'Cerrar',
+        {
+          duration: 3000,
+          panelClass: [
+            'snack-warning'
+          ]
+        }
+      );
+
+      return;
+
+    }
+
+
+    if (
+      !this.selectedFile
+    ) {
+
+      this._snackBar.open(
+        'Debes seleccionar el PDF del expediente',
+        'Cerrar',
+        {
+          duration: 3000,
+          panelClass: [
+            'snack-warning'
+          ]
+        }
+      );
+
+      return;
+
+    }
+
+
+    const esPdf =
+      this.selectedFile.type ===
+        'application/pdf' ||
+      this.selectedFile.name
+        .toLowerCase()
+        .endsWith('.pdf');
+
+
+    if (!esPdf) {
+
+      this._snackBar.open(
+        'El archivo debe estar en formato PDF',
+        'Cerrar',
+        {
+          duration: 3000,
+          panelClass: [
+            'snack-warning'
+          ]
+        }
+      );
+
+      return;
+
+    }
+
+
+    this.guardarBorradorLocal();
+
+    this.isLoading = true;
+
+
+    const value =
+      this.myForm.getRawValue();
+
+    const formData =
+      new FormData();
+
+
+    /* ===============================
+       DATOS GENERALES
+    =============================== */
+
+    formData.append(
+      'numeroDeic',
+      value.numeroDeic
+        ?.trim() || ''
+    );
+
+
+    formData.append(
+      'numeroMp',
+      value.numeroMp
+        ?.trim() || ''
+    );
+
+
+    formData.append(
+      'estadoInvestigacion',
+      value.estadoInvestigacion ||
+        ''
+    );
+
+
+    /* ===============================
+       INFRACTORES
+    =============================== */
+
+    const infractores =
+      (value.infractores || [])
+        .map(
+          (persona: any) => ({
+
+            nombre:
+              persona.nombre || '',
+
+            cui:
+              persona.cui || '',
+
+            fecha_Nac:
+              persona.fecha_Nac
+                ? new Date(
+                    persona.fecha_Nac
+                  ).toISOString()
+                : null,
+
+            direccion:
+              persona.direccion || ''
+
+          })
+        );
+
+
+    formData.append(
+      'infractores',
+      JSON.stringify(
+        infractores
+      )
+    );
+
+
+    /* ===============================
+       VÍCTIMAS
+    =============================== */
+
+    const victimas =
+      (value.victimas || [])
+        .map(
+          (persona: any) => ({
+
+            nombre:
+              persona.nombre || '',
+
+            cui:
+              persona.cui || '',
+
+            fecha_Nac:
+              persona.fecha_Nac
+                ? new Date(
+                    persona.fecha_Nac
+                  ).toISOString()
+                : null,
+
+            direccion:
+              persona.direccion || ''
+
+          })
+        );
+
+
+    formData.append(
+      'victimas',
+      JSON.stringify(
+        victimas
+      )
+    );
+
+
+    /* ===============================
+       LUGAR DE LOS HECHOS
+    =============================== */
+
+    formData.append(
+      'lugarHechos',
+      JSON.stringify({
+
+        departamento:
+          value.lugarHechos
+            ?.departamento || '',
+
+        municipio:
+          value.lugarHechos
+            ?.municipio || '',
+
+        direccionDetallada:
+          value.lugarHechos
+            ?.direccionDetallada || ''
+
+      })
+    );
+
+
+    /* ===============================
+       PDF
+    =============================== */
+
+    formData.append(
+      'file',
+      this.selectedFile,
+      this.selectedFile.name
+    );
+
+
+    /* ===============================
+       REQUEST
+    =============================== */
+
+    this.conflictoService
+      .registrarConflicto(
+        formData
+      )
+      .subscribe({
+
+        next: () => {
+
+          if (
+            this.informeDeic
+          ) {
+
+            this.informeService
+              .eliminar(
+                this.informeDeic
+              )
+              .subscribe();
+
+          }
+
+
+          this._snackBar.open(
+            'Caso registrado con éxito',
+            'Cerrar',
+            {
+              duration: 3000,
+              panelClass: [
+                'snack-success'
+              ]
+            }
+          );
+
+
+          sessionStorage.removeItem(
+            this.draftKey
+          );
+
+
+          this.selectedFile =
+            null;
+
+          this.fileName =
+            null;
+
+          this.informeDeic =
+            null;
+
+          this.isLoading =
+            false;
+
+
+          this.infractores.clear();
+
+          this.victimas.clear();
+
+          this.myForm.reset();
+
+          this.agregarInfractor();
+
+          this.agregarVictima();
+
+        },
+
+
+        error: (
+          error
+        ) => {
+
+          this.isLoading =
+            false;
+
+
+          console.error(
+            'Error al registrar conflicto:',
+            error
+          );
+
+
+          const backendMessage =
+            error?.error?.message;
+
+
+          const msg =
+            Array.isArray(
+              backendMessage
+            )
+              ? backendMessage.join(
+                  ' '
+                )
+              : (
+                  backendMessage ||
+                  'Error al registrar el caso'
+                );
+
+
+          if (
+            msg
+              .toLowerCase()
+              .includes('exist')
+          ) {
+
+            this.deicDuplicado =
+              value.numeroDeic ||
+              '';
+
+            this.casoYaExiste =
+              true;
+
+            return;
+
+          }
+
+
+          this._snackBar.open(
+            msg,
+            'Cerrar',
+            {
+              duration: 5000,
+              panelClass: [
+                'snack-error'
+              ]
+            }
+          );
+
+        }
+
+      });
+
+  }
+
+
+  /* =====================================================
+     SEGUIMIENTO
+  ===================================================== */
+
+  irASeguimiento(): void {
+
+    this.router.navigate(
+      [
+        '/casos/seguimiento-conflicto'
+      ],
+      {
+        state: {
+          numeroDeic:
+            this.deicDuplicado
+        }
+      }
+    );
+
+  }
+
+
+  /* =====================================================
+     RESET
+  ===================================================== */
+
+  resetFormState(
+    form: FormGroup
+  ): void {
+
+    form.reset();
+
+
+    Object.keys(
+      form.controls
+    ).forEach(
+      key => {
+
+        const control =
+          form.get(key);
+
+
+        if (
+          control instanceof
+          FormGroup
+        ) {
+
+          this.resetFormState(
+            control
+          );
+
+        } else {
+
+          control
+            ?.markAsPristine();
+
+          control
+            ?.markAsUntouched();
+
+          control
+            ?.setErrors(null);
+
+        }
+
+      }
+    );
+
+  }
+
+
+  /* =====================================================
+     BORRADOR
+  ===================================================== */
+
+  private guardarBorradorLocal():
+    void {
+
+    sessionStorage.setItem(
+      this.draftKey,
+
+      JSON.stringify({
+
+        value:
+          this.myForm
+            .getRawValue(),
+
+        fileName:
+          this.fileName
+
+      })
+    );
+
+  }
+
+
+  private restaurarBorradorLocal():
+    void {
+
+    const raw =
+      sessionStorage.getItem(
+        this.draftKey
+      );
+
+
+    if (!raw) {
       return;
     }
 
-    this.guardarBorradorLocal();
-    this.isLoading = true;
-    const formData = new FormData();
-    formData.append('numeroDeic', this.myForm.value.numeroDeic?.trim() || '');
-    formData.append('numeroMp', this.myForm.value.numeroMp?.trim() || '');
-    formData.append('estadoInvestigacion', this.myForm.value.estadoInvestigacion || '');
-
-    this.myForm.value.infractores?.forEach((inf: any, i: number) => {
-      formData.append(`infractores[${i}][nombre]`, inf.nombre);
-      formData.append(`infractores[${i}][cui]`, inf.cui);
-      formData.append(`infractores[${i}][fecha_Nac]`, inf.fecha_Nac);
-      formData.append(`infractores[${i}][direccion]`, inf.direccion);
-    });
-
-    this.myForm.value.victimas?.forEach((vic: any, i: number) => {
-      formData.append(`victimas[${i}][nombre]`, vic.nombre);
-      formData.append(`victimas[${i}][fecha_Nac]`, vic.fecha_Nac);
-      formData.append(`victimas[${i}][direccion]`, vic.direccion);
-      formData.append(`victimas[${i}][cui]`, vic.cui);
-    });
-
-    formData.append('file', this.selectedFile);
-
-    this.conflictoService.registrarConflicto(formData).subscribe({
-      next: () => {
-        if (this.informeDeic) {
-          this.informeService.eliminar(this.informeDeic).subscribe();
-        }
-        this._snackBar.open('Caso registrado con éxito', 'Cerrar', { duration: 3000, panelClass: ['snack-success'] });
-        this.resetFormState(this.myForm);
-        sessionStorage.removeItem(this.draftKey);
-        this.selectedFile = null;
-        this.isLoading = false;
-        this.informeDeic = null;
-      },
-      error: (error) => {
-        this.isLoading = false;
-        const msg: string = error?.error?.message || '';
-        if (msg.toLowerCase().includes('exist')) {
-          this.deicDuplicado = this.myForm.value.numeroDeic || '';
-          this.casoYaExiste = true;
-        } else {
-          this._snackBar.open('Error al registrar el caso', 'Cerrar', { duration: 3000, panelClass: ['snack-error'] });
-        }
-      }
-    });
-  }
-
-  irASeguimiento() {
-    this.router.navigate(['/casos/seguimiento-conflicto'], {
-      state: { numeroDeic: this.deicDuplicado }
-    });
-  }
-
-  resetFormState(form: FormGroup) {
-    form.reset();
-    Object.keys(form.controls).forEach(key => {
-      const control = form.get(key);
-      if (control instanceof FormGroup) {
-        this.resetFormState(control);
-      } else {
-        control?.markAsPristine();
-        control?.markAsUntouched();
-        control?.setErrors(null);
-      }
-    });
-  }
-
-  private guardarBorradorLocal(): void {
-    sessionStorage.setItem(this.draftKey, JSON.stringify({
-      value: this.myForm.getRawValue(),
-      fileName: this.fileName,
-    }));
-  }
-
-  private restaurarBorradorLocal(): void {
-    const raw = sessionStorage.getItem(this.draftKey);
-    if (!raw) return;
 
     try {
-      const draft = JSON.parse(raw);
-      const value = draft.value || {};
-      value.infractores = (value.infractores || []).map((item: any) => ({
-        ...item,
-        fecha_Nac: item.fecha_Nac ? new Date(item.fecha_Nac) : null,
-      }));
-      value.victimas = (value.victimas || []).map((item: any) => ({
-        ...item,
-        fecha_Nac: item.fecha_Nac ? new Date(item.fecha_Nac) : null,
-      }));
+
+      const draft =
+        JSON.parse(raw);
+
+      const value =
+        draft.value || {};
+
+
+      value.infractores =
+        (
+          value.infractores ||
+          []
+        ).map(
+          (item: any) => ({
+
+            ...item,
+
+            fecha_Nac:
+              item.fecha_Nac
+                ? new Date(
+                    item.fecha_Nac
+                  )
+                : null
+
+          })
+        );
+
+
+      value.victimas =
+        (
+          value.victimas ||
+          []
+        ).map(
+          (item: any) => ({
+
+            ...item,
+
+            fecha_Nac:
+              item.fecha_Nac
+                ? new Date(
+                    item.fecha_Nac
+                  )
+                : null
+
+          })
+        );
+
 
       this.infractores.clear();
+
       this.victimas.clear();
-      (value.infractores.length ? value.infractores : [{}]).forEach(() => this.agregarInfractor());
-      (value.victimas.length ? value.victimas : [{}]).forEach(() => this.agregarVictima());
-      this.myForm.patchValue(value);
-      this.fileName = draft.fileName ? `${draft.fileName} (selecciona el archivo nuevamente)` : null;
-      this._snackBar.open('Recupere un borrador local. Revisa los datos y selecciona el archivo nuevamente.', 'Cerrar', {
-        duration: 5000,
-        panelClass: ['snack-warning']
-      });
+
+
+      (
+        value.infractores?.length
+          ? value.infractores
+          : [{}]
+      ).forEach(
+        () =>
+          this.agregarInfractor()
+      );
+
+
+      (
+        value.victimas?.length
+          ? value.victimas
+          : [{}]
+      ).forEach(
+        () =>
+          this.agregarVictima()
+      );
+
+
+      this.myForm.patchValue(
+        value
+      );
+
+
+      this.fileName =
+        draft.fileName
+          ? `${draft.fileName} (selecciona el archivo nuevamente)`
+          : null;
+
+
+      this._snackBar.open(
+        'Recuperé un borrador local. Revisa los datos y selecciona el archivo nuevamente.',
+        'Cerrar',
+        {
+          duration: 5000,
+          panelClass: [
+            'snack-warning'
+          ]
+        }
+      );
+
+
     } catch {
-      sessionStorage.removeItem(this.draftKey);
+
+      sessionStorage.removeItem(
+        this.draftKey
+      );
+
     }
+
   }
+
 }

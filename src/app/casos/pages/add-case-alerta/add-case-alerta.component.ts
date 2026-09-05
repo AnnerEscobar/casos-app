@@ -71,26 +71,104 @@ export default class AddCaseAlertaComponent implements OnInit {
   ];
 
   myForm = this.formBuilder.group({
-    numeroDeic: ['', [Validators.required, Validators.pattern(/^DEIC52-\d{4}-\d{2}-\d{2}-\d+$/)]],
-    numeroMp: ['', [Validators.required, Validators.pattern(/^M0030-\d{4}-\d+$/)]],
-    numeroAlerta: ['', [Validators.required, Validators.pattern(/^\d+-\d{4}$/)]],
-    nombreDesaparecido: ['', [Validators.required]],
-    fecha_Nac: [null, [Validators.required]],
-    estadoInvestigacion: ['', [Validators.required]],
+
+    numeroDeic: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern(/^DEIC52-\d{4}-\d{2}-\d{2}-\d+$/)
+      ]
+    ],
+
+    numeroMp: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern(/^M0030-\d{4}-\d+$/)
+      ]
+    ],
+
+    numeroAlerta: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern(/^\d+-\d{4}$/)
+      ]
+    ],
+
+    nombreDesaparecido: [
+      '',
+      Validators.required
+    ],
+
+    fecha_Nac: [
+      null,
+      Validators.required
+    ],
+
+    estadoInvestigacion: [
+      '',
+      Validators.required
+    ],
+
     origenAlerta: [''],
+
     casaHogar: [''],
+
     ubicacionGps: [''],
-    direccion: this.formBuilder.group({
-      departamento: ['', [Validators.required]],
-      municipio: ['', [Validators.required]],
-      direccionDetallada: ['', [Validators.required]],
+
+
+    // V3
+    denunciante: this.formBuilder.group({
+
+      nombre: [
+        '',
+        Validators.required
+      ],
+
+      cui: [''],
+
+      telefono: ['']
+
     }),
-    direccionLocalizacion: [''],
-    nombreAcompanante: [''],
-    telefono: [''],
-    horaLocalizacion: [''],
-    fechaLocalizacion: [null],
-    fileUrls: this.formBuilder.array([]),
+
+
+    // V3
+    lugarDesaparicion: this.formBuilder.group({
+
+      departamento: [
+        '',
+        Validators.required
+      ],
+
+      municipio: [
+        '',
+        Validators.required
+      ],
+
+      direccionDetallada: [
+        '',
+        Validators.required
+      ]
+
+    }),
+
+
+    // V3
+    datosLocalizacion: this.formBuilder.group({
+
+      direccionLocalizacion: [''],
+
+      nombrePersonaConQuienEstaba: [''],
+
+      telefono: [''],
+
+      horaLocalizacion: [''],
+
+      fechaLocalizacion: [null]
+
+    })
+
   });
 
   ngOnInit() {
@@ -110,16 +188,72 @@ export default class AddCaseAlertaComponent implements OnInit {
       });
     });
 
-    this.myForm.get('origenAlerta')?.valueChanges.subscribe((origen) => {
-      const casaHogarControl = this.myForm.get('casaHogar');
-      if (origen === 'Casa hogar') {
-        casaHogarControl?.setValidators(Validators.required);
-      } else {
-        casaHogarControl?.clearValidators();
-        casaHogarControl?.setValue('');
-      }
-      casaHogarControl?.updateValueAndValidity();
-    });
+    this.myForm
+      .get('estadoInvestigacion')
+      ?.valueChanges
+      .subscribe((estado) => {
+
+        const mostrar =
+          estado === 'Remitido';
+
+        const datosLocalizacion =
+          this.myForm.get(
+            'datosLocalizacion'
+          ) as FormGroup;
+
+        const campos = [
+          'direccionLocalizacion',
+          'nombrePersonaConQuienEstaba',
+          'telefono',
+          'horaLocalizacion',
+          'fechaLocalizacion'
+        ];
+
+        campos.forEach(campo => {
+
+          const control =
+            datosLocalizacion.get(campo);
+
+          if (mostrar) {
+
+            control?.setValidators(
+              Validators.required
+            );
+
+          } else {
+
+            control?.clearValidators();
+
+          }
+
+          control?.updateValueAndValidity({
+            emitEvent: false
+          });
+
+        });
+
+
+        if (!mostrar) {
+
+          datosLocalizacion.reset({
+
+            direccionLocalizacion: '',
+
+            nombrePersonaConQuienEstaba: '',
+
+            telefono: '',
+
+            horaLocalizacion: '',
+
+            fechaLocalizacion: null
+
+          }, {
+            emitEvent: false
+          });
+
+        }
+
+      });
 
     const datos = history.state;
 
@@ -144,10 +278,17 @@ export default class AddCaseAlertaComponent implements OnInit {
         numeroAlerta: datos.numeroAlerta,
         nombreDesaparecido: datos.nombre,
         fecha_Nac: datos.fecha_Nac,
-        direccion: {
-          departamento: datos.departamento || '',
-          municipio: datos.municipio || '',
-          direccionDetallada: datos.lugar || ''
+        lugarDesaparicion: {
+
+          departamento:
+            datos.departamento || '',
+
+          municipio:
+            datos.municipio || '',
+
+          direccionDetallada:
+            datos.lugar || ''
+
         }
       });
     } else {
@@ -155,72 +296,396 @@ export default class AddCaseAlertaComponent implements OnInit {
     }
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
-      this.fileName = this.selectedFile.name;
-    } else {
-      this.selectedFile = null;
-      this.fileName = null;
-    }
+onFileSelected(event: Event): void {
+
+  const input =
+    event.target as HTMLInputElement;
+
+  const file =
+    input.files?.[0];
+
+
+  if (!file) {
+
+    this.selectedFile = null;
+    this.fileName = null;
+
+    return;
   }
 
-  registrarCaso() {
-    if (this.myForm.invalid || !this.selectedFile) {
-      this._snackBar.open('Debes completar todos los campos y seleccionar un archivo', 'Cerrar', { duration: 3000, panelClass: ['snack-warning'] });
-      return;
-    }
 
-    this.guardarBorradorLocal();
-    this.isLoading = true;
-    const formData = new FormData();
-    formData.append('numeroDeic', this.myForm.value.numeroDeic || '');
-    formData.append('numeroMp', this.myForm.value.numeroMp || '');
-    formData.append('numeroAlerta', this.myForm.value.numeroAlerta || '');
-    formData.append('nombreDesaparecido', this.myForm.value.nombreDesaparecido || '');
-    formData.append('fecha_Nac', this.myForm.value.fecha_Nac || '');
-    formData.append('estadoInvestigacion', this.myForm.value.estadoInvestigacion || '');
-    formData.append('origenAlerta', this.myForm.value.origenAlerta || '');
-    formData.append('casaHogar', this.myForm.value.casaHogar || '');
-    formData.append('ubicacionGps', this.myForm.value.ubicacionGps || '');
-    formData.append('direccion[departamento]', this.myForm.value.direccion?.departamento || '');
-    formData.append('direccion[municipio]', this.myForm.value.direccion?.municipio || '');
-    formData.append('direccion[direccionDetallada]', this.myForm.value.direccion?.direccionDetallada || '');
-    formData.append('file', this.selectedFile);
+  const esPdf =
+    file.type === 'application/pdf' ||
+    file.name
+      .toLowerCase()
+      .endsWith('.pdf');
 
-    if (this.myForm.value.estadoInvestigacion === 'Remitido') {
-      formData.append('direccionLocalizacion', this.myForm.value.direccionLocalizacion || '');
-      formData.append('nombreAcompanante', this.myForm.value.nombreAcompanante || '');
-      formData.append('telefono', this.myForm.value.telefono || '');
-      formData.append('horaLocalizacion', this.myForm.value.horaLocalizacion || '');
-      formData.append('fechaLocalizacion', this.myForm.value.fechaLocalizacion || '');
-    }
 
-    this.alertaService.registrarAlerta(formData).subscribe({
-      next: () => {
-        if (this.informeDeic) {
-          this.informeService.eliminar(this.informeDeic).subscribe();
-        }
-        this._snackBar.open('Caso registrado correctamente', 'Cerrar', { duration: 3000, panelClass: ['snack-success'] });
-        this.resetFormState(this.myForm);
-        sessionStorage.removeItem(this.draftKey);
-        this.selectedFile = null;
-        this.isLoading = false;
-        this.informeDeic = null;
-      },
-      error: (error) => {
-        this.isLoading = false;
-        const msg: string = error?.error?.message || '';
-        if (msg.toLowerCase().includes('exist')) {
-          this.deicDuplicado = this.myForm.value.numeroDeic || '';
-          this.casoYaExiste = true;
-        } else {
-          this._snackBar.open('Error al registrar el caso', 'Cerrar', { duration: 3000, panelClass: ['snack-error'] });
-        }
+  if (!esPdf) {
+
+    this._snackBar.open(
+      'Solo se permiten archivos PDF',
+      'Cerrar',
+      {
+        duration: 3000,
+        panelClass: ['snack-warning']
       }
-    });
+    );
+
+    input.value = '';
+
+    this.selectedFile = null;
+    this.fileName = null;
+
+    return;
   }
+
+
+  this.selectedFile = file;
+
+  this.fileName =
+    file.name;
+
+}
+
+  registrarCaso(): void {
+
+  if (this.myForm.invalid) {
+
+    this.myForm.markAllAsTouched();
+
+    this._snackBar.open(
+      'Debes completar todos los campos obligatorios',
+      'Cerrar',
+      {
+        duration: 3000,
+        panelClass: ['snack-warning']
+      }
+    );
+
+    return;
+  }
+
+
+  if (!this.selectedFile) {
+
+    this._snackBar.open(
+      'Debes seleccionar el PDF del expediente',
+      'Cerrar',
+      {
+        duration: 3000,
+        panelClass: ['snack-warning']
+      }
+    );
+
+    return;
+  }
+
+
+  const esPdf =
+    this.selectedFile.type ===
+      'application/pdf' ||
+    this.selectedFile.name
+      .toLowerCase()
+      .endsWith('.pdf');
+
+
+  if (!esPdf) {
+
+    this._snackBar.open(
+      'El archivo debe estar en formato PDF',
+      'Cerrar',
+      {
+        duration: 3000,
+        panelClass: ['snack-warning']
+      }
+    );
+
+    return;
+  }
+
+
+  this.guardarBorradorLocal();
+
+  this.isLoading = true;
+
+
+  const value =
+    this.myForm.getRawValue();
+
+  const formData =
+    new FormData();
+
+
+  // DATOS DEL CASO
+
+  formData.append(
+    'numeroDeic',
+    value.numeroDeic || ''
+  );
+
+  formData.append(
+    'numeroMp',
+    value.numeroMp || ''
+  );
+
+  formData.append(
+    'numeroAlerta',
+    value.numeroAlerta || ''
+  );
+
+  formData.append(
+    'nombreDesaparecido',
+    value.nombreDesaparecido || ''
+  );
+
+
+  if (value.fecha_Nac) {
+
+    formData.append(
+      'fecha_Nac',
+      new Date(
+        value.fecha_Nac
+      ).toISOString()
+    );
+
+  }
+
+
+  formData.append(
+    'estadoInvestigacion',
+    value.estadoInvestigacion || ''
+  );
+
+
+  if (value.origenAlerta) {
+
+    formData.append(
+      'origenAlerta',
+      value.origenAlerta
+    );
+
+  }
+
+
+  if (value.casaHogar) {
+
+    formData.append(
+      'casaHogar',
+      value.casaHogar
+    );
+
+  }
+
+
+  if (value.ubicacionGps) {
+
+    formData.append(
+      'ubicacionGps',
+      value.ubicacionGps
+    );
+
+  }
+
+
+  // DENUNCIANTE
+
+  formData.append(
+    'denunciante',
+    JSON.stringify({
+
+      nombre:
+        value.denunciante?.nombre || '',
+
+      cui:
+        value.denunciante?.cui || '',
+
+      telefono:
+        value.denunciante?.telefono || ''
+
+    })
+  );
+
+
+  // LUGAR DE DESAPARICIÓN
+
+  formData.append(
+    'lugarDesaparicion',
+    JSON.stringify({
+
+      departamento:
+        value.lugarDesaparicion
+          ?.departamento || '',
+
+      municipio:
+        value.lugarDesaparicion
+          ?.municipio || '',
+
+      direccionDetallada:
+        value.lugarDesaparicion
+          ?.direccionDetallada || ''
+
+    })
+  );
+
+
+  // DATOS DE LOCALIZACIÓN
+  // Solo si corresponde
+
+  if (
+    value.estadoInvestigacion ===
+    'Remitido'
+  ) {
+
+    const localizacion =
+      value.datosLocalizacion;
+
+
+    formData.append(
+      'datosLocalizacion',
+      JSON.stringify({
+
+        direccionLocalizacion:
+          localizacion
+            ?.direccionLocalizacion || '',
+
+        nombrePersonaConQuienEstaba:
+          localizacion
+            ?.nombrePersonaConQuienEstaba || '',
+
+        telefono:
+          localizacion
+            ?.telefono || '',
+
+        horaLocalizacion:
+          localizacion
+            ?.horaLocalizacion || '',
+
+        fechaLocalizacion:
+          localizacion?.fechaLocalizacion
+            ? new Date(
+                localizacion.fechaLocalizacion
+              ).toISOString()
+            : null
+
+      })
+    );
+
+  }
+
+
+  // PDF
+
+  formData.append(
+    'file',
+    this.selectedFile,
+    this.selectedFile.name
+  );
+
+
+  this.alertaService
+    .registrarAlerta(formData)
+    .subscribe({
+
+      next: () => {
+
+        if (this.informeDeic) {
+
+          this.informeService
+            .eliminar(
+              this.informeDeic
+            )
+            .subscribe();
+
+        }
+
+
+        this._snackBar.open(
+          'Caso registrado correctamente',
+          'Cerrar',
+          {
+            duration: 3000,
+            panelClass: ['snack-success']
+          }
+        );
+
+
+        this.resetFormState(
+          this.myForm
+        );
+
+
+        sessionStorage.removeItem(
+          this.draftKey
+        );
+
+
+        this.selectedFile = null;
+
+        this.fileName = null;
+
+        this.isLoading = false;
+
+        this.informeDeic = null;
+
+      },
+
+
+      error: (error) => {
+
+        this.isLoading = false;
+
+
+        console.error(
+          'Error al registrar alerta:',
+          error
+        );
+
+
+        const backendMessage =
+          error?.error?.message;
+
+
+        const msg =
+          Array.isArray(
+            backendMessage
+          )
+            ? backendMessage.join(' ')
+            : (
+                backendMessage ||
+                'Error al registrar el caso'
+              );
+
+
+        if (
+          msg
+            .toLowerCase()
+            .includes('exist')
+        ) {
+
+          this.deicDuplicado =
+            value.numeroDeic || '';
+
+          this.casoYaExiste = true;
+
+          return;
+        }
+
+
+        this._snackBar.open(
+          msg,
+          'Cerrar',
+          {
+            duration: 5000,
+            panelClass: ['snack-error']
+          }
+        );
+
+      }
+
+    });
+
+}
 
   irASeguimiento() {
     this.router.navigate(['/casos/seguimiento-alerta'], {
@@ -250,23 +715,76 @@ export default class AddCaseAlertaComponent implements OnInit {
   }
 
   private restaurarBorradorLocal(): void {
-    const raw = sessionStorage.getItem(this.draftKey);
-    if (!raw) return;
 
-    try {
-      const draft = JSON.parse(raw);
-      const value = draft.value || {};
-      if (value.fecha_Nac) value.fecha_Nac = new Date(value.fecha_Nac);
-      if (value.fechaLocalizacion) value.fechaLocalizacion = new Date(value.fechaLocalizacion);
+  const raw =
+    sessionStorage.getItem(
+      this.draftKey
+    );
 
-      this.myForm.patchValue(value);
-      this.fileName = draft.fileName ? `${draft.fileName} (selecciona el archivo nuevamente)` : null;
-      this._snackBar.open('Recupere un borrador local. Revisa los datos y selecciona el archivo nuevamente.', 'Cerrar', {
+  if (!raw) return;
+
+
+  try {
+
+    const draft =
+      JSON.parse(raw);
+
+    const value =
+      draft.value || {};
+
+
+    if (value.fecha_Nac) {
+
+      value.fecha_Nac =
+        new Date(
+          value.fecha_Nac
+        );
+
+    }
+
+
+    if (
+      value.datosLocalizacion
+        ?.fechaLocalizacion
+    ) {
+
+      value.datosLocalizacion
+        .fechaLocalizacion =
+          new Date(
+            value.datosLocalizacion
+              .fechaLocalizacion
+          );
+
+    }
+
+
+    this.myForm.patchValue(
+      value
+    );
+
+
+    this.fileName =
+      draft.fileName
+        ? `${draft.fileName} (selecciona el archivo nuevamente)`
+        : null;
+
+
+    this._snackBar.open(
+      'Recuperé un borrador local. Revisa los datos y selecciona el archivo nuevamente.',
+      'Cerrar',
+      {
         duration: 5000,
         panelClass: ['snack-warning']
-      });
-    } catch {
-      sessionStorage.removeItem(this.draftKey);
-    }
+      }
+    );
+
+  } catch {
+
+    sessionStorage.removeItem(
+      this.draftKey
+    );
+
   }
+
+}
 }

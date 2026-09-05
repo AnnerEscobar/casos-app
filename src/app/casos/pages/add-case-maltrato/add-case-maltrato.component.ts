@@ -27,7 +27,7 @@ import { InformeService } from '../../../informes/services/informe.service';
     MatProgressSpinnerModule, MatCardModule, MatTooltipModule
   ],
   templateUrl: './add-case-maltrato.component.html',
-  styleUrl: './add-case-maltrato.component.css'
+  styleUrls: ['./add-case-maltrato.component.css'],
 })
 export default class AddCaseMaltratoComponent implements OnInit {
 
@@ -50,14 +50,62 @@ export default class AddCaseMaltratoComponent implements OnInit {
   deicDuplicado = '';
   private readonly draftKey = 'draft:add-case-maltrato';
 
-  myForm = this.formBuider.group({
-    numeroDeic: ['', [Validators.required]],
-    numeroMp: ['', [Validators.required]],
-    estadoInvestigacion: ['', [Validators.required]],
-    infractores: this.formBuider.array([]),
-    victimas: this.formBuider.array([]),
-    fileUrls: this.formBuider.array([]),
-  });
+myForm = this.formBuider.group({
+
+  numeroDeic: [
+    '',
+    [
+      Validators.required,
+      Validators.pattern(
+        /^DEIC51-\d{4}-\d{2}-\d{2}-\d+$/
+      )
+    ]
+  ],
+
+ numeroMp: [
+  '',
+  [
+    Validators.required,
+    Validators.pattern(
+      /^(?:(?:MPE01|M0008|MP004|M0030|MP001)-\d{4}-\d+|IC\/PNCORLLAT\d+-\d{4}-\d+)$/
+    )
+  ]
+],
+
+  estadoInvestigacion: [
+    '',
+    Validators.required
+  ],
+
+  // Lo mantenemos con este nombre internamente
+  // para no romper tus métodos actuales.
+  infractores:
+    this.formBuider.array([]),
+
+  victimas:
+    this.formBuider.array([]),
+
+  lugarHechos:
+    this.formBuider.group({
+
+      departamento: [
+        '',
+        Validators.required
+      ],
+
+      municipio: [
+        '',
+        Validators.required
+      ],
+
+      direccionDetallada: [
+        '',
+        Validators.required
+      ]
+
+    })
+
+});
 
   get infractores(): FormArray<FormGroup> {
     return this.myForm.get('infractores') as FormArray;
@@ -108,96 +156,431 @@ export default class AddCaseMaltratoComponent implements OnInit {
     }
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
-      this.fileName = this.selectedFile.name;
-    } else {
-      this.selectedFile = null;
-      this.fileName = null;
-    }
+onFileSelected(event: Event): void {
+
+  const input =
+    event.target as HTMLInputElement;
+
+  const file =
+    input.files?.[0];
+
+
+  if (!file) {
+
+    this.selectedFile = null;
+    this.fileName = null;
+
+    return;
   }
 
-  agregarInfractor() {
-    this.infractores.push(this.formBuider.group({
-      nombre: ['', Validators.required],
-      cui: ['', Validators.required],
-      fecha_Nac: ['', Validators.required],
-      direccion: ['', Validators.required],
-    }));
+
+  const esPdf =
+    file.type === 'application/pdf' ||
+    file.name
+      .toLowerCase()
+      .endsWith('.pdf');
+
+
+  if (!esPdf) {
+
+    this._snackBar.open(
+      'Solo se permiten archivos PDF',
+      'Cerrar',
+      {
+        duration: 3000,
+        panelClass: ['snack-warning']
+      }
+    );
+
+    input.value = '';
+
+    this.selectedFile = null;
+    this.fileName = null;
+
+    return;
   }
 
-  eliminarInfractor(index: number) {
+
+  this.selectedFile = file;
+  this.fileName = file.name;
+
+}
+
+ agregarInfractor(): void {
+
+  this.infractores.push(
+    this.formBuider.group({
+
+      nombre: [
+        '',
+        Validators.required
+      ],
+
+      cui: [
+        '',
+        Validators.required
+      ],
+
+      fecha_Nac: [
+        null,
+        Validators.required
+      ],
+
+      direccion: [
+        '',
+        Validators.required
+      ]
+
+    })
+  );
+
+}
+
+eliminarInfractor(index: number): void {
+
+  if (
+    this.infractores.length > 1
+  ) {
     this.infractores.removeAt(index);
   }
 
-  agregarVictima() {
-    this.victimas.push(this.formBuider.group({
-      nombre: ['', Validators.required],
-      fecha_Nac: ['', Validators.required],
-      direccion: ['', Validators.required],
-      cui: ['', Validators.required],
-    }));
-  }
+}
 
-  eliminarVictima(index: number) {
+  agregarVictima(): void {
+
+  this.victimas.push(
+    this.formBuider.group({
+
+      nombre: [
+        '',
+        Validators.required
+      ],
+
+      cui: [
+        '',
+        Validators.required
+      ],
+
+      fecha_Nac: [
+        null,
+        Validators.required
+      ],
+
+      direccion: [
+        '',
+        Validators.required
+      ]
+
+    })
+  );
+
+}
+
+eliminarVictima(index: number): void {
+
+  if (
+    this.victimas.length > 1
+  ) {
     this.victimas.removeAt(index);
   }
 
-  registrarCaso() {
-    if (this.myForm.invalid || !this.selectedFile) {
-      this._snackBar.open('Debes completar todos los campos y seleccionar un archivo', 'Cerrar', { duration: 3000, panelClass: ['snack-warning'] });
-      return;
-    }
+}
 
-    this.guardarBorradorLocal();
-    this.isLoading = true;
-    const formData = new FormData();
-    formData.append('numeroDeic', this.myForm.value.numeroDeic?.trim() || '');
-    formData.append('numeroMp', this.myForm.value.numeroMp?.trim() || '');
-    formData.append('estadoInvestigacion', this.myForm.value.estadoInvestigacion || '');
+registrarCaso(): void {
 
-    this.myForm.value.infractores?.forEach((inf: any, i: number) => {
-      formData.append(`infractores[${i}][nombre]`, inf.nombre);
-      formData.append(`infractores[${i}][cui]`, inf.cui);
-      formData.append(`infractores[${i}][fecha_Nac]`, inf.fecha_Nac);
-      formData.append(`infractores[${i}][direccion]`, inf.direccion);
-    });
+  if (this.myForm.invalid) {
 
-    this.myForm.value.victimas?.forEach((vic: any, i: number) => {
-      formData.append(`victimas[${i}][nombre]`, vic.nombre);
-      formData.append(`victimas[${i}][fecha_Nac]`, vic.fecha_Nac);
-      formData.append(`victimas[${i}][direccion]`, vic.direccion);
-      formData.append(`victimas[${i}][cui]`, vic.cui);
-    });
+    this.myForm.markAllAsTouched();
 
-    formData.append('file', this.selectedFile);
-
-    this.maltratoService.sendFormData(formData).subscribe({
-      next: () => {
-        if (this.informeDeic) {
-          this.informeService.eliminar(this.informeDeic).subscribe();
-        }
-        this._snackBar.open('Caso registrado con éxito', 'Cerrar', { duration: 3000, panelClass: ['snack-success'] });
-        this.resetFormState(this.myForm);
-        sessionStorage.removeItem(this.draftKey);
-        this.selectedFile = null;
-        this.isLoading = false;
-        this.informeDeic = null;
-      },
-      error: (error) => {
-        this.isLoading = false;
-        const msg: string = error?.error?.message || '';
-        if (msg.toLowerCase().includes('exist')) {
-          this.deicDuplicado = this.myForm.value.numeroDeic || '';
-          this.casoYaExiste = true;
-        } else {
-          this._snackBar.open('Error al registrar el caso', 'Cerrar', { duration: 3000, panelClass: ['snack-error'] });
-        }
+    this._snackBar.open(
+      'Debes completar todos los campos obligatorios',
+      'Cerrar',
+      {
+        duration: 3000,
+        panelClass: ['snack-warning']
       }
-    });
+    );
+
+    return;
   }
+
+
+  if (!this.selectedFile) {
+
+    this._snackBar.open(
+      'Debes seleccionar el PDF del expediente',
+      'Cerrar',
+      {
+        duration: 3000,
+        panelClass: ['snack-warning']
+      }
+    );
+
+    return;
+  }
+
+
+  const esPdf =
+    this.selectedFile.type ===
+      'application/pdf' ||
+    this.selectedFile.name
+      .toLowerCase()
+      .endsWith('.pdf');
+
+
+  if (!esPdf) {
+
+    this._snackBar.open(
+      'El archivo debe estar en formato PDF',
+      'Cerrar',
+      {
+        duration: 3000,
+        panelClass: ['snack-warning']
+      }
+    );
+
+    return;
+  }
+
+
+  this.guardarBorradorLocal();
+
+  this.isLoading = true;
+
+
+  const value =
+    this.myForm.getRawValue();
+
+  const formData =
+    new FormData();
+
+
+  // --------------------------------
+  // Datos generales
+  // --------------------------------
+
+  formData.append(
+    'numeroDeic',
+    value.numeroDeic?.trim() || ''
+  );
+
+  formData.append(
+    'numeroMp',
+    value.numeroMp?.trim() || ''
+  );
+
+  formData.append(
+    'estadoInvestigacion',
+    value.estadoInvestigacion || ''
+  );
+
+
+  // --------------------------------
+  // Sindicados
+  // --------------------------------
+
+  const sindicados =
+    (value.infractores || [])
+      .map((persona: any) => ({
+
+        nombre:
+          persona.nombre || '',
+
+        cui:
+          persona.cui || '',
+
+        fecha_Nac:
+          persona.fecha_Nac
+            ? new Date(
+                persona.fecha_Nac
+              ).toISOString()
+            : null,
+
+        direccion:
+          persona.direccion || ''
+
+      }));
+
+
+  formData.append(
+    'sindicados',
+    JSON.stringify(sindicados)
+  );
+
+
+  // --------------------------------
+  // Víctimas
+  // --------------------------------
+
+  const victimas =
+    (value.victimas || [])
+      .map((persona: any) => ({
+
+        nombre:
+          persona.nombre || '',
+
+        cui:
+          persona.cui || '',
+
+        fecha_Nac:
+          persona.fecha_Nac
+            ? new Date(
+                persona.fecha_Nac
+              ).toISOString()
+            : null,
+
+        direccion:
+          persona.direccion || ''
+
+      }));
+
+
+  formData.append(
+    'victimas',
+    JSON.stringify(victimas)
+  );
+
+
+  // --------------------------------
+  // Lugar de los hechos
+  // --------------------------------
+
+  formData.append(
+    'lugarHechos',
+    JSON.stringify({
+
+      departamento:
+        value.lugarHechos
+          ?.departamento || '',
+
+      municipio:
+        value.lugarHechos
+          ?.municipio || '',
+
+      direccionDetallada:
+        value.lugarHechos
+          ?.direccionDetallada || ''
+
+    })
+  );
+
+
+  // --------------------------------
+  // PDF
+  // --------------------------------
+
+  formData.append(
+    'file',
+    this.selectedFile,
+    this.selectedFile.name
+  );
+
+
+  this.maltratoService
+    .sendFormData(formData)
+    .subscribe({
+
+      next: () => {
+
+        if (this.informeDeic) {
+
+          this.informeService
+            .eliminar(
+              this.informeDeic
+            )
+            .subscribe();
+
+        }
+
+
+        this._snackBar.open(
+          'Caso registrado con éxito',
+          'Cerrar',
+          {
+            duration: 3000,
+            panelClass: ['snack-success']
+          }
+        );
+
+
+        sessionStorage.removeItem(
+          this.draftKey
+        );
+
+
+        this.selectedFile = null;
+        this.fileName = null;
+        this.informeDeic = null;
+        this.isLoading = false;
+
+
+        // Limpiar correctamente FormArrays
+        this.infractores.clear();
+        this.victimas.clear();
+
+        this.myForm.reset();
+
+        this.agregarInfractor();
+        this.agregarVictima();
+
+      },
+
+
+      error: (error) => {
+
+        this.isLoading = false;
+
+
+        console.error(
+          'Error al registrar maltrato:',
+          error
+        );
+
+
+        const backendMessage =
+          error?.error?.message;
+
+
+        const msg =
+          Array.isArray(
+            backendMessage
+          )
+            ? backendMessage.join(' ')
+            : (
+                backendMessage ||
+                'Error al registrar el caso'
+              );
+
+
+        if (
+          msg
+            .toLowerCase()
+            .includes('exist')
+        ) {
+
+          this.deicDuplicado =
+            value.numeroDeic || '';
+
+          this.casoYaExiste = true;
+
+          return;
+        }
+
+
+        this._snackBar.open(
+          msg,
+          'Cerrar',
+          {
+            duration: 5000,
+            panelClass: ['snack-error']
+          }
+        );
+
+      }
+
+    });
+
+}
 
   irASeguimiento() {
     this.router.navigate(['/casos/seguimiento-maltrato'], {
@@ -219,41 +602,127 @@ export default class AddCaseMaltratoComponent implements OnInit {
     });
   }
 
-  private guardarBorradorLocal(): void {
-    sessionStorage.setItem(this.draftKey, JSON.stringify({
-      value: this.myForm.getRawValue(),
-      fileName: this.fileName,
-    }));
+private guardarBorradorLocal(): void {
+
+  sessionStorage.setItem(
+    this.draftKey,
+    JSON.stringify({
+
+      value:
+        this.myForm.getRawValue(),
+
+      fileName:
+        this.fileName
+
+    })
+  );
+
+}
+
+private restaurarBorradorLocal(): void {
+
+  const raw =
+    sessionStorage.getItem(
+      this.draftKey
+    );
+
+
+  if (!raw) {
+    return;
   }
 
-  private restaurarBorradorLocal(): void {
-    const raw = sessionStorage.getItem(this.draftKey);
-    if (!raw) return;
 
-    try {
-      const draft = JSON.parse(raw);
-      const value = draft.value || {};
-      value.infractores = (value.infractores || []).map((item: any) => ({
-        ...item,
-        fecha_Nac: item.fecha_Nac ? new Date(item.fecha_Nac) : null,
-      }));
-      value.victimas = (value.victimas || []).map((item: any) => ({
-        ...item,
-        fecha_Nac: item.fecha_Nac ? new Date(item.fecha_Nac) : null,
-      }));
+  try {
 
-      this.infractores.clear();
-      this.victimas.clear();
-      (value.infractores.length ? value.infractores : [{}]).forEach(() => this.agregarInfractor());
-      (value.victimas.length ? value.victimas : [{}]).forEach(() => this.agregarVictima());
-      this.myForm.patchValue(value);
-      this.fileName = draft.fileName ? `${draft.fileName} (selecciona el archivo nuevamente)` : null;
-      this._snackBar.open('Recupere un borrador local. Revisa los datos y selecciona el archivo nuevamente.', 'Cerrar', {
+    const draft =
+      JSON.parse(raw);
+
+    const value =
+      draft.value || {};
+
+
+    value.infractores =
+      (value.infractores || [])
+        .map((item: any) => ({
+
+          ...item,
+
+          fecha_Nac:
+            item.fecha_Nac
+              ? new Date(
+                  item.fecha_Nac
+                )
+              : null
+
+        }));
+
+
+    value.victimas =
+      (value.victimas || [])
+        .map((item: any) => ({
+
+          ...item,
+
+          fecha_Nac:
+            item.fecha_Nac
+              ? new Date(
+                  item.fecha_Nac
+                )
+              : null
+
+        }));
+
+
+    this.infractores.clear();
+
+    this.victimas.clear();
+
+
+    (
+      value.infractores.length
+        ? value.infractores
+        : [{}]
+    ).forEach(
+      () => this.agregarInfractor()
+    );
+
+
+    (
+      value.victimas.length
+        ? value.victimas
+        : [{}]
+    ).forEach(
+      () => this.agregarVictima()
+    );
+
+
+    this.myForm.patchValue(
+      value
+    );
+
+
+    this.fileName =
+      draft.fileName
+        ? `${draft.fileName} (selecciona el archivo nuevamente)`
+        : null;
+
+
+    this._snackBar.open(
+      'Recuperé un borrador local. Revisa los datos y selecciona el archivo nuevamente.',
+      'Cerrar',
+      {
         duration: 5000,
         panelClass: ['snack-warning']
-      });
-    } catch {
-      sessionStorage.removeItem(this.draftKey);
-    }
+      }
+    );
+
+  } catch {
+
+    sessionStorage.removeItem(
+      this.draftKey
+    );
+
   }
+
+}
 }

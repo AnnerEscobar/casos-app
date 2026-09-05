@@ -1,0 +1,263 @@
+<div class="selector-page">
+
+  <!-- Header -->
+  <header class="selector-header">
+
+    <div class="header-content">
+
+      <div class="header-icon">
+        <mat-icon>update</mat-icon>
+      </div>
+
+      <div>
+
+        <span class="eyebrow">
+          GESTIÓN DE CASOS
+        </span>
+
+        <h1>
+          Agregar seguimiento
+        </h1>
+
+        <p>
+          Selecciona el tipo de caso al que deseas
+          agregar nuevas diligencias o información.
+        </p>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <!-- Información -->
+  <div class="info-banner">
+
+    <mat-icon>info</mat-icon>
+
+    <div>
+
+      <strong>
+        Selecciona el tipo de expediente
+      </strong>
+
+      <p>
+        Después podrás buscar el caso correspondiente
+        y registrar el nuevo seguimiento.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- Cards -->
+  <div class="case-grid">
+
+
+    <!-- ALERTA -->
+    <article
+      class="case-card"
+      (click)="seleccionar('alerta')">
+
+      <div class="case-top">
+
+        <div class="case-icon alerta-icon">
+          <mat-icon>person_search</mat-icon>
+        </div>
+
+        <span class="case-badge alerta-badge">
+          ALBA-KENETH
+        </span>
+
+      </div>
+
+
+      <div class="case-content">
+
+        <h2>
+          Alerta Alba-Keneth
+        </h2>
+
+        <p>
+          Agrega diligencias, información de localización
+          u otras actuaciones relacionadas con una alerta.
+        </p>
+
+
+        <div class="case-details">
+
+          <span>
+            <mat-icon>search</mat-icon>
+            Buscar por número DEIC
+          </span>
+
+          <span>
+            <mat-icon>history</mat-icon>
+            Registrar nueva actuación
+          </span>
+
+          <span>
+            <mat-icon>attach_file</mat-icon>
+            Adjuntar documentación
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="case-action">
+
+        <span>
+          Agregar seguimiento
+        </span>
+
+        <mat-icon>
+          arrow_forward
+        </mat-icon>
+
+      </div>
+
+    </article>
+
+
+
+    <!-- MALTRATO -->
+    <article
+      class="case-card"
+      (click)="seleccionar('maltrato')">
+
+      <div class="case-top">
+
+        <div class="case-icon maltrato-icon">
+          <mat-icon>health_and_safety</mat-icon>
+        </div>
+
+        <span class="case-badge maltrato-badge">
+          MALTRATO
+        </span>
+
+      </div>
+
+
+      <div class="case-content">
+
+        <h2>
+          Maltrato
+        </h2>
+
+        <p>
+          Registra nuevas diligencias o actuaciones
+          realizadas durante la investigación del caso.
+        </p>
+
+
+        <div class="case-details">
+
+          <span>
+            <mat-icon>search</mat-icon>
+            Buscar expediente
+          </span>
+
+          <span>
+            <mat-icon>history</mat-icon>
+            Agregar diligencia
+          </span>
+
+          <span>
+            <mat-icon>attach_file</mat-icon>
+            Adjuntar documentación
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="case-action">
+
+        <span>
+          Agregar seguimiento
+        </span>
+
+        <mat-icon>
+          arrow_forward
+        </mat-icon>
+
+      </div>
+
+    </article>
+
+
+
+    <!-- CONFLICTO -->
+    <article
+      class="case-card"
+      (click)="seleccionar('conflicto')">
+
+      <div class="case-top">
+
+        <div class="case-icon conflicto-icon">
+          <mat-icon>gavel</mat-icon>
+        </div>
+
+        <span class="case-badge conflicto-badge">
+          CONFLICTO
+        </span>
+
+      </div>
+
+
+      <div class="case-content">
+
+        <h2>
+          Conflicto con la ley
+        </h2>
+
+        <p>
+          Registra nuevas actuaciones relacionadas con
+          adolescentes en conflicto con la ley.
+        </p>
+
+
+        <div class="case-details">
+
+          <span>
+            <mat-icon>search</mat-icon>
+            Buscar expediente
+          </span>
+
+          <span>
+            <mat-icon>history</mat-icon>
+            Agregar diligencia
+          </span>
+
+          <span>
+            <mat-icon>attach_file</mat-icon>
+            Adjuntar documentación
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="case-action">
+
+        <span>
+          Agregar seguimiento
+        </span>
+
+        <mat-icon>
+          arrow_forward
+        </mat-icon>
+
+      </div>
+
+    </article>
+
+  </div>
+
+</div>
