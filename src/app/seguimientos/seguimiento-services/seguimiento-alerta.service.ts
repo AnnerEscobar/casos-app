@@ -1,3 +1,5 @@
+import { CasoSeguimiento, RespuestaSeguimiento } from '../../casos/models/caso-historico.model';
+import { normalizarNumeroCaso } from '../../casos/historicos/historico-formulario';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environment.prod';
 import { HttpClient } from '@angular/common/http';
@@ -15,11 +17,11 @@ export class SeguimientoAlertaService {
 constructor() { }
 
 enviarSeguimientoAlerta(numeroDeic: string, data: FormData) {
-  return this.http.patch(`${this.baseUrl}/seguimiento/${numeroDeic}`, data);
+  return this.http.patch<RespuestaSeguimiento>(`${this.baseUrl}/seguimiento/${encodeURIComponent(normalizarNumeroCaso(numeroDeic))}`, data);
 }
 
 getCasoPorDeic(numeroDeic: string) {
-  return this.http.get<any>(`${this.baseUrl}/by-deic/${numeroDeic}`);
+  return this.http.get<CasoSeguimiento>(`${this.baseUrl}/by-deic/${encodeURIComponent(normalizarNumeroCaso(numeroDeic))}`);
 }
 
 

@@ -1,195 +1,491 @@
-<!-- Header -->
 <div class="dashboard-header">
-  <div>
-    <h2 class="dashboard-title">Estadísticas de Casos</h2>
-    <p class="dashboard-sub">{{ tituloPeriodo }}</p>
-  </div>
-  <div class="header-actions">
-    <div class="session-counter" [class.session-counter--warning]="sessionWarning">
-      <mat-icon>timer</mat-icon>
-      <div>
-        <span>Sesion</span>
-        <strong>{{ sessionRemainingLabel }}</strong>
-      </div>
+
+  <div class="dashboard-heading">
+
+    <div class="dashboard-heading-top">
+
+      <h2 class="dashboard-title">
+        {{ dashboardTitle }}
+      </h2>
+
+
+      <span
+        class="scope-badge"
+        [class.scope-badge--personal]="esInvestigador"
+        [class.scope-badge--global]="!esInvestigador">
+
+        <mat-icon>
+          {{
+            esInvestigador
+              ? 'person'
+              : 'groups'
+          }}
+        </mat-icon>
+
+        {{ scopeLabel }}
+
+      </span>
+
     </div>
 
-  <mat-form-field appearance="outline" class="year-select">
-    <mat-label>Período</mat-label>
-    <mat-select [(ngModel)]="selectedYear" (selectionChange)="onYearChange($event.value)">
-      <mat-option [value]="'all'">General</mat-option>
-      @for (y of yearsDisponibles; track y) {
-        @if (y !== 'all') {
-          <mat-option [value]="y">{{ y }}</mat-option>
-        }
-      }
-    </mat-select>
-  </mat-form-field>
+
+    <p class="dashboard-sub">
+      {{ dashboardSubtitle }}
+    </p>
+
   </div>
+
+
+  <div class="header-actions">
+
+
+    <!-- SESIÓN -->
+
+    <div
+      class="session-counter"
+      [class.session-counter--warning]="sessionWarning">
+
+      <mat-icon>
+        timer
+      </mat-icon>
+
+      <div>
+
+        <span>
+          Sesión
+        </span>
+
+        <strong>
+          {{ sessionRemainingLabel }}
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <!-- PERÍODO -->
+
+    <mat-form-field
+      appearance="outline"
+      class="year-select">
+
+      <mat-label>
+        Período
+      </mat-label>
+
+      <mat-select
+        [(ngModel)]="selectedYear"
+        (selectionChange)="onYearChange($event.value)">
+
+        <mat-option
+          [value]="'all'">
+
+          General
+
+        </mat-option>
+
+
+        @for (
+          year of yearsDisponibles;
+          track year
+        ) {
+
+          @if (
+            year !== 'all'
+          ) {
+
+            <mat-option
+              [value]="year">
+
+              {{ year }}
+
+            </mat-option>
+
+          }
+
+        }
+
+      </mat-select>
+
+    </mat-form-field>
+
+  </div>
+
 </div>
+
 
 <div class="stats-container">
 
-  <!-- Spinner overlay -->
-  <div class="overlay-stats" *ngIf="isLoading">
-    <mat-spinner diameter="50"></mat-spinner>
+
+  <!-- LOADING -->
+
+  <div
+    class="overlay-stats"
+    *ngIf="isLoading">
+
+    <div class="dashboard-loading">
+
+      <mat-spinner
+        diameter="48">
+      </mat-spinner>
+
+      <span>
+        Cargando estadísticas...
+      </span>
+
+    </div>
+
   </div>
 
-  <!-- KPI Cards -->
+
+  <!-- =================================================
+       KPI
+  ================================================== -->
+
   <div class="kpi-wrap">
-    @for (item of exps; track item.key) {
-      <mat-card class="kpi-card" [ngClass]="'kpi--' + item.key">
+
+    @for (
+      item of kpis;
+      track item.key
+    ) {
+
+      <mat-card
+        class="kpi-card"
+        [ngClass]="
+          'kpi--' + item.key
+        ">
+
         <div class="kpi-top">
+
           <div class="kpi-icon">
-            <mat-icon>{{ item.icon }}</mat-icon>
+
+            <mat-icon>
+              {{ item.icon }}
+            </mat-icon>
+
           </div>
+
         </div>
-        <div class="kpi-value">{{ item.amount || 0 }}</div>
-        <div class="kpi-label">{{ item.tag }}</div>
+
+
+        <div class="kpi-value">
+          {{ item.amount || 0 }}
+        </div>
+
+
+        <div class="kpi-label">
+          {{ item.tag }}
+        </div>
+
       </mat-card>
+
     }
+
   </div>
 
-  <!-- Charts: 2x2 grid -->
+
+  <!-- =================================================
+       TÍTULO SECCIÓN
+  ================================================== -->
+
+  <div class="dashboard-section-heading">
+
+    <div>
+
+      <span class="section-eyebrow">
+        {{
+          esInvestigador
+            ? 'MI ACTIVIDAD'
+            : 'ANÁLISIS GENERAL'
+        }}
+      </span>
+
+      <h3>
+        Estadísticas de casos
+      </h3>
+
+      <p>
+
+        @if (esInvestigador) {
+
+          Información correspondiente únicamente
+          a los casos registrados por tu usuario.
+
+        } @else {
+
+          Información consolidada de los casos
+          oficiales registrados en el sistema.
+
+        }
+
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- =================================================
+       GRÁFICAS PRINCIPALES
+  ================================================== -->
+
   <div class="charts-grid">
 
-    <!-- 1. Barras por tipo -->
+
+    <!-- CASOS POR TIPO -->
+
     <div class="chart-card">
-      <apx-chart #barChart
+
+      <apx-chart
+        #barChart
+
         [series]="barChartOptions.series"
+
         [chart]="barChartOptions.chart"
+
         [xaxis]="barChartOptions.xaxis"
+
         [yaxis]="barChartOptions.yaxis"
+
         [title]="barChartOptions.title"
+
         [colors]="barChartOptions.colors"
+
         [plotOptions]="barChartOptions.plotOptions"
+
         [dataLabels]="barChartOptions.dataLabels"
+
         [legend]="barChartOptions.legend"
+
         [grid]="barChartOptions.grid"
+
         [tooltip]="barChartOptions.tooltip">
+
       </apx-chart>
+
     </div>
 
-    <!-- 2. Stacked estado -->
+
+    <!-- ESTADO DE INVESTIGACIÓN -->
+
     <div class="chart-card">
-      <apx-chart #stackedChart
+
+      <apx-chart
+        #stackedChart
+
         [series]="stackedChartOptions.series"
+
         [chart]="stackedChartOptions.chart"
+
         [xaxis]="stackedChartOptions.xaxis"
+
         [yaxis]="stackedChartOptions.yaxis"
+
         [title]="stackedChartOptions.title"
+
         [colors]="stackedChartOptions.colors"
+
         [plotOptions]="stackedChartOptions.plotOptions"
+
         [dataLabels]="stackedChartOptions.dataLabels"
+
         [legend]="stackedChartOptions.legend"
+
         [grid]="stackedChartOptions.grid"
+
         [fill]="stackedChartOptions.fill"
+
         [tooltip]="stackedChartOptions.tooltip">
-      </apx-chart>
-    </div>
 
-    <!-- 3. Radial resolución -->
-    <div class="chart-card">
-      <apx-chart #radialChart
-        [series]="radialChartOptions.series"
-        [chart]="radialChartOptions.chart"
-        [labels]="radialChartOptions.labels"
-        [colors]="radialChartOptions.colors"
-        [plotOptions]="radialChartOptions.plotOptions"
-        [legend]="radialChartOptions.legend"
-        [title]="radialChartOptions.title">
       </apx-chart>
-    </div>
 
-    <!-- 4. Horizontal personas -->
-    <div class="chart-card">
-      <apx-chart #hBarChart
-        [series]="hBarChartOptions.series"
-        [chart]="hBarChartOptions.chart"
-        [xaxis]="hBarChartOptions.xaxis"
-        [title]="hBarChartOptions.title"
-        [colors]="hBarChartOptions.colors"
-        [plotOptions]="hBarChartOptions.plotOptions"
-        [dataLabels]="hBarChartOptions.dataLabels"
-        [legend]="hBarChartOptions.legend"
-        [grid]="hBarChartOptions.grid"
-        [tooltip]="hBarChartOptions.tooltip">
-      </apx-chart>
     </div>
 
   </div>
 
-  <!-- Cantidad mensual por tipo (ancho completo) -->
-  <div class="chart-card chart-full">
-    <apx-chart #monthlyTotalChart
-      [series]="monthlyTotalChartOptions.series"
-      [chart]="monthlyTotalChartOptions.chart"
-      [xaxis]="monthlyTotalChartOptions.xaxis"
-      [yaxis]="monthlyTotalChartOptions.yaxis"
-      [title]="monthlyTotalChartOptions.title"
-      [colors]="monthlyTotalChartOptions.colors"
-      [plotOptions]="monthlyTotalChartOptions.plotOptions"
-      [dataLabels]="monthlyTotalChartOptions.dataLabels"
-      [legend]="monthlyTotalChartOptions.legend"
-      [grid]="monthlyTotalChartOptions.grid"
-      [tooltip]="monthlyTotalChartOptions.tooltip">
-    </apx-chart>
-  </div>
 
-  <!-- Area mensual (ancho completo) -->
+  <!-- =================================================
+       EVOLUCIÓN
+  ================================================== -->
+
   <div class="chart-card chart-full">
-    <apx-chart #areaChart
+
+    <div class="chart-context">
+
+      <mat-icon>
+        timeline
+      </mat-icon>
+
+      <span>
+
+        @if (
+          selectedYear === 'all'
+        ) {
+
+          La vista general muestra la actividad
+          correspondiente a los últimos 12 meses.
+
+        } @else {
+
+          Distribución mensual correspondiente
+          al año seleccionado.
+
+        }
+
+      </span>
+
+    </div>
+
+
+    <apx-chart
+      #areaChart
+
       [series]="areaChartOptions.series"
+
       [chart]="areaChartOptions.chart"
+
       [xaxis]="areaChartOptions.xaxis"
+
       [yaxis]="areaChartOptions.yaxis"
+
       [title]="areaChartOptions.title"
+
       [colors]="areaChartOptions.colors"
+
       [stroke]="areaChartOptions.stroke"
+
       [fill]="areaChartOptions.fill"
+
       [dataLabels]="areaChartOptions.dataLabels"
+
       [legend]="areaChartOptions.legend"
+
       [grid]="areaChartOptions.grid"
+
       [tooltip]="areaChartOptions.tooltip">
+
     </apx-chart>
+
   </div>
 
-  <!-- Proyección próximos 2 meses -->
-  <div class="chart-card chart-full forecast-card">
-    <div class="forecast-badge">
-      <mat-icon>auto_graph</mat-icon>
-      <span>Proyección basada en promedio móvil de 3 meses</span>
+
+  <!-- =================================================
+       SOLO ANALISTA / JEFE
+  ================================================== -->
+
+  @if (
+    esSupervision
+  ) {
+
+    <div class="dashboard-section-heading supervision-heading">
+
+      <div>
+
+        <span class="section-eyebrow">
+          SUPERVISIÓN
+        </span>
+
+        <h3>
+          Actividad por investigador
+        </h3>
+
+        <p>
+          Cantidad de casos oficiales registrados
+          por cada investigador.
+        </p>
+
+      </div>
+
+
+      <div class="investigator-summary">
+
+        <mat-icon>
+          badge
+        </mat-icon>
+
+        <div>
+
+          <strong>
+            {{ investigadoresConRegistros }}
+          </strong>
+
+          <span>
+            Investigadores con registros
+          </span>
+
+        </div>
+
+      </div>
+
     </div>
-    <apx-chart #forecastChart
-      [series]="forecastChartOptions.series"
-      [chart]="forecastChartOptions.chart"
-      [xaxis]="forecastChartOptions.xaxis"
-      [yaxis]="forecastChartOptions.yaxis"
-      [title]="forecastChartOptions.title"
-      [colors]="forecastChartOptions.colors"
-      [stroke]="forecastChartOptions.stroke"
-      [markers]="forecastChartOptions.markers"
-      [fill]="forecastChartOptions.fill"
-      [legend]="forecastChartOptions.legend"
-      [grid]="forecastChartOptions.grid"
-      [tooltip]="forecastChartOptions.tooltip"
-      [annotations]="forecastChartOptions.annotations"
-      [forecastDataPoints]="forecastChartOptions.forecastDataPoints">
-    </apx-chart>
-  </div>
 
-  <!-- Donut alertas -->
-  <div class="chart-card chart-half">
-    <apx-chart #donutChart
-      [series]="donutChartOptions.series"
-      [chart]="donutChartOptions.chart"
-      [labels]="donutChartOptions.labels"
-      [colors]="donutChartOptions.colors"
-      [stroke]="donutChartOptions.stroke"
-      [dataLabels]="donutChartOptions.dataLabels"
-      [plotOptions]="donutChartOptions.plotOptions"
-      [legend]="donutChartOptions.legend"
-      [title]="donutChartOptions.title">
-    </apx-chart>
-  </div>
+
+    @if (
+      investigadoresConRegistros > 0
+    ) {
+
+      <div class="chart-card chart-full">
+
+        <apx-chart
+          #investigatorChart
+
+          [series]="investigatorChartOptions.series"
+
+          [chart]="investigatorChartOptions.chart"
+
+          [xaxis]="investigatorChartOptions.xaxis"
+
+          [title]="investigatorChartOptions.title"
+
+          [plotOptions]="investigatorChartOptions.plotOptions"
+
+          [dataLabels]="investigatorChartOptions.dataLabels"
+
+          [grid]="investigatorChartOptions.grid"
+
+          [tooltip]="investigatorChartOptions.tooltip">
+
+        </apx-chart>
+
+
+        <div class="chart-footnote">
+
+          <mat-icon>
+            info
+          </mat-icon>
+
+          <span>
+            Los expedientes históricos que no poseen
+            un investigador registrado no se incluyen
+            en esta gráfica.
+          </span>
+
+        </div>
+
+      </div>
+
+    } @else {
+
+      <div class="dashboard-empty">
+
+        <mat-icon>
+          person_search
+        </mat-icon>
+
+        <strong>
+          Sin registros por investigador
+        </strong>
+
+        <span>
+          No existen casos con un investigador
+          identificado para el período seleccionado.
+        </span>
+
+      </div>
+
+    }
+
+  }
 
 </div>

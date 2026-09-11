@@ -1,3 +1,7 @@
+import { Input, Output, EventEmitter, DestroyRef } from '@angular/core';
+import { HistoricoDataComponent } from '../../historicos/historico-data.component';
+import { HistoricoFormulario, quitarRequeridos, mensajeError, normalizarNumeroCaso } from '../../historicos/historico-formulario';
+import { CasoSeguimiento } from '../../models/caso-historico.model';
 import { CommonModule } from '@angular/common';
 
 import {
@@ -41,7 +45,7 @@ import { InformeService } from '../../../informes/services/informe.service';
     provideNativeDateAdapter()
   ],
 
-  imports: [
+  imports: [HistoricoDataComponent,
     MatFormFieldModule,
     MatSelectModule,
     ReactiveFormsModule,
@@ -65,6 +69,47 @@ import { InformeService } from '../../../informes/services/informe.service';
 })
 export default class AddCaseConflictoComponent
   implements OnInit {
+  @Input() modoHistorico = false;
+  @Input() numeroDeicInicial = '';
+  @Output() historicoCreado = new EventEmitter<CasoSeguimiento>();
+  @Output() ocupacionCambio = new EventEmitter<boolean>();
+  readonly historico = new HistoricoFormulario();
+  private destroyRef = inject(DestroyRef);
+
+  private iniciarHistorico(): void {
+    this.historico.preparar(this.myForm, 'conflicto', this.numeroDeicInicial);
+    const sub = this.historico.datos.controls.estadoExpedienteHistorico.valueChanges.subscribe(() => {
+      this.historico.cambiarEstado(this.myForm);
+      if (this.historico.minimo) { this.selectedFile = null; this.fileName = null; }
+    });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
+  }
+
+  private guardarHistorico(): void {
+    if (this.isLoading) return;
+    for (const campo of ['numeroDeic', 'numeroMp', 'numeroAlerta']) {
+      const control = this.myForm.get(campo);
+      if (typeof control?.value === 'string') control.setValue(normalizarNumeroCaso(control.value));
+    }
+    if (this.myForm.invalid || this.historico.datos.invalid) {
+      this.myForm.markAllAsTouched(); this.historico.datos.markAllAsTouched();
+      this._snackBar.open('Seleccione el estado del expediente y revise los datos ingresados.', 'Cerrar', { duration: 4000, panelClass: ['snack-warning'] });
+      return;
+    }
+    this.isLoading = true; this.ocupacionCambio.emit(true);
+    this.conflictoService.crearHistorico(this.historico.payload(this.myForm, 'conflicto'), this.historico.minimo ? null : this.selectedFile).subscribe({
+      next: caso => {
+        this.isLoading = false; this.ocupacionCambio.emit(false);
+        this._snackBar.open('El caso histórico fue incorporado correctamente.', 'Cerrar', { duration: 4000, panelClass: ['snack-success'] });
+        this.historicoCreado.emit(caso);
+      },
+      error: error => {
+        this.isLoading = false; this.ocupacionCambio.emit(false);
+        this._snackBar.open(mensajeError(error, 'No fue posible incorporar el caso histórico.'), 'Cerrar', { duration: 6000, panelClass: ['snack-error'] });
+      },
+    });
+  }
+
 
   private formBuilder =
     inject(FormBuilder);
@@ -197,6 +242,7 @@ export default class AddCaseConflictoComponent
   ===================================================== */
 
   ngOnInit(): void {
+    if (this.modoHistorico) { this.iniciarHistorico(); return; }
 
     this.agregarInfractor();
 
@@ -410,7 +456,9 @@ export default class AddCaseConflictoComponent
 
     );
 
-  }
+
+  if (this.modoHistorico) { quitarRequeridos(this.infractores); quitarRequeridos(this.victimas); this.historico.cambiarEstado(this.myForm); }
+}
 
 
   eliminarInfractor(
@@ -418,7 +466,7 @@ export default class AddCaseConflictoComponent
   ): void {
 
     if (
-      this.infractores.length > 1
+      this.infractores.length > (this.modoHistorico ? 0 : 1)
     ) {
 
       this.infractores.removeAt(
@@ -464,7 +512,9 @@ export default class AddCaseConflictoComponent
 
     );
 
-  }
+
+  if (this.modoHistorico) { quitarRequeridos(this.infractores); quitarRequeridos(this.victimas); this.historico.cambiarEstado(this.myForm); }
+}
 
 
   eliminarVictima(
@@ -472,7 +522,7 @@ export default class AddCaseConflictoComponent
   ): void {
 
     if (
-      this.victimas.length > 1
+      this.victimas.length > (this.modoHistorico ? 0 : 1)
     ) {
 
       this.victimas.removeAt(
@@ -489,6 +539,7 @@ export default class AddCaseConflictoComponent
   ===================================================== */
 
   registrarCaso(): void {
+  if (this.modoHistorico) { this.guardarHistorico(); return; }
 
     if (
       this.myForm.invalid

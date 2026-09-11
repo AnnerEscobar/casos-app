@@ -1,558 +1,2219 @@
-import { ConflictoService } from './../../casos/services/conflicto.service';
-import { AlertaService } from './../../casos/services/alerta.service';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { MaltratoService } from '../../casos/services/maltrato.service';
-import { NgApexchartsModule, ChartComponent } from 'ng-apexcharts';
-import { finalize, forkJoin } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { DashboardService } from './dashboard.service';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSelectModule } from '@angular/material/select';
-import { MatOptionModule } from '@angular/material/core';
+
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
+
+import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { AuthService } from '../../auth/auth-service/auth.service';
+import { MatIconModule } from '@angular/material/icon';
+import { MatOptionModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+
+import {
+  ChartComponent,
+  NgApexchartsModule
+} from 'ng-apexcharts';
+
+import { finalize } from 'rxjs';
+
+import {
+  DashboardResponse,
+  DashboardService
+} from './dashboard.service';
+
+import {
+  AuthService
+} from '../../auth/auth-service/auth.service';
+
 
 type YearOption = number | 'all';
 
+
+type KpiKey =
+  | 'total'
+  | 'alerta'
+  | 'maltrato'
+  | 'conflicto'
+  | 'pendientes'
+  | 'rechazados';
+
+
+interface KpiCard {
+  key: KpiKey;
+  tag: string;
+  amount: number;
+  icon: string;
+}
+
+
 const C = {
-  alerta:      '#1976D2',
-  maltrato:    '#D81B60',
-  conflicto:   '#7E57C2',
-  informado:   '#42A5F5',
-  concluido:   '#43A047',
-  remitido:    '#FFB300',
+
+  alerta: '#1976D2',
+  maltrato: '#D81B60',
+  conflicto: '#7E57C2',
+
+  informado: '#42A5F5',
+  concluido: '#43A047',
+  remitido: '#FFB300',
   desestimado: '#EF5350',
-  victimas:    '#EF9A9A',
-  infractores: '#CE93D8',
-  grid:        '#ECEFF4',
+
+  grid: '#ECEFF4'
+
 };
 
+
 @Component({
+
   selector: 'app-estadistics',
+
   imports: [
-    MatCardModule, MatGridListModule, NgApexchartsModule, CommonModule,
-    MatProgressSpinnerModule, MatIconModule, MatSelectModule,
-    MatOptionModule, FormsModule, MatFormFieldModule
+
+    CommonModule,
+    FormsModule,
+
+    MatCardModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatOptionModule,
+    MatProgressSpinnerModule,
+    MatSelectModule,
+
+    NgApexchartsModule
+
   ],
-  templateUrl: './estadistics.component.html',
-  styleUrl: './estadistics.component.css',
+
+  templateUrl:
+    './estadistics.component.html',
+
+  styleUrl:
+    './estadistics.component.css',
+
 })
-export default class EstadisticsComponent implements OnInit, OnDestroy {
+export default class EstadisticsComponent
+  implements OnInit, OnDestroy {
+
+
+  /* =====================================================
+     CHARTS
+  ===================================================== */
+
+  @ViewChild('barChart')
+  barChart!: ChartComponent;
+
+  @ViewChild('stackedChart')
+  stackedChart!: ChartComponent;
+
+  @ViewChild('areaChart')
+  areaChart!: ChartComponent;
+
+  @ViewChild('investigatorChart')
+  investigatorChart!: ChartComponent;
+
+
+  barChartOptions: any;
+  stackedChartOptions: any;
+  areaChartOptions: any;
+  investigatorChartOptions: any;
+
+
+  /* =====================================================
+     ESTADO GENERAL
+  ===================================================== */
 
   isLoading = false;
-  sessionRemainingLabel = '--:--';
-  sessionWarning = false;
-  private sessionTimerId: ReturnType<typeof setInterval> | null = null;
 
-  @ViewChild('barChart')      barChart!:      ChartComponent;
-  @ViewChild('stackedChart')  stackedChart!:  ChartComponent;
-  @ViewChild('radialChart')   radialChart!:   ChartComponent;
-  @ViewChild('hBarChart')     hBarChart!:     ChartComponent;
-  @ViewChild('monthlyTotalChart') monthlyTotalChart!: ChartComponent;
-  @ViewChild('areaChart')     areaChart!:     ChartComponent;
-  @ViewChild('donutChart')    donutChart!:    ChartComponent;
-  @ViewChild('forecastChart') forecastChart!: ChartComponent;
+  dashboardRole = '';
 
-  currentYear = new Date().getFullYear();
-  selectedYear: YearOption = 'all';
-  yearsDisponibles: YearOption[] = ['all'];
+  dashboardScope:
+    'PERSONAL' |
+    'GLOBAL' =
+    'GLOBAL';
 
-  exps: Array<{
-    key: 'alerta' | 'maltrato' | 'conflicto' | 'remitidas' | 'activas' | 'inactivas';
-    tag: string; amount: number; icon: string;
-  }> = [
-    { key: 'alerta',     tag: 'Alerta Alba-Keneth',   amount: 0, icon: 'notifications_active' },
-    { key: 'maltrato',   tag: 'Casos de Maltrato',    amount: 0, icon: 'volunteer_activism'   },
-    { key: 'conflicto',  tag: 'Casos de Conflicto',   amount: 0, icon: 'gavel'                },
-    { key: 'remitidas',  tag: 'Alertas Remitidas',    amount: 0, icon: 'outgoing_mail'        },
-    { key: 'activas',    tag: 'Alertas Activas',      amount: 0, icon: 'task_alt'             },
-    { key: 'inactivas',  tag: 'Alertas Inactivas',    amount: 0, icon: 'remove_circle'        },
-  ];
 
-  // ── Chart options (typed as any for flexibility) ──────────────────────────
-  barChartOptions:      any;
-  donutChartOptions:    any;
-  stackedChartOptions:  any;
-  monthlyTotalChartOptions: any;
-  areaChartOptions:     any;
-  radialChartOptions:   any;
-  hBarChartOptions:     any;
-  forecastChartOptions: any;
+  /* =====================================================
+     DATOS BASE
+  ===================================================== */
+
+  private alertasBase: any[] = [];
+
+  private maltratosBase: any[] = [];
+
+  private conflictosBase: any[] = [];
+
+
+  private pendientes = 0;
+
+  private rechazados = 0;
+
+
+  investigadoresConRegistros = 0;
+
+
+  /* =====================================================
+     KPIs
+  ===================================================== */
+
+  kpis: KpiCard[] = [];
+
+
+  /* =====================================================
+     FILTRO DE AÑO
+  ===================================================== */
+
+  currentYear =
+    new Date().getFullYear();
+
+  selectedYear:
+    YearOption =
+    'all';
+
+  yearsDisponibles:
+    YearOption[] =
+    ['all'];
+
+
+  /* =====================================================
+     SESIÓN
+  ===================================================== */
+
+  sessionRemainingLabel =
+    '--:--';
+
+  sessionWarning =
+    false;
+
+  private sessionTimerId:
+    ReturnType<typeof setInterval> |
+    null =
+    null;
+
 
   constructor(
-    private alertaService:   AlertaService,
-    private maltratoService: MaltratoService,
-    private conflictoService: ConflictoService,
-    private dashboardService: DashboardService,
-    private authService: AuthService,
-  ) { this.initCharts(); }
+
+    private dashboardService:
+      DashboardService,
+
+    private authService:
+      AuthService
+
+  ) {
+
+    this.initCharts();
+
+  }
+
 
   ngOnInit(): void {
+
     this.cargarDatos();
+
     this.iniciarContadorSesion();
+
   }
+
 
   ngOnDestroy(): void {
-    if (this.sessionTimerId) clearInterval(this.sessionTimerId);
+
+    if (
+      this.sessionTimerId
+    ) {
+
+      clearInterval(
+        this.sessionTimerId
+      );
+
+    }
+
   }
 
-  // ── Inicialización base de cada gráfico ──────────────────────────────────
-  private initCharts() {
-    const baseBar = {
-      chart: { type: 'bar', height: 300, toolbar: { show: false }, redrawOnParentResize: true },
-      plotOptions: { bar: { horizontal: false, columnWidth: '50%', borderRadius: 5, borderRadiusApplication: 'end' } },
-      dataLabels: { enabled: false },
-      grid: { borderColor: C.grid, strokeDashArray: 2 },
-      tooltip: { y: { formatter: (v: number) => `${v} casos` } },
-    };
 
-    // 1. Barras totales por tipo
+  /* =====================================================
+     ROLES
+  ===================================================== */
+
+  get esInvestigador(): boolean {
+
+    return (
+      this.dashboardRole ===
+      'Investigador'
+    );
+
+  }
+
+
+  get esAnalista(): boolean {
+
+    return (
+      this.dashboardRole ===
+      'Analista'
+    );
+
+  }
+
+
+  get esJefe(): boolean {
+
+    return (
+      this.dashboardRole ===
+      'Jefe'
+    );
+
+  }
+
+
+  get esAdministrador(): boolean {
+
+    return (
+      this.dashboardRole ===
+      'Administrador'
+    );
+
+  }
+
+
+  get esSupervision(): boolean {
+
+    return (
+      this.esAnalista ||
+      this.esJefe
+    );
+
+  }
+
+
+  /* =====================================================
+     TEXTOS DEL DASHBOARD
+  ===================================================== */
+
+  get dashboardTitle(): string {
+
+    if (
+      this.esInvestigador
+    ) {
+
+      return 'Mi panel de casos';
+
+    }
+
+
+    if (
+      this.esAnalista
+    ) {
+
+      return 'Panel de análisis y supervisión';
+
+    }
+
+
+    if (
+      this.esJefe
+    ) {
+
+      return 'Panel de supervisión';
+
+    }
+
+
+    if (
+      this.esAdministrador
+    ) {
+
+      return 'Resumen general del sistema';
+
+    }
+
+
+    return 'Dashboard';
+
+  }
+
+
+  get dashboardSubtitle(): string {
+
+    if (
+      this.esInvestigador
+    ) {
+
+      return (
+        `Casos registrados por tu usuario · ${this.tituloPeriodo}`
+      );
+
+    }
+
+
+    if (
+      this.esAnalista
+    ) {
+
+      return (
+        `Panorama general de casos y autorizaciones · ${this.tituloPeriodo}`
+      );
+
+    }
+
+
+    if (
+      this.esJefe
+    ) {
+
+      return (
+        `Panorama general de la actividad operativa · ${this.tituloPeriodo}`
+      );
+
+    }
+
+
+    return (
+      `Resumen general · ${this.tituloPeriodo}`
+    );
+
+  }
+
+
+  get scopeLabel(): string {
+
+    return this.esInvestigador
+      ? 'Datos personales'
+      : 'Datos generales';
+
+  }
+
+
+  /* =====================================================
+     INICIALIZAR GRÁFICAS
+  ===================================================== */
+
+  private initCharts(): void {
+
+
+    /* CASOS POR TIPO */
+
     this.barChartOptions = {
-      ...baseBar,
-      series: [{ name: 'Casos', data: [0, 0, 0] }],
-      colors: [C.alerta, C.maltrato, C.conflicto],
-      plotOptions: { bar: { distributed: true, horizontal: false, columnWidth: '45%', borderRadius: 6, borderRadiusApplication: 'end', dataLabels: { position: 'top' } } },
-      dataLabels: { enabled: true, formatter: (v: number) => `${v}`, offsetY: -14, style: { fontSize: '12px', colors: ['#555'] } },
-      xaxis: { categories: ['Alertas', 'Maltratos', 'Conflictos'] },
-      yaxis: { min: 0, tickAmount: 5 },
-      legend: { show: false },
-      title: { text: 'Total por tipo de caso', style: { fontSize: '13px', fontWeight: '600' } },
-    };
 
-    // 2. Donut distribución alertas
-    this.donutChartOptions = {
-      series: [0, 0, 0],
-      chart: { type: 'donut', height: 300, redrawOnParentResize: true },
-      labels: ['Activas', 'Concluidas', 'Remitidas'],
-      colors: [C.informado, C.concluido, C.remitido],
-      stroke: { colors: ['#fff'] },
-      dataLabels: { enabled: true, formatter: (v: number) => `${v.toFixed(0)}%` },
-      plotOptions: { pie: { donut: { size: '62%', labels: { show: true, total: { show: true, label: 'Total', fontSize: '14px', fontWeight: '700' } } } } },
-      legend: { position: 'bottom' },
-      responsive: [],
-      title: { text: 'Distribución de Alertas', style: { fontSize: '13px', fontWeight: '600' } },
-    };
-
-    // 3. Stacked bar — estado por tipo
-    this.stackedChartOptions = {
-      ...baseBar,
       series: [
-        { name: 'Informado',   data: [0, 0, 0] },
-        { name: 'Concluido',   data: [0, 0, 0] },
-        { name: 'Remitido',    data: [0, 0, 0] },
-        { name: 'Desestimado', data: [0, 0, 0] },
-      ],
-      chart: { type: 'bar', height: 300, stacked: true, toolbar: { show: false }, redrawOnParentResize: true },
-      colors: [C.informado, C.concluido, C.remitido, C.desestimado],
-      xaxis: { categories: ['Alertas', 'Maltratos', 'Conflictos'] },
-      yaxis: { min: 0, tickAmount: 5 },
-      legend: { position: 'top', horizontalAlign: 'right', fontSize: '12px' },
-      fill: { opacity: 1 },
-      title: { text: 'Estado de investigación por tipo', style: { fontSize: '13px', fontWeight: '600' } },
-    };
-
-    // 4. Barras mensuales por tipo
-    this.monthlyTotalChartOptions = {
-      ...baseBar,
-      series: [
-        { name: 'Alerta', data: new Array(12).fill(0) },
-        { name: 'Maltrato', data: new Array(12).fill(0) },
-        { name: 'Conflicto', data: new Array(12).fill(0) },
-      ],
-      colors: [C.alerta, C.maltrato, C.conflicto],
-      plotOptions: { bar: { horizontal: false, columnWidth: '70%', borderRadius: 4, borderRadiusApplication: 'end' } },
-      dataLabels: { enabled: false },
-      xaxis: { categories: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'] },
-      yaxis: { min: 0, tickAmount: 5 },
-      legend: { position: 'top', horizontalAlign: 'right', fontSize: '12px' },
-      title: { text: 'Cantidad de casos por mes y tipo', style: { fontSize: '13px', fontWeight: '600' } },
-    };
-
-    this.areaChartOptions = {
-      series: [
-        { name: 'Alerta',    data: new Array(12).fill(0) },
-        { name: 'Maltrato',  data: new Array(12).fill(0) },
-        { name: 'Conflicto', data: new Array(12).fill(0) },
-      ],
-      chart: { type: 'area', height: 300, toolbar: { show: false }, redrawOnParentResize: true },
-      colors: [C.alerta, C.maltrato, C.conflicto],
-      dataLabels: { enabled: false },
-      stroke: { curve: 'smooth', width: 2 },
-      fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05, stops: [0, 90, 100] } },
-      xaxis: { categories: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'] },
-      yaxis: { min: 0, tickAmount: 5 },
-      legend: { position: 'top', horizontalAlign: 'right', fontSize: '12px' },
-      grid: { borderColor: C.grid, strokeDashArray: 2 },
-      title: { text: 'Tendencia mensual de casos', style: { fontSize: '13px', fontWeight: '600' } },
-      tooltip: { y: { formatter: (v: number) => `${v} casos` } },
-    };
-
-    // 5. Radial bar — tasa de resolución
-    this.radialChartOptions = {
-      series: [0, 0, 0],
-      chart: { type: 'radialBar', height: 300, redrawOnParentResize: true },
-      labels: ['Alertas', 'Maltratos', 'Conflictos'],
-      colors: [C.alerta, C.maltrato, C.conflicto],
-      plotOptions: {
-        radialBar: {
-          startAngle: -135,
-          endAngle: 135,
-          hollow: { size: '25%', background: 'transparent' },
-          track: { background: '#f0f0f0', strokeWidth: '97%', margin: 4 },
-          dataLabels: {
-            name: { fontSize: '12px', offsetY: -10 },
-            value: { fontSize: '15px', fontWeight: 700, formatter: (v: number) => `${v.toFixed(0)}%` },
-            total: { show: true, label: 'Promedio', fontSize: '12px',
-              formatter: (w: any) => {
-                const s = w.globals.series as number[];
-                const avg = s.length ? Math.round(s.reduce((a: number, b: number) => a + b, 0) / s.length) : 0;
-                return `${avg}%`;
-              }
-            }
-          }
+        {
+          name: 'Casos',
+          data: [0, 0, 0]
         }
-      },
-      legend: { show: true, position: 'bottom', horizontalAlign: 'center', fontSize: '12px' },
-      title: { text: 'Tasa de resolución', style: { fontSize: '13px', fontWeight: '600' } },
-    };
-
-    // 6. Forecast — proyección próximos 2 meses
-    this.forecastChartOptions = {
-      series: [
-        { name: 'Alerta',    data: new Array(14).fill(0) },
-        { name: 'Maltrato',  data: new Array(14).fill(0) },
-        { name: 'Conflicto', data: new Array(14).fill(0) },
       ],
+
       chart: {
-        type: 'line',
-        height: 320,
-        toolbar: { show: false },
-        redrawOnParentResize: true,
-        animations: { enabled: true, easing: 'easeinout', speed: 600 },
+        type: 'bar',
+        height: 310,
+        toolbar: {
+          show: false
+        },
+        redrawOnParentResize: true
       },
-      forecastDataPoints: { count: 2, fillOpacity: 0.5, strokeWidth: 2, dashArray: 6 },
-      colors: [C.alerta, C.maltrato, C.conflicto],
-      stroke: { curve: 'smooth', width: [2, 2, 2], dashArray: [0, 0, 0] },
-      markers: { size: 4, strokeWidth: 0, hover: { size: 6 } },
-      fill: { type: 'solid', opacity: 1 },
-      xaxis: { categories: [], tooltip: { enabled: false } },
-      yaxis: { min: 0, tickAmount: 5, labels: { formatter: (v: number) => Math.round(v).toString() } },
-      legend: { position: 'top', horizontalAlign: 'right', fontSize: '12px' },
-      grid: { borderColor: C.grid, strokeDashArray: 2 },
-      title: { text: 'Proyección de casos — próximos 2 meses', style: { fontSize: '13px', fontWeight: '600' } },
-      tooltip: { shared: true, y: { formatter: (v: number, opts: any) => {
-        const idx = opts?.dataPointIndex;
-        const total = (opts?.w?.globals?.series as number[][])?.reduce((sum, s) => sum + (s[idx] ?? 0), 0);
-        return `${Math.round(v)} casos (total ${Math.round(total)})`;
-      }}},
-      annotations: {
-        xaxis: [{
-          x: '',   // se llena dinámicamente
-          borderColor: '#999',
-          borderWidth: 1,
-          strokeDashArray: 4,
-          label: { text: 'Hoy', style: { color: '#fff', background: '#999', fontSize: '11px' } }
-        }]
+
+      colors: [
+        C.alerta,
+        C.maltrato,
+        C.conflicto
+      ],
+
+      plotOptions: {
+
+        bar: {
+          distributed: true,
+          horizontal: false,
+          columnWidth: '45%',
+          borderRadius: 6,
+          borderRadiusApplication: 'end'
+        }
+
+      },
+
+      dataLabels: {
+
+        enabled: true,
+
+        formatter:
+          (value: number) =>
+            `${value}`,
+
+        offsetY: -12,
+
+        style: {
+          fontSize: '12px',
+          colors: ['#555']
+        }
+
+      },
+
+      xaxis: {
+        categories: [
+          'Alertas',
+          'Maltratos',
+          'Conflictos'
+        ]
+      },
+
+      yaxis: {
+        min: 0,
+        tickAmount: 5
+      },
+
+      legend: {
+        show: false
+      },
+
+      grid: {
+        borderColor: C.grid,
+        strokeDashArray: 2
+      },
+
+      tooltip: {
+
+        y: {
+          formatter:
+            (value: number) =>
+              `${value} casos`
+        }
+
+      },
+
+      title: {
+
+        text:
+          'Casos por tipo',
+
+        style: {
+          fontSize: '13px',
+          fontWeight: '600'
+        }
+
       }
+
     };
 
-    // 7. Horizontal bar — personas involucradas
-    this.hBarChartOptions = {
-      series: [
-        { name: 'Víctimas',              data: [0, 0, 0] },
-        { name: 'Sindicados/Infractores', data: [0, 0, 0] },
-      ],
-      chart: { type: 'bar', height: 300, toolbar: { show: false }, redrawOnParentResize: true },
-      colors: [C.victimas, C.infractores],
-      plotOptions: { bar: { horizontal: true, borderRadius: 4, dataLabels: { position: 'top' } } },
-      dataLabels: { enabled: true, offsetX: 20, style: { fontSize: '11px', colors: ['#555'] } },
-      xaxis: { categories: ['Alertas', 'Maltratos', 'Conflictos'] },
-      legend: { position: 'top', horizontalAlign: 'right', fontSize: '12px' },
-      grid: { borderColor: C.grid, strokeDashArray: 2 },
-      title: { text: 'Personas involucradas por tipo', style: { fontSize: '13px', fontWeight: '600' } },
-      tooltip: { y: { formatter: (v: number) => `${v} personas` } },
-    };
-  }
 
-  // ── Carga de datos ────────────────────────────────────────────────────────
-  cargarDatos(): void {
-    this.isLoading = true;
-    forkJoin({
-      alertas:   this.alertaService.getAlertas(),
-      maltratos: this.maltratoService.getMaltratos(),
-      conflictos: this.conflictoService.getConflictos(),
-    }).pipe(finalize(() => this.isLoading = false))
-    .subscribe(({ alertas, maltratos, conflictos }) => {
+    /* ESTADO DE INVESTIGACIÓN */
 
-      // Años disponibles
-      const allYears = new Set<number>();
-      [...alertas, ...maltratos, ...conflictos].forEach(i => {
-        const y = this.getYear(i);
-        if (y !== null) allYears.add(y);
-      });
-      this.yearsDisponibles = ['all', ...Array.from(allYears).sort((a, b) => b - a)];
-
-      // Filtrar por año
-      const filtra = <T>(arr: T[]) =>
-        this.selectedYear === 'all' ? arr : arr.filter(i => this.getYear(i) === this.selectedYear);
-
-      this.actualizarTodo(filtra(alertas), filtra(maltratos), filtra(conflictos));
-    });
-  }
-
-  private actualizarTodo(alertas: any[], maltratos: any[], conflictos: any[]) {
-    const aInf  = alertas.filter(a => a.estadoInvestigacion === 'Informado').length;
-    const aRem  = alertas.filter(a => a.estadoInvestigacion === 'Remitido').length;
-    const aCon  = alertas.filter(a => a.estadoInvestigacion === 'Concluido').length;
-    const mInf  = maltratos.filter(m => m.estadoInvestigacion === 'Informado').length;
-    const mDes  = maltratos.filter(m => m.estadoInvestigacion === 'Desestimado').length;
-    const cInf  = conflictos.filter(c => c.estadoInvestigacion === 'Informado').length;
-    const cCon  = conflictos.filter(c => c.estadoInvestigacion === 'Concluido').length;
-
-    // KPI cards
-    const kpiMap: Record<string, number> = {
-      alerta:    alertas.length,
-      maltrato:  maltratos.length,
-      conflicto: conflictos.length,
-      remitidas: aRem,
-      activas:   aInf,
-      inactivas: aCon + aRem,
-    };
-    this.exps = this.exps.map(e => ({ ...e, amount: kpiMap[e.key] ?? 0 }));
-
-    const periodo = this.tituloPeriodo;
-
-    // 1. Barras por tipo
-    this.barChartOptions = {
-      ...this.barChartOptions,
-      series: [{ name: 'Casos', data: [alertas.length, maltratos.length, conflictos.length] }],
-      title: { text: `Total por tipo — ${periodo}`, style: { fontSize: '13px', fontWeight: '600' } },
-    };
-    this.barChart?.updateOptions(this.barChartOptions);
-
-    // 2. Donut alertas
-    this.donutChartOptions = {
-      ...this.donutChartOptions,
-      series: [aInf, aCon, aRem],
-      title: { text: `Distribución de Alertas — ${periodo}`, style: { fontSize: '13px', fontWeight: '600' } },
-    };
-    this.donutChart?.updateOptions(this.donutChartOptions);
-
-    // 3. Stacked estado
     this.stackedChartOptions = {
-      ...this.stackedChartOptions,
+
       series: [
-        { name: 'Informado',   data: [aInf, mInf, cInf] },
-        { name: 'Concluido',   data: [aCon, 0, cCon]    },
-        { name: 'Remitido',    data: [aRem, 0, 0]        },
-        { name: 'Desestimado', data: [0, mDes, 0]        },
+
+        {
+          name: 'Informado',
+          data: [0, 0, 0]
+        },
+
+        {
+          name: 'Concluido',
+          data: [0, 0, 0]
+        },
+
+        {
+          name: 'Remitido',
+          data: [0, 0, 0]
+        },
+
+        {
+          name: 'Desestimado',
+          data: [0, 0, 0]
+        }
+
       ],
-      title: { text: `Estado de investigación — ${periodo}`, style: { fontSize: '13px', fontWeight: '600' } },
-    };
-    this.stackedChart?.updateOptions(this.stackedChartOptions);
 
-    // 4. Barras mensuales por tipo
-    this.actualizarBarrasMensualesPorTipo(alertas, maltratos, conflictos, periodo);
+      chart: {
 
-    // 4. Area mensual
-    this.actualizarAreaMensual(alertas, maltratos, conflictos, periodo);
+        type: 'bar',
+        height: 310,
+        stacked: true,
 
-    // 4b. Proyección
-    this.actualizarProyeccion(alertas, maltratos, conflictos, periodo);
+        toolbar: {
+          show: false
+        },
 
-    // 5. Radial — tasa de resolución
-    const pctA = alertas.length   ? Math.round((aCon + aRem) / alertas.length   * 100) : 0;
-    const pctM = maltratos.length ? Math.round(mDes           / maltratos.length  * 100) : 0;
-    const pctC = conflictos.length? Math.round(cCon           / conflictos.length * 100) : 0;
-    this.radialChartOptions = {
-      ...this.radialChartOptions,
-      series: [pctA, pctM, pctC],
-      title: { text: `Tasa de resolución — ${periodo}`, style: { fontSize: '13px', fontWeight: '600' } },
-    };
-    this.radialChart?.updateOptions(this.radialChartOptions);
+        redrawOnParentResize: true
 
-    // 6. Horizontal personas
-    const aVic  = alertas.length;   // cada alerta = 1 desaparecido
-    const mVic  = maltratos.reduce((s: number, m: any)  => s + (m.victimas?.length   || 0), 0);
-    const mInfP = maltratos.reduce((s: number, m: any)  => s + (m.infractores?.length || 0), 0);
-    const cVic  = conflictos.reduce((s: number, c: any) => s + (c.victimas?.length    || 0), 0);
-    const cInfP = conflictos.reduce((s: number, c: any) => s + (c.infractores?.length || 0), 0);
-    this.hBarChartOptions = {
-      ...this.hBarChartOptions,
-      series: [
-        { name: 'Víctimas',               data: [aVic, mVic,  cVic]  },
-        { name: 'Sindicados/Infractores',  data: [0,    mInfP, cInfP] },
+      },
+
+      colors: [
+
+        C.informado,
+        C.concluido,
+        C.remitido,
+        C.desestimado
+
       ],
-      title: { text: `Personas involucradas — ${periodo}`, style: { fontSize: '13px', fontWeight: '600' } },
-    };
-    this.hBarChart?.updateOptions(this.hBarChartOptions);
-  }
 
-  private actualizarBarrasMensualesPorTipo(alertas: any[], maltratos: any[], conflictos: any[], periodo: string) {
-    const series = {
-      Alerta: new Array(12).fill(0),
-      Maltrato: new Array(12).fill(0),
-      Conflicto: new Array(12).fill(0),
-    };
-    const getMonth = (v: any) => {
-      const d = new Date(v?.fecha || v?.fechaRegistro || v?.createdAt);
-      return isNaN(+d) ? -1 : d.getMonth();
+      plotOptions: {
+
+        bar: {
+          horizontal: false,
+          columnWidth: '55%',
+          borderRadius: 4
+        }
+
+      },
+
+      dataLabels: {
+        enabled: false
+      },
+
+      xaxis: {
+
+        categories: [
+          'Alertas',
+          'Maltratos',
+          'Conflictos'
+        ]
+
+      },
+
+      yaxis: {
+        min: 0,
+        tickAmount: 5
+      },
+
+      legend: {
+        position: 'top',
+        horizontalAlign: 'right',
+        fontSize: '11px'
+      },
+
+      fill: {
+        opacity: 1
+      },
+
+      grid: {
+        borderColor: C.grid,
+        strokeDashArray: 2
+      },
+
+      tooltip: {
+
+        y: {
+          formatter:
+            (value: number) =>
+              `${value} casos`
+        }
+
+      },
+
+      title: {
+
+        text:
+          'Estado de investigación',
+
+        style: {
+          fontSize: '13px',
+          fontWeight: '600'
+        }
+
+      }
+
     };
 
-    alertas.forEach(a => { const mes = getMonth(a); if (mes >= 0) series.Alerta[mes]++; });
-    maltratos.forEach(m => { const mes = getMonth(m); if (mes >= 0) series.Maltrato[mes]++; });
-    conflictos.forEach(c => { const mes = getMonth(c); if (mes >= 0) series.Conflicto[mes]++; });
 
-    this.monthlyTotalChartOptions = {
-      ...this.monthlyTotalChartOptions,
-      series: [
-        { name: 'Alerta', data: series.Alerta },
-        { name: 'Maltrato', data: series.Maltrato },
-        { name: 'Conflicto', data: series.Conflicto },
-      ],
-      title: { text: `Cantidad de casos por mes y tipo - ${periodo}`, style: { fontSize: '13px', fontWeight: '600' } },
-    };
-    this.monthlyTotalChart?.updateOptions(this.monthlyTotalChartOptions);
-  }
-
-  private actualizarAreaMensual(alertas: any[], maltratos: any[], conflictos: any[], periodo: string) {
-    const series = { Alerta: new Array(12).fill(0), Maltrato: new Array(12).fill(0), Conflicto: new Array(12).fill(0) };
-    const getMonth = (v: any) => {
-      const d = new Date(v?.fecha || v?.fechaRegistro || v?.createdAt);
-      return isNaN(+d) ? -1 : d.getMonth();
-    };
-    alertas.forEach(a   => { const m = getMonth(a); if (m >= 0) series.Alerta[m]++;   });
-    maltratos.forEach(m => { const i = getMonth(m); if (i >= 0) series.Maltrato[i]++; });
-    conflictos.forEach(c=> { const j = getMonth(c); if (j >= 0) series.Conflicto[j]++;});
+    /* EVOLUCIÓN MENSUAL */
 
     this.areaChartOptions = {
-      ...this.areaChartOptions,
+
       series: [
-        { name: 'Alerta',    data: series.Alerta    },
-        { name: 'Maltrato',  data: series.Maltrato  },
-        { name: 'Conflicto', data: series.Conflicto },
+
+        {
+          name: 'Alerta',
+          data: []
+        },
+
+        {
+          name: 'Maltrato',
+          data: []
+        },
+
+        {
+          name: 'Conflicto',
+          data: []
+        }
+
       ],
-      title: { text: `Tendencia mensual — ${periodo}`, style: { fontSize: '13px', fontWeight: '600' } },
-    };
-    this.areaChart?.updateOptions(this.areaChartOptions);
-  }
 
-  private actualizarProyeccion(alertas: any[], maltratos: any[], conflictos: any[], periodo: string) {
-    const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-    const hoy = new Date();
-    const mesActual = hoy.getMonth(); // 0-11
+      chart: {
 
-    // Contar por mes (índice 0-11) según createdAt
-    const porMes = (arr: any[]) => {
-      const counts = new Array(12).fill(0);
-      arr.forEach(v => {
-        const d = new Date(v?.createdAt || v?.fecha || v?.fechaRegistro);
-        if (!isNaN(+d)) counts[d.getMonth()]++;
-      });
-      return counts;
-    };
+        type: 'area',
+        height: 330,
 
-    const cA = porMes(alertas);
-    const cM = porMes(maltratos);
-    const cC = porMes(conflictos);
+        toolbar: {
+          show: false
+        },
 
-    // Moving average de 3 meses → proyectar los 2 meses siguientes
-    const ma3 = (counts: number[], fromIdx: number): [number, number] => {
-      const last3 = [
-        counts[(fromIdx - 2 + 12) % 12],
-        counts[(fromIdx - 1 + 12) % 12],
-        counts[fromIdx],
-      ];
-      const p1 = Math.round((last3[0] + last3[1] + last3[2]) / 3);
-      const p2 = Math.round((last3[1] + last3[2] + p1) / 3);
-      return [p1, p2];
-    };
+        redrawOnParentResize: true
 
-    const [pA1, pA2] = ma3(cA, mesActual);
-    const [pM1, pM2] = ma3(cM, mesActual);
-    const [pC1, pC2] = ma3(cC, mesActual);
-
-    // Categorías: 12 meses históricos + 2 proyectados
-    const cats = MESES.map((m, i) => i === mesActual ? `${m} ◄` : m);
-    const mes1 = MESES[(mesActual + 1) % 12];
-    const mes2 = MESES[(mesActual + 2) % 12];
-    cats.push(`${mes1} (est.)`, `${mes2} (est.)`);
-
-    // Anotación vertical en el mes actual
-    const labelHoy = cats[mesActual];
-
-    this.forecastChartOptions = {
-      ...this.forecastChartOptions,
-      series: [
-        { name: 'Alerta',    data: [...cA, pA1, pA2] },
-        { name: 'Maltrato',  data: [...cM, pM1, pM2] },
-        { name: 'Conflicto', data: [...cC, pC1, pC2] },
-      ],
-      xaxis: { categories: cats, tooltip: { enabled: false } },
-      annotations: {
-        xaxis: [{
-          x: labelHoy,
-          borderColor: '#9E9E9E',
-          borderWidth: 1,
-          strokeDashArray: 4,
-          label: { text: 'Mes actual', style: { color: '#fff', background: '#9E9E9E', fontSize: '11px' } }
-        }]
       },
-      title: { text: `Proyección — ${periodo} + 2 meses`, style: { fontSize: '13px', fontWeight: '600' } },
+
+      colors: [
+        C.alerta,
+        C.maltrato,
+        C.conflicto
+      ],
+
+      dataLabels: {
+        enabled: false
+      },
+
+      stroke: {
+        curve: 'smooth',
+        width: 2
+      },
+
+      fill: {
+
+        type: 'gradient',
+
+        gradient: {
+
+          shadeIntensity: 1,
+          opacityFrom: 0.4,
+          opacityTo: 0.05,
+
+          stops: [
+            0,
+            90,
+            100
+          ]
+
+        }
+
+      },
+
+      xaxis: {
+        categories: []
+      },
+
+      yaxis: {
+        min: 0,
+        tickAmount: 5
+      },
+
+      legend: {
+        position: 'top',
+        horizontalAlign: 'right',
+        fontSize: '12px'
+      },
+
+      grid: {
+        borderColor: C.grid,
+        strokeDashArray: 2
+      },
+
+      tooltip: {
+
+        y: {
+          formatter:
+            (value: number) =>
+              `${value} casos`
+        }
+
+      },
+
+      title: {
+
+        text:
+          'Evolución mensual',
+
+        style: {
+          fontSize: '13px',
+          fontWeight: '600'
+        }
+
+      }
+
     };
-    this.forecastChart?.updateOptions(this.forecastChartOptions);
+
+
+    /* CASOS POR INVESTIGADOR */
+
+    this.investigatorChartOptions = {
+
+      series: [
+        {
+          name: 'Casos',
+          data: []
+        }
+      ],
+
+      chart: {
+
+        type: 'bar',
+        height: 300,
+
+        toolbar: {
+          show: false
+        },
+
+        redrawOnParentResize: true
+
+      },
+
+      plotOptions: {
+
+        bar: {
+
+          horizontal: true,
+
+          borderRadius: 5,
+
+          borderRadiusApplication:
+            'end'
+
+        }
+
+      },
+
+      dataLabels: {
+
+        enabled: true,
+
+        formatter:
+          (value: number) =>
+            `${value}`
+
+      },
+
+      xaxis: {
+        categories: []
+      },
+
+      grid: {
+        borderColor: C.grid,
+        strokeDashArray: 2
+      },
+
+      tooltip: {
+
+        y: {
+          formatter:
+            (value: number) =>
+              `${value} casos`
+        }
+
+      },
+
+      title: {
+
+        text:
+          'Casos registrados por investigador',
+
+        style: {
+          fontSize: '13px',
+          fontWeight: '600'
+        }
+
+      }
+
+    };
+
   }
 
-  private iniciarContadorSesion(): void {
-    this.actualizarContadorSesion();
-    this.sessionTimerId = setInterval(() => this.actualizarContadorSesion(), 1000);
+
+  /* =====================================================
+     CARGAR DASHBOARD
+  ===================================================== */
+
+  cargarDatos(): void {
+
+    this.isLoading =
+      true;
+
+
+    this.dashboardService
+      .getDashboard()
+      .pipe(
+
+        finalize(
+          () =>
+            this.isLoading =
+              false
+        )
+
+      )
+      .subscribe({
+
+        next: (
+          data:
+            DashboardResponse
+        ) => {
+
+          this.dashboardRole =
+            data.role;
+
+          this.dashboardScope =
+            data.alcance;
+
+
+          this.alertasBase =
+            data.alertas || [];
+
+          this.maltratosBase =
+            data.maltratos || [];
+
+          this.conflictosBase =
+            data.conflictos || [];
+
+
+          this.pendientes =
+            data
+              .autorizaciones
+              ?.pendientes
+              ?.total || 0;
+
+
+          this.rechazados =
+            data
+              .autorizaciones
+              ?.rechazados
+              ?.total || 0;
+
+
+          this.generarAniosDisponibles();
+
+          this.aplicarFiltroActual();
+
+        },
+
+
+        error: (
+          error
+        ) => {
+
+          console.error(
+            'Error al cargar dashboard:',
+            error
+          );
+
+        }
+
+      });
+
   }
 
-  private actualizarContadorSesion(): void {
-    const expiresAt = this.authService.getSessionExpiresAt();
-    if (!expiresAt) {
-      this.sessionRemainingLabel = '--:--';
-      this.sessionWarning = false;
-      return;
+
+  /* =====================================================
+     AÑOS
+  ===================================================== */
+
+  private generarAniosDisponibles():
+    void {
+
+    const years =
+      new Set<number>();
+
+
+    [
+      ...this.alertasBase,
+      ...this.maltratosBase,
+      ...this.conflictosBase
+    ]
+      .forEach(
+        caso => {
+
+          const year =
+            this.getYear(
+              caso
+            );
+
+
+          if (
+            year !== null
+          ) {
+
+            years.add(
+              year
+            );
+
+          }
+
+        }
+      );
+
+
+    this.yearsDisponibles = [
+
+      'all',
+
+      ...Array
+        .from(
+          years
+        )
+        .sort(
+          (a, b) =>
+            b - a
+        )
+
+    ];
+
+  }
+
+
+  onYearChange(
+    year: YearOption
+  ): void {
+
+    this.selectedYear =
+      year;
+
+    this.aplicarFiltroActual();
+
+  }
+
+
+  private aplicarFiltroActual():
+    void {
+
+    const alertas =
+      this.filtrarPorPeriodo(
+        this.alertasBase
+      );
+
+    const maltratos =
+      this.filtrarPorPeriodo(
+        this.maltratosBase
+      );
+
+    const conflictos =
+      this.filtrarPorPeriodo(
+        this.conflictosBase
+      );
+
+
+    this.actualizarTodo(
+
+      alertas,
+
+      maltratos,
+
+      conflictos
+
+    );
+
+  }
+
+
+  private filtrarPorPeriodo<T>(
+    registros: T[]
+  ): T[] {
+
+    if (
+      this.selectedYear ===
+      'all'
+    ) {
+
+      return registros;
+
     }
 
-    const remainingMs = Math.max(0, expiresAt - Date.now());
-    this.sessionWarning = remainingMs <= 5 * 60 * 1000;
 
-    if (remainingMs <= 0) {
-      this.sessionRemainingLabel = 'Expirada';
-      return;
+    return registros.filter(
+      registro =>
+        this.getYear(
+          registro
+        ) ===
+        this.selectedYear
+    );
+
+  }
+
+
+  /* =====================================================
+     ACTUALIZAR TODO
+  ===================================================== */
+
+  private actualizarTodo(
+
+    alertas: any[],
+
+    maltratos: any[],
+
+    conflictos: any[]
+
+  ): void {
+
+
+    this.actualizarKpis(
+
+      alertas,
+
+      maltratos,
+
+      conflictos
+
+    );
+
+
+    this.actualizarCasosPorTipo(
+
+      alertas,
+
+      maltratos,
+
+      conflictos
+
+    );
+
+
+    this.actualizarEstados(
+
+      alertas,
+
+      maltratos,
+
+      conflictos
+
+    );
+
+
+    this.actualizarEvolucionMensual(
+
+      alertas,
+
+      maltratos,
+
+      conflictos
+
+    );
+
+
+    if (
+      this.esSupervision
+    ) {
+
+      this.actualizarCasosPorInvestigador(
+
+        alertas,
+
+        maltratos,
+
+        conflictos
+
+      );
+
     }
 
-    const totalSeconds = Math.ceil(remainingMs / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-
-    const mm = String(minutes).padStart(2, '0');
-    const ss = String(seconds).padStart(2, '0');
-    this.sessionRemainingLabel = hours > 0
-      ? `${hours}:${mm}:${ss}`
-      : `${mm}:${ss}`;
   }
 
-  private getYear(v: any): number | null {
-    const raw = v?.fecha ?? v?.fechaRegistro ?? v?.createdAt;
-    if (!raw) return null;
-    const d = new Date(raw);
-    return isNaN(d.getTime()) ? null : d.getFullYear();
+
+  /* =====================================================
+     KPIs
+  ===================================================== */
+
+  private actualizarKpis(
+
+    alertas: any[],
+
+    maltratos: any[],
+
+    conflictos: any[]
+
+  ): void {
+
+
+    const total =
+
+      alertas.length +
+      maltratos.length +
+      conflictos.length;
+
+
+    if (
+      this.esInvestigador
+    ) {
+
+      this.kpis = [
+
+        {
+          key: 'total',
+          tag: 'Mis casos aprobados',
+          amount: total,
+          icon: 'folder_open'
+        },
+
+        {
+          key: 'alerta',
+          tag: 'Mis Alertas',
+          amount: alertas.length,
+          icon: 'notifications_active'
+        },
+
+        {
+          key: 'maltrato',
+          tag: 'Mis Maltratos',
+          amount: maltratos.length,
+          icon: 'volunteer_activism'
+        },
+
+        {
+          key: 'conflicto',
+          tag: 'Mis Conflictos',
+          amount: conflictos.length,
+          icon: 'gavel'
+        },
+
+        {
+          key: 'pendientes',
+          tag: 'Pendientes actuales',
+          amount: this.pendientes,
+          icon: 'schedule'
+        },
+
+        {
+          key: 'rechazados',
+          tag: 'Rechazados actuales',
+          amount: this.rechazados,
+          icon: 'error_outline'
+        }
+
+      ];
+
+      return;
+
+    }
+
+
+    if (
+      this.esAnalista ||
+      this.esJefe
+    ) {
+
+      this.kpis = [
+
+        {
+          key: 'total',
+          tag: 'Casos oficiales',
+          amount: total,
+          icon: 'folder_open'
+        },
+
+        {
+          key: 'alerta',
+          tag: 'Alertas Alba-Keneth',
+          amount: alertas.length,
+          icon: 'notifications_active'
+        },
+
+        {
+          key: 'maltrato',
+          tag: 'Casos de Maltrato',
+          amount: maltratos.length,
+          icon: 'volunteer_activism'
+        },
+
+        {
+          key: 'conflicto',
+          tag: 'Casos de Conflicto',
+          amount: conflictos.length,
+          icon: 'gavel'
+        },
+
+        {
+          key: 'pendientes',
+          tag: 'Pendientes de autorización',
+          amount: this.pendientes,
+          icon: 'pending_actions'
+        },
+
+        {
+          key: 'rechazados',
+          tag: 'Registros rechazados',
+          amount: this.rechazados,
+          icon: 'assignment_late'
+        }
+
+      ];
+
+      return;
+
+    }
+
+
+    /*
+     * Administrador:
+     * resumen general sin saturarlo
+     * de información operativa.
+     */
+
+    this.kpis = [
+
+      {
+        key: 'total',
+        tag: 'Casos oficiales',
+        amount: total,
+        icon: 'folder_open'
+      },
+
+      {
+        key: 'alerta',
+        tag: 'Alertas Alba-Keneth',
+        amount: alertas.length,
+        icon: 'notifications_active'
+      },
+
+      {
+        key: 'maltrato',
+        tag: 'Casos de Maltrato',
+        amount: maltratos.length,
+        icon: 'volunteer_activism'
+      },
+
+      {
+        key: 'conflicto',
+        tag: 'Casos de Conflicto',
+        amount: conflictos.length,
+        icon: 'gavel'
+      }
+
+    ];
+
   }
+
+
+  /* =====================================================
+     CASOS POR TIPO
+  ===================================================== */
+
+  private actualizarCasosPorTipo(
+
+    alertas: any[],
+
+    maltratos: any[],
+
+    conflictos: any[]
+
+  ): void {
+
+    const titulo =
+      this.esInvestigador
+        ? `Mis casos por tipo — ${this.tituloPeriodo}`
+        : `Casos por tipo — ${this.tituloPeriodo}`;
+
+
+    this.barChartOptions = {
+
+      ...this.barChartOptions,
+
+      series: [
+
+        {
+          name: 'Casos',
+
+          data: [
+
+            alertas.length,
+            maltratos.length,
+            conflictos.length
+
+          ]
+
+        }
+
+      ],
+
+      title: {
+
+        text: titulo,
+
+        style: {
+          fontSize: '13px',
+          fontWeight: '600'
+        }
+
+      }
+
+    };
+
+
+    this.barChart
+      ?.updateOptions(
+        this.barChartOptions
+      );
+
+  }
+
+
+  /* =====================================================
+     ESTADOS
+  ===================================================== */
+
+  private actualizarEstados(
+
+    alertas: any[],
+
+    maltratos: any[],
+
+    conflictos: any[]
+
+  ): void {
+
+
+    const aInf =
+      alertas.filter(
+        caso =>
+          caso.estadoInvestigacion ===
+          'Informado'
+      ).length;
+
+
+    const aCon =
+      alertas.filter(
+        caso =>
+          caso.estadoInvestigacion ===
+          'Concluido'
+      ).length;
+
+
+    const aRem =
+      alertas.filter(
+        caso =>
+          caso.estadoInvestigacion ===
+          'Remitido'
+      ).length;
+
+
+    const mInf =
+      maltratos.filter(
+        caso =>
+          caso.estadoInvestigacion ===
+          'Informado'
+      ).length;
+
+
+    const mDes =
+      maltratos.filter(
+        caso =>
+          caso.estadoInvestigacion ===
+          'Desestimado'
+      ).length;
+
+
+    const cInf =
+      conflictos.filter(
+        caso =>
+          caso.estadoInvestigacion ===
+          'Informado'
+      ).length;
+
+
+    const cDes =
+      conflictos.filter(
+        caso =>
+          caso.estadoInvestigacion ===
+          'Desestimado'
+      ).length;
+
+
+    const titulo =
+      this.esInvestigador
+
+        ? `Estado de mis investigaciones — ${this.tituloPeriodo}`
+
+        : `Estado de investigación — ${this.tituloPeriodo}`;
+
+
+    this.stackedChartOptions = {
+
+      ...this.stackedChartOptions,
+
+      series: [
+
+        {
+          name: 'Informado',
+
+          data: [
+            aInf,
+            mInf,
+            cInf
+          ]
+        },
+
+        {
+          name: 'Concluido',
+
+          data: [
+            aCon,
+            0,
+            0
+          ]
+        },
+
+        {
+          name: 'Remitido',
+
+          data: [
+            aRem,
+            0,
+            0
+          ]
+        },
+
+        {
+          name: 'Desestimado',
+
+          data: [
+            0,
+            mDes,
+            cDes
+          ]
+        }
+
+      ],
+
+      title: {
+
+        text: titulo,
+
+        style: {
+          fontSize: '13px',
+          fontWeight: '600'
+        }
+
+      }
+
+    };
+
+
+    this.stackedChart
+      ?.updateOptions(
+        this.stackedChartOptions
+      );
+
+  }
+
+
+  /* =====================================================
+     EVOLUCIÓN MENSUAL
+  ===================================================== */
+
+  private actualizarEvolucionMensual(
+
+    alertas: any[],
+
+    maltratos: any[],
+
+    conflictos: any[]
+
+  ): void {
+
+
+    if (
+      this.selectedYear ===
+      'all'
+    ) {
+
+      this.actualizarUltimosDoceMeses(
+
+        alertas,
+
+        maltratos,
+
+        conflictos
+
+      );
+
+      return;
+
+    }
+
+
+    const meses = [
+
+      'Ene',
+      'Feb',
+      'Mar',
+      'Abr',
+      'May',
+      'Jun',
+      'Jul',
+      'Ago',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dic'
+
+    ];
+
+
+    const seriesAlerta =
+      new Array(12).fill(0);
+
+    const seriesMaltrato =
+      new Array(12).fill(0);
+
+    const seriesConflicto =
+      new Array(12).fill(0);
+
+
+    alertas.forEach(
+      caso => {
+
+        const date =
+          this.getDate(
+            caso
+          );
+
+        if (date) {
+
+          seriesAlerta[
+            date.getMonth()
+          ]++;
+
+        }
+
+      }
+    );
+
+
+    maltratos.forEach(
+      caso => {
+
+        const date =
+          this.getDate(
+            caso
+          );
+
+        if (date) {
+
+          seriesMaltrato[
+            date.getMonth()
+          ]++;
+
+        }
+
+      }
+    );
+
+
+    conflictos.forEach(
+      caso => {
+
+        const date =
+          this.getDate(
+            caso
+          );
+
+        if (date) {
+
+          seriesConflicto[
+            date.getMonth()
+          ]++;
+
+        }
+
+      }
+    );
+
+
+    this.actualizarAreaChart(
+
+      meses,
+
+      seriesAlerta,
+
+      seriesMaltrato,
+
+      seriesConflicto,
+
+      `Evolución mensual — ${this.tituloPeriodo}`
+
+    );
+
+  }
+
+
+  private actualizarUltimosDoceMeses(
+
+    alertas: any[],
+
+    maltratos: any[],
+
+    conflictos: any[]
+
+  ): void {
+
+
+    const hoy =
+      new Date();
+
+
+    const periodos: {
+      year: number;
+      month: number;
+      label: string;
+      key: string;
+    }[] = [];
+
+
+    const nombresMes = [
+
+      'Ene',
+      'Feb',
+      'Mar',
+      'Abr',
+      'May',
+      'Jun',
+      'Jul',
+      'Ago',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dic'
+
+    ];
+
+
+    for (
+      let i = 11;
+      i >= 0;
+      i--
+    ) {
+
+      const fecha =
+        new Date(
+          hoy.getFullYear(),
+          hoy.getMonth() - i,
+          1
+        );
+
+
+      periodos.push({
+
+        year:
+          fecha.getFullYear(),
+
+        month:
+          fecha.getMonth(),
+
+        label:
+          `${nombresMes[fecha.getMonth()]} ${String(fecha.getFullYear()).slice(-2)}`,
+
+        key:
+          `${fecha.getFullYear()}-${fecha.getMonth()}`
+
+      });
+
+    }
+
+
+    const contar =
+      (
+        registros: any[]
+      ): number[] => {
+
+
+        const mapa =
+          new Map<string, number>();
+
+
+        registros.forEach(
+          caso => {
+
+            const date =
+              this.getDate(
+                caso
+              );
+
+
+            if (!date) {
+              return;
+            }
+
+
+            const key =
+              `${date.getFullYear()}-${date.getMonth()}`;
+
+
+            mapa.set(
+
+              key,
+
+              (
+                mapa.get(key) ||
+                0
+              ) + 1
+
+            );
+
+          }
+        );
+
+
+        return periodos.map(
+          periodo =>
+            mapa.get(
+              periodo.key
+            ) || 0
+        );
+
+      };
+
+
+    this.actualizarAreaChart(
+
+      periodos.map(
+        periodo =>
+          periodo.label
+      ),
+
+      contar(alertas),
+
+      contar(maltratos),
+
+      contar(conflictos),
+
+      'Evolución de casos — últimos 12 meses'
+
+    );
+
+  }
+
+
+  private actualizarAreaChart(
+
+    categories: string[],
+
+    alertas: number[],
+
+    maltratos: number[],
+
+    conflictos: number[],
+
+    titulo: string
+
+  ): void {
+
+
+    this.areaChartOptions = {
+
+      ...this.areaChartOptions,
+
+      series: [
+
+        {
+          name: 'Alerta',
+          data: alertas
+        },
+
+        {
+          name: 'Maltrato',
+          data: maltratos
+        },
+
+        {
+          name: 'Conflicto',
+          data: conflictos
+        }
+
+      ],
+
+      xaxis: {
+        categories
+      },
+
+      title: {
+
+        text: titulo,
+
+        style: {
+          fontSize: '13px',
+          fontWeight: '600'
+        }
+
+      }
+
+    };
+
+
+    this.areaChart
+      ?.updateOptions(
+        this.areaChartOptions
+      );
+
+  }
+
+
+  /* =====================================================
+     CASOS POR INVESTIGADOR
+  ===================================================== */
+
+  private actualizarCasosPorInvestigador(
+
+    alertas: any[],
+
+    maltratos: any[],
+
+    conflictos: any[]
+
+  ): void {
+
+
+    const acumulado =
+      new Map<
+        string,
+        {
+          nombre: string;
+          cantidad: number;
+        }
+      >();
+
+
+    [
+
+      ...alertas,
+      ...maltratos,
+      ...conflictos
+
+    ].forEach(
+      caso => {
+
+
+        const usuario =
+          caso.registradoPor;
+
+
+        /*
+         * Los históricos V2 pueden no
+         * tener registradoPor.
+         */
+
+        if (
+          !usuario ||
+          typeof usuario !==
+            'object' ||
+          !usuario._id
+        ) {
+
+          return;
+
+        }
+
+
+        /*
+         * Esta gráfica representa
+         * INVESTIGADORES, no registros
+         * creados directamente por analistas.
+         */
+
+        if (
+          usuario.role !==
+          'Investigador'
+        ) {
+
+          return;
+
+        }
+
+
+        const id =
+          usuario
+            ._id
+            .toString();
+
+
+        const actual =
+          acumulado.get(
+            id
+          );
+
+
+        if (
+          actual
+        ) {
+
+          actual.cantidad++;
+
+          return;
+
+        }
+
+
+        acumulado.set(
+
+          id,
+
+          {
+
+            nombre:
+              usuario.nombre ||
+              'Investigador',
+
+            cantidad: 1
+
+          }
+
+        );
+
+      }
+    );
+
+
+    const datos =
+      Array
+        .from(
+          acumulado.values()
+        )
+        .sort(
+          (a, b) =>
+            b.cantidad -
+            a.cantidad
+        );
+
+
+    this.investigadoresConRegistros =
+      datos.length;
+
+
+    this.investigatorChartOptions = {
+
+      ...this.investigatorChartOptions,
+
+      series: [
+
+        {
+          name: 'Casos',
+
+          data:
+            datos.map(
+              item =>
+                item.cantidad
+            )
+
+        }
+
+      ],
+
+      chart: {
+
+        ...this.investigatorChartOptions
+          .chart,
+
+        height:
+          Math.max(
+            300,
+            datos.length * 48
+          )
+
+      },
+
+      xaxis: {
+
+        categories:
+          datos.map(
+            item =>
+              item.nombre
+          )
+
+      },
+
+      title: {
+
+        text:
+          `Casos registrados por investigador — ${this.tituloPeriodo}`,
+
+        style: {
+          fontSize: '13px',
+          fontWeight: '600'
+        }
+
+      }
+
+    };
+
+
+    this.investigatorChart
+      ?.updateOptions(
+        this.investigatorChartOptions
+      );
+
+  }
+
+
+  /* =====================================================
+     FECHAS
+  ===================================================== */
+
+  private getDate(
+    value: any
+  ): Date | null {
+
+    const raw =
+      value?.fecha ??
+      value?.fechaRegistro ??
+      value?.createdAt;
+
+
+    if (!raw) {
+
+      return null;
+
+    }
+
+
+    const date =
+      new Date(
+        raw
+      );
+
+
+    return isNaN(
+      date.getTime()
+    )
+      ? null
+      : date;
+
+  }
+
+
+  private getYear(
+    value: any
+  ): number | null {
+
+    return (
+      this
+        .getDate(value)
+        ?.getFullYear() ??
+      null
+    );
+
+  }
+
 
   get tituloPeriodo(): string {
-    return this.selectedYear === 'all' ? 'General' : `Año ${this.selectedYear}`;
+
+    return (
+      this.selectedYear ===
+      'all'
+    )
+      ? 'General'
+      : `Año ${this.selectedYear}`;
+
   }
 
-  onYearChange(y: YearOption) {
-    this.selectedYear = y;
-    this.cargarDatos();
+
+  /* =====================================================
+     SESIÓN
+  ===================================================== */
+
+  private iniciarContadorSesion():
+    void {
+
+    this.actualizarContadorSesion();
+
+
+    this.sessionTimerId =
+      setInterval(
+        () =>
+          this.actualizarContadorSesion(),
+        1000
+      );
+
   }
+
+
+  private actualizarContadorSesion():
+    void {
+
+    const expiresAt =
+      this.authService
+        .getSessionExpiresAt();
+
+
+    if (
+      !expiresAt
+    ) {
+
+      this.sessionRemainingLabel =
+        '--:--';
+
+      this.sessionWarning =
+        false;
+
+      return;
+
+    }
+
+
+    const remainingMs =
+      Math.max(
+        0,
+        expiresAt - Date.now()
+      );
+
+
+    this.sessionWarning =
+      remainingMs <=
+      5 * 60 * 1000;
+
+
+    if (
+      remainingMs <= 0
+    ) {
+
+      this.sessionRemainingLabel =
+        'Expirada';
+
+      return;
+
+    }
+
+
+    const totalSeconds =
+      Math.ceil(
+        remainingMs / 1000
+      );
+
+
+    const hours =
+      Math.floor(
+        totalSeconds / 3600
+      );
+
+
+    const minutes =
+      Math.floor(
+        (
+          totalSeconds %
+          3600
+        ) / 60
+      );
+
+
+    const seconds =
+      totalSeconds % 60;
+
+
+    const mm =
+      String(
+        minutes
+      ).padStart(
+        2,
+        '0'
+      );
+
+
+    const ss =
+      String(
+        seconds
+      ).padStart(
+        2,
+        '0'
+      );
+
+
+    this.sessionRemainingLabel =
+      hours > 0
+
+        ? `${hours}:${mm}:${ss}`
+
+        : `${mm}:${ss}`;
+
+  }
+
 }

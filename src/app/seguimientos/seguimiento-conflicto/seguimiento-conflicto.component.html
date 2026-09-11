@@ -119,6 +119,7 @@
             <input
               matInput
               formControlName="numeroDeic"
+              [readonly]="searching || submitting || abriendoHistorico"
               placeholder="DEIC53-2026-09-04-001">
 
             <mat-icon matSuffix>
@@ -178,8 +179,21 @@
          CASO ENCONTRADO
     ====================================================== -->
 
-    <ng-container
+    <section class="v3-card" *ngIf="numeroNoEncontrado" aria-live="polite">
+      <div class="v3-card-content">
+        <h2>Caso no encontrado</h2>
+        <p>No se encontró un caso disponible para consulta con el número <strong>{{ numeroNoEncontrado }}</strong>.</p>
+        <p>Si corresponde a un expediente anterior al sistema, puede incorporarlo como histórico. Si ya fue registrado, podría estar pendiente de aprobación.</p>
+        <button mat-flat-button type="button" *ngIf="puedeIncorporar" [disabled]="abriendoHistorico" (click)="incorporarHistorico()"><mat-icon>history</mat-icon>{{ abriendoHistorico ? 'Abriendo…' : 'Incorporar caso histórico' }}</button>
+        <button mat-stroked-button type="button" [disabled]="abriendoHistorico" (click)="numeroNoEncontrado = ''">Cancelar</button>
+      </div>
+    </section>
+
+<ng-container
       *ngIf="casoEncontrado">
+      <app-historico-info [caso]="casoEncontrado" />
+      <div class="v3-info-banner" *ngIf="casoEncontrado.estadoRegistro === 'Pendiente' && !casoCerrado"><mat-icon>info</mat-icon><p>La incorporación está pendiente de aprobación. Puede registrar el seguimiento en este expediente.</p></div>
+
 
 
       <section class="v3-card case-found-card">
@@ -285,8 +299,7 @@
                 ">
 
                 {{
-                  infractores[0]
-                    ?.nombre
+                  infractores[0].nombre
                 }}
 
                 <span
@@ -330,8 +343,7 @@
                 ">
 
                 {{
-                  victimas[0]
-                    ?.nombre
+                  victimas[0].nombre
                 }}
 
                 <span
@@ -680,7 +692,7 @@
                     <strong>
 
                       {{
-                        seguimiento.estado ||
+                        (seguimiento.nuevoEstado || seguimiento.estado) ||
                         'Seguimiento'
                       }}
 
@@ -700,6 +712,7 @@
 
                     </span>
 
+                  <app-seguimiento-participantes [seguimiento]="seguimiento" />
                   </div>
 
 
@@ -718,7 +731,7 @@
                     {{
                       seguimiento
                         .archivos
-                        .length
+                        ?.length
                     }}
 
                   </span>
@@ -740,7 +753,16 @@
            NUEVO ESTADO
       ================================================== -->
 
-      <section class="v3-card">
+      <section class="v3-card" *ngIf="casoCerrado" aria-live="polite">
+        <div class="v3-card-header"><div class="v3-card-title-group"><div class="v3-section-icon"><mat-icon>lock</mat-icon></div><div><h2>{{ bloqueoServidor ? 'Verificación del expediente' : 'Caso desestimado' }}</h2></div></div></div>
+        <div class="v3-card-content">
+          <p>{{ bloqueoServidor ? 'Consulte el historial actualizado antes de continuar. El servidor no permitió registrar el seguimiento.' : 'El último seguimiento de este expediente fue desestimado. No es posible registrar nuevos seguimientos.' }}</p>
+          <p *ngIf="!bloqueoServidor && ultimoSeguimiento?.fecha">Desestimado el: {{ ultimoSeguimiento?.fecha | date:'dd/MM/yyyy HH:mm' }}</p>
+        </div>
+      </section>
+      <ng-container *ngIf="!casoCerrado">
+      <app-responsable-seguimiento id="nuevo-seguimiento-historico" tabindex="-1" *ngIf="casoEncontrado.origenCaso === 'HISTORICO'" [control]="investigadorAsignado" />
+<section class="v3-card">
 
         <div class="v3-card-header">
 
@@ -1019,6 +1041,7 @@
 
       </div>
 
+    </ng-container>
     </ng-container>
 
   </form>

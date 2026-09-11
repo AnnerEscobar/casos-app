@@ -1,3 +1,4 @@
+import { UsuarioReferencia } from '../../casos/models/caso-historico.model';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -13,6 +14,10 @@ export class UsuariosService {
   private apiUrl = `${environment.apiUrl}/auth`;
 
   constructor(private http: HttpClient) { }
+
+  getInvestigadores(): Observable<UsuarioReferencia[]> {
+    return this.http.get<UsuarioReferencia[]>(`${this.apiUrl}/investigadores`);
+  }
 
   getUsuarios(): Observable<Usuario[]> {
     return this.http.get<Usuario[]>(`${this.apiUrl}/users`);

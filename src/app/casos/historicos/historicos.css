@@ -1,0 +1,20 @@
+:host { display: block; min-width: 0; }
+.historico-card { background: #fff; border: 1px solid #e4e6ea; border-radius: 14px; padding: 20px; margin-bottom: 18px; box-shadow: 0 1px 2px rgba(16,24,40,.025); min-width: 0; }
+.historico-heading { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 18px; }
+.historico-heading mat-icon { color: #4b78aa; flex-shrink: 0; }
+h2 { margin: 0 0 8px; font-size: 15px; font-weight: 650; color: #292d34; }
+p, dt { color: #6d7380; font-size: 13px; line-height: 1.5; }
+p { margin: 0 0 16px; }
+.historico-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.historico-full { grid-column: 1 / -1; }
+.historico-ayuda { margin-top: -8px; }
+mat-form-field { width: 100%; min-width: 0; }
+.historico-chip { display: inline-flex; align-items: center; gap: 6px; color: #4b78aa; background: #edf5ff; border-radius: 10px; padding: 6px 10px; font-size: 12px; }
+.historico-chip mat-icon { font-size: 18px; width: 18px; height: 18px; }
+dl { margin-bottom: 0; }
+dd { margin: 4px 0 0; font-size: 13px; color: #292d34; overflow-wrap: anywhere; }
+.historico-observacion { white-space: pre-wrap; }
+:host-context(.dark-theme) .historico-card { background: #1e293b; border-color: #334155; }
+:host-context(.dark-theme) h2, :host-context(.dark-theme) dd { color: #f1f5f9; }
+:host-context(.dark-theme) p, :host-context(.dark-theme) dt { color: #94a3b8; }
+@media (max-width: 600px) { .historico-grid { grid-template-columns: minmax(0, 1fr); } .historico-card { padding: 16px; } }

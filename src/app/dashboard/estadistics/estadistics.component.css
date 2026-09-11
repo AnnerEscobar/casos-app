@@ -1,360 +1,838 @@
-/* ── Header ─────────────────────────────────────────────────────────────── */
+:host {
+  display: block;
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   HEADER PRINCIPAL
+========================================================= */
+
 .dashboard-header {
+  width: 100%;
+  box-sizing: border-box;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 8px;
+  gap: 24px;
+
+  padding: 20px 22px;
+  margin-bottom: 20px;
+
+  background: #ffffff;
+
+  border: 1px solid #e6e9ee;
+  border-radius: 15px;
+
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, 0.035);
 }
+
+
+.dashboard-heading {
+  min-width: 0;
+}
+
+
+.dashboard-heading-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 
 .dashboard-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1e2432;
   margin: 0;
+
+  color: #1f2937;
+
+  font-size: 22px;
+  font-weight: 750;
+
+  letter-spacing: -0.3px;
 }
 
+
 .dashboard-sub {
-  font-size: 13px;
-  color: #7a828e;
-  margin: 2px 0 0;
+  margin: 5px 0 0;
+
+  color: #7c8798;
+
+  font-size: 12.5px;
+  line-height: 1.45;
 }
+
+
+/* =========================================================
+   BADGE DE ALCANCE
+========================================================= */
+
+.scope-badge {
+  height: 27px;
+
+  padding: 0 10px;
+
+  border-radius: 999px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  font-size: 10px;
+  font-weight: 750;
+
+  white-space: nowrap;
+}
+
+
+.scope-badge mat-icon {
+  width: 15px;
+  height: 15px;
+
+  font-size: 15px;
+}
+
+
+.scope-badge--personal {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+
+.scope-badge--global {
+  background: #f3f0fa;
+  color: #735f9e;
+}
+
+
+/* =========================================================
+   ACCIONES DEL HEADER
+========================================================= */
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
   justify-content: flex-end;
+
+  gap: 12px;
+
+  flex-shrink: 0;
 }
+
+
+/* =========================================================
+   CONTADOR DE SESIÓN
+========================================================= */
 
 .session-counter {
-  min-height: 56px;
-  display: inline-flex;
+  height: 54px;
+
+  min-width: 118px;
+
+  padding: 0 14px;
+
+  box-sizing: border-box;
+
+  display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.72);
-  color: #334155;
+  gap: 9px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e5e9ef;
+  border-radius: 10px;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
 }
 
-.session-counter mat-icon {
-  width: 22px;
-  height: 22px;
-  font-size: 22px;
-  color: #2563eb;
-}
 
-.session-counter span {
-  display: block;
+.session-counter > mat-icon {
+  width: 20px;
+  height: 20px;
+
+  font-size: 20px;
+
   color: #64748b;
-  font-size: 12px;
+}
+
+
+.session-counter > div {
+  display: flex;
+  flex-direction: column;
+
   line-height: 1.1;
 }
 
-.session-counter strong {
-  display: block;
-  margin-top: 4px;
-  color: #0f172a;
-  font-size: 15px;
-  line-height: 1;
-  font-weight: 800;
-  letter-spacing: 0;
+
+.session-counter span {
+  color: #929baa;
+
+  font-size: 9px;
+  font-weight: 650;
+
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
 }
+
+
+.session-counter strong {
+  margin-top: 3px;
+
+  color: #334155;
+
+  font-size: 13px;
+  font-weight: 750;
+}
+
 
 .session-counter--warning {
-  border-color: #f59e0b;
-  background: #fffbeb;
+  background: #fff7ed;
+
+  border-color: #fed7aa;
 }
 
-.session-counter--warning mat-icon,
+
+.session-counter--warning > mat-icon,
 .session-counter--warning strong {
-  color: #b45309;
+  color: #ea580c;
 }
+
+
+/* =========================================================
+   SELECTOR DE AÑO
+========================================================= */
 
 .year-select {
-  width: 160px;
-  margin-bottom: -20px; /* compensar el espacio extra de mat-form-field */
+  width: 165px;
+  margin-bottom: -22px;
 }
 
-@media (max-width: 640px) {
-  .dashboard-header {
-    align-items: stretch;
-  }
 
-  .header-actions,
-  .year-select {
-    width: 100%;
-  }
+/* =========================================================
+   CONTENEDOR GENERAL
+========================================================= */
 
-  .session-counter {
-    flex: 1 1 150px;
-  }
-}
-
-/* ── Contenedor principal ──────────────────────────────────────────────── */
 .stats-container {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+
+  width: 100%;
+  box-sizing: border-box;
+
+  padding-bottom: 50px;
 }
+
+
+/* =========================================================
+   LOADING
+========================================================= */
 
 .overlay-stats {
   position: absolute;
+
   inset: 0;
-  background: rgba(255, 255, 255, 0.8);
+
+  z-index: 100;
+
+  min-height: 350px;
+
   display: flex;
+  align-items: flex-start;
   justify-content: center;
-  align-items: center;
-  z-index: 10;
-  border-radius: 12px;
+
+  padding-top: 130px;
+
+  background:
+    rgba(248, 250, 252, 0.72);
+
+  backdrop-filter: blur(2px);
+
+  border-radius: 16px;
 }
 
-/* ── KPI cards ─────────────────────────────────────────────────────────── */
+
+.dashboard-loading {
+  min-width: 190px;
+
+  padding: 22px 25px;
+
+  background: #ffffff;
+
+  border: 1px solid #e6e9ee;
+  border-radius: 14px;
+
+  box-shadow:
+    0 12px 35px rgba(15, 23, 42, 0.1);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 12px;
+
+  color: #64748b;
+
+  font-size: 11.5px;
+}
+
+
+/* =========================================================
+   KPI GRID
+========================================================= */
+
 .kpi-wrap {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+
+  grid-template-columns:
+    repeat(6, minmax(0, 1fr));
+
+  gap: 14px;
 }
 
-@media (min-width: 640px)  { .kpi-wrap { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (min-width: 1024px) { .kpi-wrap { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+
+/* =========================================================
+   KPI CARD
+========================================================= */
 
 .kpi-card {
-  position: relative;
-  padding: 16px 16px 14px;
-  border-radius: 14px;
-  border: 1px solid #e6e8ee;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-  --accent:    #1976d2;
-  --accent-bg: rgba(25, 118, 210, 0.10);
-  overflow: hidden;
+  min-width: 0;
+  min-height: 125px;
+
+  box-sizing: border-box;
+
+  padding: 16px 17px !important;
+
+  border: 1px solid #e6e9ee !important;
+  border-radius: 14px !important;
+
+  background: #ffffff !important;
+
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, 0.035) !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
 }
 
-.kpi-card::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 5px;
-  background: var(--accent);
-  border-radius: 14px 0 0 14px;
-}
 
 .kpi-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.10);
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 7px 18px rgba(15, 23, 42, 0.07) !important;
+
+  border-color: #dce1e7 !important;
 }
+
 
 .kpi-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  margin-bottom: 12px;
 }
+
 
 .kpi-icon {
-  width: 38px; height: 38px;
+  width: 36px;
+  height: 36px;
+
   border-radius: 10px;
-  display: inline-flex;
+
+  display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--accent-bg);
-  color: var(--accent);
 }
+
+
+.kpi-icon mat-icon {
+  width: 20px;
+  height: 20px;
+
+  font-size: 20px;
+}
+
 
 .kpi-value {
-  margin-top: 10px;
-  font-size: 30px;
-  font-weight: 800;
+  color: #1f2937;
+
+  font-size: 27px;
   line-height: 1;
-  color: var(--accent);
+
+  font-weight: 760;
+
+  letter-spacing: -0.7px;
 }
+
 
 .kpi-label {
-  margin-top: 4px;
-  font-size: 12px;
+  margin-top: 7px;
+
+  color: #7d8795;
+
+  font-size: 10.8px;
   font-weight: 600;
-  color: #515761;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
+  line-height: 1.35;
 }
 
-/* Colores por tipo */
-.kpi--alerta     { --accent: #1976D2; --accent-bg: rgba(25,  118, 210, .10); }
-.kpi--maltrato   { --accent: #D81B60; --accent-bg: rgba(216,  27,  96, .12); }
-.kpi--conflicto  { --accent: #7E57C2; --accent-bg: rgba(126,  87, 194, .12); }
-.kpi--remitidas  { --accent: #FFB300; --accent-bg: rgba(255, 179,   0, .18); }
-.kpi--activas    { --accent: #1976D2; --accent-bg: rgba(25,  118, 210, .10); }
-.kpi--inactivas  { --accent: #9E9E9E; --accent-bg: rgba(158, 158, 158, .20); }
 
-/* ── Grid de gráficos (2×2) ───────────────────────────────────────────── */
+/* =========================================================
+   COLORES KPI
+========================================================= */
+
+.kpi--total .kpi-icon {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+
+.kpi--alerta .kpi-icon {
+  background: #eff6ff;
+  color: #1976d2;
+}
+
+
+.kpi--maltrato .kpi-icon {
+  background: #fff1f5;
+  color: #d81b60;
+}
+
+
+.kpi--conflicto .kpi-icon {
+  background: #f3effb;
+  color: #735f9e;
+}
+
+
+.kpi--pendientes .kpi-icon {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+
+.kpi--rechazados .kpi-icon {
+  background: #fff1f2;
+  color: #be123c;
+}
+
+
+/* =========================================================
+   ENCABEZADOS DE SECCIÓN
+========================================================= */
+
+.dashboard-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  margin: 28px 2px 13px;
+}
+
+
+.section-eyebrow {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #735f9e;
+
+  font-size: 9.5px;
+  font-weight: 800;
+
+  letter-spacing: 1px;
+}
+
+
+.dashboard-section-heading h3 {
+  margin: 0;
+
+  color: #263144;
+
+  font-size: 17px;
+  font-weight: 720;
+}
+
+
+.dashboard-section-heading p {
+  margin: 4px 0 0;
+
+  color: #8a94a4;
+
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+
+/* =========================================================
+   GRID DE GRÁFICAS
+========================================================= */
+
 .charts-grid {
   display: grid;
-  grid-template-columns: 1fr;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
   gap: 16px;
 }
 
-@media (min-width: 768px) {
-  .charts-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
 
-/* Tarjeta de gráfico base */
+/* =========================================================
+   CARD DE GRÁFICA
+========================================================= */
+
 .chart-card {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 8px 4px 4px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  min-width: 0;
+
+  box-sizing: border-box;
+
+  padding: 15px 16px 10px;
+
+  background: #ffffff;
+
+  border: 1px solid #e6e9ee;
+  border-radius: 14px;
+
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, 0.035);
+
+  overflow: hidden;
 }
 
-/* Ancho completo (area mensual) */
+
+.chart-card apx-chart {
+  display: block;
+
+  width: 100%;
+}
+
+
 .chart-full {
   width: 100%;
+
+  margin-top: 16px;
 }
 
-/* Mitad de ancho (donut) centrado */
-.chart-half {
-  width: 100%;
-}
 
-@media (min-width: 768px) {
-  .chart-half {
-    width: 50%;
-    align-self: flex-start;
-  }
-}
+/* =========================================================
+   INFORMACIÓN SOBRE LA GRÁFICA
+========================================================= */
 
-/* ── ApexCharts overrides ─────────────────────────────────────────────── */
-:host ::ng-deep .chart-card .apexcharts-legend {
-  justify-content: center !important;
-  flex-wrap: wrap;
-  gap: 6px;
-}
+.chart-context {
+  margin: 0 3px 5px;
 
-:host ::ng-deep .chart-card .apexcharts-canvas {
-  width: 100% !important;
-  max-width: 100%;
-}
+  padding: 8px 11px;
 
-:host ::ng-deep .apexcharts-title-text {
-  font-family: inherit !important;
-}
+  border-radius: 8px;
 
-/* ── Forecast card ───────────────────────────────────────────────────────── */
-.forecast-card {
-  border-color: #c5cae9;
-  background: linear-gradient(135deg, #fafbff 0%, #fff 100%);
-}
+  background: #f8fafc;
 
-.forecast-badge {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  margin: 8px 0 0 12px;
-  padding: 4px 12px;
-  border-radius: 999px;
-  background: #e8eaf6;
-  color: #3949ab;
-  font-size: 11px;
-  font-weight: 600;
+
+  gap: 7px;
+
+  color: #7b8798;
+
+  font-size: 10px;
 }
 
-.forecast-badge mat-icon {
-  font-size: 15px;
+
+.chart-context mat-icon {
+  width: 16px;
+  height: 16px;
+
+  font-size: 16px;
+
+  color: #64748b;
+
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   SUPERVISIÓN
+========================================================= */
+
+.supervision-heading {
+  margin-top: 32px;
+}
+
+
+.investigator-summary {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 9px 13px;
+
+  background: #ffffff;
+
+  border: 1px solid #e6e9ee;
+  border-radius: 10px;
+
+  flex-shrink: 0;
+}
+
+
+.investigator-summary > mat-icon {
+  width: 21px;
+  height: 21px;
+
+  font-size: 21px;
+
+  color: #735f9e;
+}
+
+
+.investigator-summary > div {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.investigator-summary strong {
+  color: #334155;
+
+  font-size: 16px;
+  line-height: 1;
+}
+
+
+.investigator-summary span {
+  margin-top: 3px;
+
+  color: #8a94a4;
+
+  font-size: 9px;
+}
+
+
+/* =========================================================
+   NOTA BAJO GRÁFICA
+========================================================= */
+
+.chart-footnote {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 6px;
+
+  padding: 4px 3px 7px;
+
+  color: #9099a7;
+
+  font-size: 9.5px;
+  line-height: 1.4;
+}
+
+
+.chart-footnote mat-icon {
   width: 15px;
   height: 15px;
+
+  margin-top: 1px;
+
+  font-size: 15px;
+
+  flex-shrink: 0;
 }
 
-:host-context(.dark-theme) .dashboard-title {
-  color: #f1f5f9;
+
+/* =========================================================
+   ESTADO VACÍO
+========================================================= */
+
+.dashboard-empty {
+  min-height: 180px;
+
+  padding: 25px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border: 1px solid #e6e9ee;
+  border-radius: 14px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  color: #8c96a5;
 }
 
-:host-context(.dark-theme) .dashboard-sub {
-  color: #94a3b8;
+
+.dashboard-empty > mat-icon {
+  width: 38px;
+  height: 38px;
+
+  margin-bottom: 8px;
+
+  font-size: 38px;
+
+  color: #a4acb8;
 }
 
-:host-context(.dark-theme) .session-counter {
-  background: #1e293b;
-  border-color: #475569;
-  color: #e2e8f0;
+
+.dashboard-empty strong {
+  color: #566173;
+
+  font-size: 13px;
 }
 
-:host-context(.dark-theme) .session-counter mat-icon {
-  color: #93c5fd;
+
+.dashboard-empty span {
+  margin-top: 4px;
+
+  max-width: 380px;
+
+  font-size: 10.5px;
+  line-height: 1.45;
 }
 
-:host-context(.dark-theme) .session-counter span {
-  color: #94a3b8;
+
+/* =========================================================
+   APEXCHARTS
+========================================================= */
+
+::ng-deep .apexcharts-title-text {
+  fill: #354052 !important;
 }
 
-:host-context(.dark-theme) .session-counter strong {
-  color: #f8fafc;
+
+::ng-deep .apexcharts-legend-text {
+  color: #667085 !important;
 }
 
-:host-context(.dark-theme) .session-counter--warning {
-  background: rgba(146, 64, 14, 0.22);
-  border-color: rgba(251, 191, 36, 0.45);
+
+::ng-deep .apexcharts-xaxis-label,
+::ng-deep .apexcharts-yaxis-label {
+  fill: #8490a0 !important;
 }
 
-:host-context(.dark-theme) .session-counter--warning mat-icon,
-:host-context(.dark-theme) .session-counter--warning strong {
-  color: #fbbf24;
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1250px) {
+
+  .kpi-wrap {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
 }
 
-:host-context(.dark-theme) .overlay-stats {
-  background: rgba(15, 23, 42, 0.78);
+
+@media (max-width: 900px) {
+
+  .dashboard-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+
+  .header-actions {
+    width: 100%;
+
+    justify-content: flex-start;
+
+    flex-wrap: wrap;
+  }
+
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .year-select {
+    width: 180px;
+  }
+
 }
 
-:host-context(.dark-theme) .kpi-card,
-:host-context(.dark-theme) .chart-card {
-  background: #1e293b;
-  border-color: #334155;
-  box-shadow: none;
+
+@media (max-width: 700px) {
+
+  .kpi-wrap {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+
+  .dashboard-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+
+  .investigator-summary {
+    width: 100%;
+
+    box-sizing: border-box;
+  }
+
 }
 
-:host-context(.dark-theme) .kpi-label {
-  color: #cbd5e1;
-}
 
-:host-context(.dark-theme) .forecast-card {
-  background: #1e293b;
-  border-color: #334155;
-}
+@media (max-width: 500px) {
 
-:host-context(.dark-theme) .forecast-badge {
-  background: #172554;
-  color: #bfdbfe;
-}
+  .dashboard-header {
+    padding: 17px;
+  }
 
-:host-context(.dark-theme) ::ng-deep .apexcharts-title-text,
-:host-context(.dark-theme) ::ng-deep .apexcharts-text,
-:host-context(.dark-theme) ::ng-deep .apexcharts-xaxis text,
-:host-context(.dark-theme) ::ng-deep .apexcharts-yaxis text,
-:host-context(.dark-theme) ::ng-deep .apexcharts-legend-text,
-:host-context(.dark-theme) ::ng-deep .apexcharts-datalabel,
-:host-context(.dark-theme) ::ng-deep .apexcharts-datalabel-label,
-:host-context(.dark-theme) ::ng-deep .apexcharts-datalabel-value,
-:host-context(.dark-theme) ::ng-deep .apexcharts-datalabel-total-label,
-:host-context(.dark-theme) ::ng-deep .apexcharts-datalabel-total-value {
-  fill: #e2e8f0 !important;
-  color: #e2e8f0 !important;
-}
 
-:host-context(.dark-theme) ::ng-deep .apexcharts-gridline,
-:host-context(.dark-theme) ::ng-deep .apexcharts-xaxis-tick,
-:host-context(.dark-theme) ::ng-deep .apexcharts-yaxis-tick {
-  stroke: #334155 !important;
-}
+  .dashboard-title {
+    font-size: 19px;
+  }
 
-:host-context(.dark-theme) ::ng-deep .apexcharts-tooltip,
-:host-context(.dark-theme) ::ng-deep .apexcharts-tooltip-title {
-  background: #0f172a !important;
-  border-color: #334155 !important;
-  color: #f1f5f9 !important;
+
+  .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+
+  .session-counter,
+  .year-select {
+    width: 100%;
+  }
+
+
+  .kpi-wrap {
+    grid-template-columns: 1fr;
+  }
+
+
+  .kpi-card {
+    min-height: 110px;
+  }
+
+
+  .chart-card {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
 }

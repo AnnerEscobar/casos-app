@@ -1,9 +1,9 @@
-<div class="v3-page">
+<div class="v3-page" [class.historico-embebido]="modoHistorico">
 
   <!-- =========================================================
        HEADER
   ========================================================== -->
-  <header class="v3-page-header">
+  <header class="v3-page-header" *ngIf="!modoHistorico">
 
     <div class="v3-page-header__main">
 
@@ -47,7 +47,7 @@
   <!-- =========================================================
        INFORMACIÓN
   ========================================================== -->
-  <div class="v3-info-banner">
+  <div class="v3-info-banner" *ngIf="!modoHistorico">
 
     <mat-icon>info</mat-icon>
 
@@ -71,6 +71,7 @@
     [formGroup]="myForm"
     (ngSubmit)="registrarCaso()"
     class="v3-form">
+    <app-historico-data *ngIf="modoHistorico" [form]="historico.datos" />
 
 
     <!-- =========================================================
@@ -163,7 +164,7 @@
           </mat-form-field>
 
 
-          <mat-form-field
+          <ng-container *ngIf="!modoHistorico || !historico.minimo"><mat-form-field
             appearance="outline"
             class="w-full">
 
@@ -195,7 +196,7 @@
               Selecciona un estado
             </mat-error>
 
-          </mat-form-field>
+          </mat-form-field></ng-container>
 
         </div>
 
@@ -207,7 +208,7 @@
     <!-- =========================================================
          SINDICADOS
     ========================================================== -->
-    <section class="v3-card">
+    <ng-container *ngIf="!modoHistorico || !historico.minimo"><section class="v3-card">
 
       <div class="v3-card-header">
 
@@ -278,7 +279,7 @@
               type="button"
               class="v3-remove-button"
               matTooltip="Eliminar sindicado"
-              [disabled]="infractores.length === 1"
+              [disabled]="!modoHistorico && infractores.length === 1"
               (click)="eliminarInfractor(i)">
 
               <mat-icon>
@@ -417,13 +418,13 @@
 
       </div>
 
-    </section>
+    </section></ng-container>
 
 
     <!-- =========================================================
          VÍCTIMAS
     ========================================================== -->
-    <section class="v3-card">
+    <ng-container *ngIf="!modoHistorico || !historico.minimo"><section class="v3-card">
 
       <div class="v3-card-header">
 
@@ -494,7 +495,7 @@
               type="button"
               class="v3-remove-button"
               matTooltip="Eliminar víctima"
-              [disabled]="victimas.length === 1"
+              [disabled]="!modoHistorico && victimas.length === 1"
               (click)="eliminarVictima(i)">
 
               <mat-icon>
@@ -633,13 +634,13 @@
 
       </div>
 
-    </section>
+    </section></ng-container>
 
 
     <!-- =========================================================
          LUGAR DE LOS HECHOS
     ========================================================== -->
-    <section class="v3-card">
+    <ng-container *ngIf="!modoHistorico || !historico.minimo"><section class="v3-card">
 
       <div class="v3-card-header">
 
@@ -736,13 +737,13 @@
 
       </div>
 
-    </section>
+    </section></ng-container>
 
 
     <!-- =========================================================
          PDF
     ========================================================== -->
-    <section class="v3-card">
+    <ng-container *ngIf="!modoHistorico || !historico.minimo"><section class="v3-card">
 
       <div class="v3-card-header">
 
@@ -769,7 +770,7 @@
 
 
         <span class="v3-required-badge">
-          Requerido
+          {{ modoHistorico ? 'Opcional' : 'Requerido' }}
         </span>
 
       </div>
@@ -883,7 +884,7 @@
 
       </div>
 
-    </section>
+    </section></ng-container>
 
 
     <!-- =========================================================
@@ -891,7 +892,7 @@
     ========================================================== -->
     <div class="v3-form-actions">
 
-      <div class="v3-form-state">
+      <div class="v3-form-state" *ngIf="!modoHistorico">
 
         <mat-icon>
           {{
@@ -917,8 +918,8 @@
         type="submit"
         class="v3-submit-button"
         [disabled]="
-          myForm.invalid ||
-          !selectedFile ||
+          myForm.invalid || (modoHistorico && historico.datos.invalid) ||
+          (!modoHistorico && !selectedFile) ||
           isLoading
         ">
 
@@ -927,7 +928,7 @@
         </mat-icon>
 
         <span *ngIf="!isLoading">
-          Registrar caso
+          {{ modoHistorico ? 'Incorporar y continuar al seguimiento' : 'Registrar caso' }}
         </span>
 
         <span *ngIf="isLoading">
@@ -944,7 +945,7 @@
   <!-- LOADING -->
   <div
     class="v3-overlay"
-    *ngIf="isLoading">
+    *ngIf="isLoading && !modoHistorico">
 
     <div class="v3-loading-card">
 

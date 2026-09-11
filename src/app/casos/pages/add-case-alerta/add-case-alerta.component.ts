@@ -1,3 +1,7 @@
+import { Input, Output, EventEmitter, DestroyRef } from '@angular/core';
+import { HistoricoDataComponent } from '../../historicos/historico-data.component';
+import { HistoricoFormulario, quitarRequeridos, mensajeError, normalizarNumeroCaso } from '../../historicos/historico-formulario';
+import { CasoSeguimiento } from '../../models/caso-historico.model';
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -19,7 +23,7 @@ import { InformeService } from '../../../informes/services/informe.service';
 @Component({
   selector: 'app-add-case-alerta',
   providers: [provideNativeDateAdapter()],
-  imports: [
+  imports: [HistoricoDataComponent,
     CommonModule, MatButtonModule, MatDatepickerModule,
     MatFormFieldModule, MatIconModule, MatInputModule,
     MatSelectModule, MatSlideToggleModule, ReactiveFormsModule,
@@ -29,6 +33,47 @@ import { InformeService } from '../../../informes/services/informe.service';
   styleUrl: './add-case-alerta.component.css'
 })
 export default class AddCaseAlertaComponent implements OnInit {
+  @Input() modoHistorico = false;
+  @Input() numeroDeicInicial = '';
+  @Output() historicoCreado = new EventEmitter<CasoSeguimiento>();
+  @Output() ocupacionCambio = new EventEmitter<boolean>();
+  readonly historico = new HistoricoFormulario();
+  private destroyRef = inject(DestroyRef);
+
+  private iniciarHistorico(): void {
+    this.historico.preparar(this.myForm, 'alerta', this.numeroDeicInicial);
+    const sub = this.historico.datos.controls.estadoExpedienteHistorico.valueChanges.subscribe(() => {
+      this.historico.cambiarEstado(this.myForm);
+      if (this.historico.minimo) { this.selectedFile = null; this.fileName = null; }
+    });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
+  }
+
+  private guardarHistorico(): void {
+    if (this.isLoading) return;
+    for (const campo of ['numeroDeic', 'numeroMp', 'numeroAlerta']) {
+      const control = this.myForm.get(campo);
+      if (typeof control?.value === 'string') control.setValue(normalizarNumeroCaso(control.value));
+    }
+    if (this.myForm.invalid || this.historico.datos.invalid) {
+      this.myForm.markAllAsTouched(); this.historico.datos.markAllAsTouched();
+      this._snackBar.open('Seleccione el estado del expediente y revise los datos ingresados.', 'Cerrar', { duration: 4000, panelClass: ['snack-warning'] });
+      return;
+    }
+    this.isLoading = true; this.ocupacionCambio.emit(true);
+    this.alertaService.crearHistorico(this.historico.payload(this.myForm, 'alerta'), this.historico.minimo ? null : this.selectedFile).subscribe({
+      next: caso => {
+        this.isLoading = false; this.ocupacionCambio.emit(false);
+        this._snackBar.open('El caso histórico fue incorporado correctamente.', 'Cerrar', { duration: 4000, panelClass: ['snack-success'] });
+        this.historicoCreado.emit(caso);
+      },
+      error: error => {
+        this.isLoading = false; this.ocupacionCambio.emit(false);
+        this._snackBar.open(mensajeError(error, 'No fue posible incorporar el caso histórico.'), 'Cerrar', { duration: 6000, panelClass: ['snack-error'] });
+      },
+    });
+  }
+
 
   private formBuilder = inject(FormBuilder);
   private _snackBar = inject(MatSnackBar);
@@ -172,6 +217,7 @@ export default class AddCaseAlertaComponent implements OnInit {
   });
 
   ngOnInit() {
+    if (this.modoHistorico) { this.iniciarHistorico(); return; }
     this.myForm.get('estadoInvestigacion')?.valueChanges.subscribe((estado) => {
       const mostrar = estado === 'Remitido';
       const campos = ['direccionLocalizacion', 'nombreAcompanante', 'telefono', 'horaLocalizacion', 'fechaLocalizacion'];
@@ -349,6 +395,7 @@ onFileSelected(event: Event): void {
 }
 
   registrarCaso(): void {
+  if (this.modoHistorico) { this.guardarHistorico(); return; }
 
   if (this.myForm.invalid) {
 

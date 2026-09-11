@@ -1,3 +1,5 @@
+import { CasoSeguimiento, RespuestaSeguimiento } from '../../casos/models/caso-historico.model';
+import { normalizarNumeroCaso } from '../../casos/historicos/historico-formulario';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environment.prod';
@@ -50,8 +52,8 @@ export class SeguimientoMaltratoService {
     numeroDeic: string
   ) {
 
-    return this.http.get<CasoMaltratoSeguimiento>(
-      `${this.apiUrl}/buscar/${numeroDeic}`
+    return this.http.get<CasoSeguimiento>(
+      `${this.apiUrl}/buscar/${encodeURIComponent(normalizarNumeroCaso(numeroDeic))}`
     );
 
   }
@@ -62,8 +64,8 @@ export class SeguimientoMaltratoService {
     data: FormData
   ) {
 
-    return this.http.patch(
-      `${this.apiUrl}/seguimiento/${numeroDeic}`,
+    return this.http.patch<RespuestaSeguimiento>(
+      `${this.apiUrl}/seguimiento/${encodeURIComponent(normalizarNumeroCaso(numeroDeic))}`,
       data
     );
 

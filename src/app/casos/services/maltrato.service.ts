@@ -1,3 +1,5 @@
+import { historicoFormData } from '../historicos/historico-formulario';
+import { CasoSeguimiento, CrearHistorico } from '../models/caso-historico.model';
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -12,7 +14,11 @@ export class MaltratoService {
 
     private http = inject(HttpClient);
 
-    constructor() { }
+    crearHistorico(datos: CrearHistorico, file?: File | null): Observable<CasoSeguimiento> {
+    return this.http.post<CasoSeguimiento>(`${this.baseUrl}/historico`, file ? historicoFormData(datos, file) : datos);
+  }
+
+  constructor() { }
 
     sendFormData(formData: FormData): Observable<any> {
       return this.http.post(`${this.baseUrl}/crear-maltrato`, formData);

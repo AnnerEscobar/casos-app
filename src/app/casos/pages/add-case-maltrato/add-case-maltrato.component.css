@@ -571,3 +571,8 @@
     width: 100%;
   }
 }
+
+/* El diálogo conserva las cards del registro, sin duplicar el margen del layout. */
+.historico-embebido { padding: 0; max-width: 100%; }
+
+.historico-embebido .v3-submit-button { white-space: normal; height: auto; min-height: 44px; padding: 10px 16px; }
