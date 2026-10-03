@@ -14,7 +14,7 @@ export class BusquedaService {
 
   // Método para buscar por nombre
   buscarPorNombre(nombre: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/por-nombre?nombre=${nombre}`);
+    return this.http.get<any[]>(`${this.baseUrl}/por-nombre`, { params: { nombre } });
   }
 
   // Método para buscar por CUI
@@ -48,5 +48,13 @@ export class BusquedaService {
       responseType: 'blob' // Indicar que la respuesta es un archivo binario
     });
   }
+
+  detalle(tipo: string, id: string) { return this.http.get<any>(`${this.baseUrl}/expediente/${tipo}/${id}`); }
+  solicitar(datos: { tipo: string; casoId: string; motivo: string }) { return this.http.post<any>(`${this.baseUrl}/solicitudes`, datos); }
+  investigadores() { return this.http.get<any[]>(`${this.baseUrl}/investigadores`); }
+  compartidos() { return this.http.get<any[]>(`${this.baseUrl}/compartidos`); }
+  revocar(id: string) { return this.http.patch<any>(`${this.baseUrl}/solicitudes/${id}/revocar`, {}); }
+  solicitudes() { return this.http.get<any[]>(`${this.baseUrl}/solicitudes`); }
+  resolver(id: string, estado: 'AUTORIZADA' | 'RECHAZADA') { return this.http.patch<any>(`${this.baseUrl}/solicitudes/${id}`, { estado }); }
 }
 

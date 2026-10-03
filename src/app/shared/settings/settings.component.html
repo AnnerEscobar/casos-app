@@ -1,147 +1,36 @@
-<div class="settings-page">
-
-  <!-- Header -->
-  <div class="settings-header">
-    <button mat-icon-button class="back-btn" (click)="goBack()">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    <div class="header-icon">
-      <mat-icon>settings</mat-icon>
-    </div>
-    <div>
-      <h2 class="page-title">Configuraciones</h2>
-      <p class="page-sub">Personaliza la apariencia y gestiona tu cuenta</p>
-    </div>
-  </div>
-
-  <div class="settings-content">
-
-    <!-- Apariencia -->
-    <div class="section-card">
-      <div class="section-header">
-        <mat-icon class="section-icon">palette</mat-icon>
-        <span class="section-title">Apariencia</span>
-      </div>
-
-      <div class="setting-row">
-        <div class="setting-info">
-          <mat-icon class="setting-icon">dark_mode</mat-icon>
-          <div>
-            <span class="setting-label">Modo oscuro</span>
-            <span class="setting-desc">Cambia el tema visual de la aplicación</span>
-          </div>
-        </div>
-        <mat-slide-toggle [checked]="theme.isDark" (change)="toggleDark()">
-        </mat-slide-toggle>
+<main class="settings-page">
+  <div class="settings-shell">
+    <a mat-button routerLink="/casos" class="back-link"><mat-icon>arrow_back</mat-icon>Volver al sistema</a>
+    <header class="settings-header">
+      <div class="header-icon"><mat-icon>settings</mat-icon></div>
+      <div><p class="eyebrow">Preferencias de usuario</p><h1>Configuraciones</h1><p class="page-sub">Personalice la apariencia y gestione su cuenta.</p></div>
+    </header>
+    <div class="settings-grid">
+      <aside class="section-card account-summary" aria-label="Cuenta actual">
+        <div class="avatar"><mat-icon>person_outline</mat-icon></div>
+        <h2>Mi cuenta</h2>
+        <p class="email">{{ usuario?.email }}</p>
+        <aside *ngIf="usuario as currentUser" class="section-card account-summary">
+  <p class="email">{{ currentUser.email }}</p>
+  <span class="role" *ngIf="currentUser.role">{{ currentUser.role }}</span>
+</aside>
+      </aside>
+      <div class="settings-sections">
+        <section class="section-card" aria-labelledby="appearance-title">
+          <div class="section-heading"><mat-icon>palette</mat-icon><div><h2 id="appearance-title">Apariencia</h2><p>Ajuste la presentación del sistema a su preferencia.</p></div></div>
+          <div class="theme-preview" [class.night]="theme.isDark" aria-hidden="true"><div class="preview-sidebar"></div><div class="preview-content"><div class="preview-toolbar"></div><div class="preview-cards"><span></span><span></span><span></span></div></div></div>
+          <div class="setting-row"><div><h3>Modo oscuro</h3><p>{{ theme.isDark ? 'Tema oscuro activado.' : 'Actualmente está utilizando el tema claro.' }}</p></div><mat-slide-toggle [checked]="theme.isDark" (change)="toggleDark()" aria-label="Activar modo oscuro"></mat-slide-toggle></div>
+          <p class="hint">La preferencia se guarda automáticamente en este navegador.</p>
+        </section>
+        <section class="section-card" aria-labelledby="account-title">
+          <div class="section-heading"><mat-icon>manage_accounts</mat-icon><div><h2 id="account-title">Cuenta y seguridad</h2><p>Administre sus opciones de acceso.</p></div></div>
+          <a class="action-row" routerLink="/change-password"><span class="action-icon"><mat-icon>lock_reset</mat-icon></span><span class="action-copy"><strong>Cambiar contraseña</strong><span>Actualice su contraseña de acceso.</span></span><mat-icon>chevron_right</mat-icon></a>
+          @if (authService.hasRole(UserRole.ADMIN)) {
+            <a class="action-row" routerLink="/casos/usuarios"><span class="action-icon"><mat-icon>group</mat-icon></span><span class="action-copy"><strong>Administración de usuarios</strong><span>Gestione usuarios, roles y estado de las cuentas.</span></span><mat-icon>chevron_right</mat-icon></a>
+          }
+          <button type="button" class="action-row logout" (click)="cerrarSesion()"><span class="action-icon"><mat-icon>logout</mat-icon></span><span class="action-copy"><strong>Cerrar sesión</strong><span>Salir de la cuenta actual en este navegador.</span></span><mat-icon>chevron_right</mat-icon></button>
+        </section>
       </div>
     </div>
-
-    <!-- Cuenta -->
-    <!-- Cuenta -->
-<div class="section-card">
-
-  <div class="section-header">
-    <mat-icon class="section-icon">manage_accounts</mat-icon>
-    <span class="section-title">Cuenta</span>
   </div>
-
-  <div class="account-actions">
-
-    <!-- Administración de usuarios - Solo Administrador -->
-    @if (authService.hasRole(UserRole.ADMIN)) {
-
-      <a class="action-row" routerLink="/casos/usuarios">
-
-        <div class="action-left">
-
-          <div class="action-icon-wrap">
-            <mat-icon>group</mat-icon>
-          </div>
-
-          <div>
-            <span class="action-label">
-              Administración de usuarios
-            </span>
-
-            <span class="action-desc">
-              Gestiona usuarios, roles y accesos al sistema
-            </span>
-          </div>
-
-        </div>
-
-        <mat-icon class="action-arrow">
-          chevron_right
-        </mat-icon>
-
-      </a>
-
-      <div class="divider"></div>
-
-    }
-
-    <!-- Cambiar contraseña -->
-    <a class="action-row" routerLink="/change-password">
-
-      <div class="action-left">
-
-        <div class="action-icon-wrap">
-          <mat-icon>lock_reset</mat-icon>
-        </div>
-
-        <div>
-          <span class="action-label">
-            Cambiar contraseña
-          </span>
-
-          <span class="action-desc">
-            Actualiza tu contraseña de acceso
-          </span>
-        </div>
-
-      </div>
-
-      <mat-icon class="action-arrow">
-        chevron_right
-      </mat-icon>
-
-    </a>
-
-    <div class="divider"></div>
-
-    <!-- Cerrar sesión -->
-    <button
-      class="action-row action-danger"
-      (click)="cerrarSesion()"
-    >
-
-      <div class="action-left">
-
-        <div class="action-icon-wrap danger">
-          <mat-icon>logout</mat-icon>
-        </div>
-
-        <div>
-          <span class="action-label">
-            Cerrar sesión
-          </span>
-
-          <span class="action-desc">
-            Salir de la cuenta actual
-          </span>
-        </div>
-
-      </div>
-
-      <mat-icon class="action-arrow">
-        chevron_right
-      </mat-icon>
-
-    </button>
-
-  </div>
-
-</div>
-
-  </div>
-</div>
+</main>

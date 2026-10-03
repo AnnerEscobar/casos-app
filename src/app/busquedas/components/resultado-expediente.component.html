@@ -1,0 +1,59 @@
+<article class="result-card" [class.restricted]="restringido">
+  <div class="card-top">
+<span class="kind">{{ caso.tipo }}</span>
+<span class="historic" *ngIf="!restringido && caso.origenCaso === 'HISTORICO'">
+<mat-icon>history</mat-icon>Histórico</span>
+</div>
+  <p class="restricted-label" *ngIf="restringido">
+<mat-icon>lock</mat-icon>Expediente localizado</p>
+  <h3>{{ caso.numeroDeic || 'Número no registrado' }}</h3>
+  <ng-container *ngIf="!restringido">
+    <p class="secondary">{{ persona.etiqueta }}: <strong>{{ persona.nombre }}</strong></p>
+    <p class="secondary">{{ caso.numeroMp ? 'MP ' + caso.numeroMp : 'MP no registrado' }}<span *ngIf="caso.numeroAlerta"> · Alerta {{ caso.numeroAlerta }}</span>
+</p>
+    <dl>
+<div>
+<dt>Estado</dt>
+<dd>
+<span class="state" [class.terminal]="terminal">{{ caso.estadoInvestigacion || 'No registrado' }}</span>
+</dd>
+</div>
+<div>
+<dt>Investigador</dt>
+<dd>{{ caso.investigador?.nombre || 'Sin investigador registrado' }}</dd>
+</div>
+<div>
+<dt>{{ institucional ? 'Último movimiento' : 'Última actualización' }}</dt>
+<dd>{{ caso.ultimoMovimiento ? (caso.ultimoMovimiento | date:'dd/MM/yyyy · HH:mm') : 'Sin fecha registrada' }}</dd>
+</div>
+<div *ngIf="institucional">
+<dt>Seguimientos</dt>
+<dd>{{ caso.cantidadSeguimientos ?? caso.seguimientos?.length ?? 0 }}</dd>
+</div>
+</dl>
+    <p class="access-note" *ngIf="caso.acceso === 'AUTORIZADO'">
+<mat-icon>verified</mat-icon>Acceso autorizado</p>
+<p class="access-note" *ngIf="caso.acceso === 'SEGUIMIENTO_ASIGNADO'">
+<mat-icon>assignment_ind</mat-icon>Seguimiento asignado</p>
+  </ng-container>
+  <ng-container *ngIf="restringido">
+<dl>
+<div>
+<dt>Asignado a</dt>
+<dd>{{ caso.investigador?.nombre || 'Sin investigador registrado' }}</dd>
+</div>
+</dl>
+<p class="restriction-copy">Se requiere autorización para consultar su información.</p>
+<p class="request-date" *ngIf="pendiente">Solicitud enviada: {{ caso.solicitud.fechaSolicitud | date:'dd/MM/yyyy · HH:mm' }}</p>
+<p class="request-date" *ngIf="caso.solicitud?.estado === 'RECHAZADA'">La solicitud anterior fue rechazada. Puedes enviar un nuevo motivo.</p>
+<p class="request-date" *ngIf="caso.solicitud?.estado === 'REVOCADA'">El permiso fue revocado. Puedes solicitar acceso nuevamente.</p>
+</ng-container>
+  <footer>
+<button mat-flat-button type="button" *ngIf="!restringido" (click)="abrir.emit(caso)">
+<mat-icon>folder_open</mat-icon>Ver expediente</button>
+<button mat-stroked-button type="button" *ngIf="restringido && !pendiente" (click)="solicitar.emit(caso)">
+<mat-icon>lock_open</mat-icon>Solicitar acceso</button>
+<span class="pending" role="status" *ngIf="restringido && pendiente">
+<mat-icon>schedule</mat-icon>Solicitud pendiente</span>
+</footer>
+</article>

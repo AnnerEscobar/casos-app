@@ -1,167 +1,140 @@
-import { BusquedaAvanzadaService } from './busqueda-avanzada.service';
-import { AfterViewInit, Component, inject, ViewChild } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
+import { Component, inject, ViewChild } from '@angular/core';
+import { TablaExpedientesComponent } from '../components/tabla-expedientes.component';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
-
+import { MatDialog } from '@angular/material/dialog';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../../auth/auth-service/auth.service';
+import { ExpedienteDialogComponent } from '../components/expediente-dialog.component';
+import { SolicitarAccesoDialogComponent } from '../components/solicitar-acceso-dialog.component';
+import { SolicitudesAccesoComponent } from '../components/solicitudes-acceso.component';
+import { OnInit } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatDatepickerModule, MatDatepickerIntl } from '@angular/material/datepicker';
+import { MatPaginatorModule, PageEvent, MatPaginatorIntl } from '@angular/material/paginator';
+import { BusquedaAvanzadaService } from './busqueda-avanzada.service';
+import { BusquedaService } from '../search-profile/busqueda.service';
 @Component({
-  selector: 'app-busqueda-avanzada',
-  imports: [
-    ReactiveFormsModule, FormsModule,
-    MatFormFieldModule, MatOptionModule, MatDatepickerModule,
-    MatButtonModule, MatSelectModule, MatInputModule,
-    MatNativeDateModule, MatTableModule, MatPaginatorModule,
-    MatSortModule, CommonModule, MatIconModule,
-    MatProgressSpinnerModule, MatSnackBarModule,
-  ],
-  templateUrl: './busqueda-avanzada.component.html',
-  styleUrl: './busqueda-avanzada.component.css'
+    providers: [
+      { provide: MAT_DATE_LOCALE, useValue: 'es-GT' },
+      { provide: MatDatepickerIntl, useFactory: () => { const i = new MatDatepickerIntl(); i.openCalendarLabel = 'Abrir calendario'; i.prevMonthLabel = 'Mes anterior'; i.nextMonthLabel = 'Mes siguiente'; return i; } },
+      { provide: MatPaginatorIntl, useFactory: () => {
+          const i = new MatPaginatorIntl(); i.itemsPerPageLabel = 'Expedientes por página'; i.nextPageLabel = 'Página siguiente'; i.previousPageLabel = 'Página anterior';
+          i.getRangeLabel = (page, size, length) => length ? (page * size + 1) + '–' + Math.min((page + 1) * size, length) + ' de ' + length : '0 expedientes';
+          return i;
+      } },
+    ],
+    selector: 'app-busqueda-avanzada', imports: [
+        CommonModule, FormsModule, ReactiveFormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatIconModule, MatProgressSpinnerModule, MatNativeDateModule, MatDatepickerModule, MatPaginatorModule, RouterLink, TablaExpedientesComponent, SolicitudesAccesoComponent
+    ], templateUrl: './busqueda-avanzada.component.html', styleUrl: './busqueda-avanzada.component.css'
 })
-export default class BusquedaAvanzadaComponent implements AfterViewInit {
-
-  displayedColumns: string[] = ['tipo', 'nombre', 'numeroDeic', 'numeroAlerta', 'origenAlerta', 'estadoInvestigacion', 'numeroMp', 'acciones'];
-  dataSource = new MatTableDataSource<any>([]);
-  isLoading = false;
-  busquedaRealizada = false;
-  filtroRapido = '';
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-
-  estados: string[] = [];
-  origenesAlerta = ['Casa hogar', 'Constatacion PGN', 'Desaparicion del hogar', 'Otro'];
-  casasHogar = [
-    'Diamante I',
-    'Diamante II',
-    'Diamante III',
-    'Diamante IV',
-    'Diamante V',
-    'Zafiro I',
-    'Zafiro II',
-    'Zafiro III',
-    'Zafiro IV',
-    'Zafiro V',
-  ];
-
-  private formBuilder = inject(FormBuilder);
-  private busquedaAvanzadaService = inject(BusquedaAvanzadaService);
-  private snackBar = inject(MatSnackBar);
-
-  filtroForm = this.formBuilder.group({
-    tipoCaso:    [''],
-    estado:      [''],
-    origenAlerta: [''],
-    casaHogar: [''],
-    fechaInicio: [''],
-    fechaFin:    [''],
-  });
-
-  onTipoCasoChange() {
-    const tipo = this.filtroForm.value.tipoCaso;
-    this.filtroForm.get('estado')?.reset();
-    this.filtroForm.get('origenAlerta')?.reset();
-    this.filtroForm.get('casaHogar')?.reset();
-
-    if (tipo === 'Maltrato') {
-      this.estados = ['Informado', 'Desestimado'];
-    } else if (tipo === 'Alerta Alba-Keneth') {
-      this.estados = ['Informado', 'Remitido', 'Concluido'];
-    } else if (tipo === 'Conflicto') {
-      this.estados = ['Informado', 'Concluido'];
-    } else {
-      this.estados = [];
-    }
-  }
-
-  applyFilter(event: Event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = value.trim().toLowerCase();
-    if (this.dataSource.paginator) this.dataSource.paginator.firstPage();
-  }
-
-  buscarCasos() {
-    const filtros = this.filtroForm.value;
-    this.isLoading = true;
-    this.busquedaRealizada = true;
-
-    this.busquedaAvanzadaService.buscarCasosFiltrados(filtros).subscribe({
-      next: (resultados) => {
-        this.dataSource.data = resultados;
-        this.isLoading = false;
-      },
-      error: () => {
-        this.isLoading = false;
-        this.snackBar.open('Error al buscar casos. Intenta nuevamente.', 'Cerrar', {
-          duration: 4000, panelClass: ['snack-error']
-        });
-      }
+export default class BusquedaAvanzadaComponent implements OnInit {
+    private fb = inject(FormBuilder);
+    private api = inject(BusquedaAvanzadaService);
+    private acceso = inject(BusquedaService);
+    private dialog = inject(MatDialog);
+    private auth = inject(AuthService);
+    @ViewChild(SolicitudesAccesoComponent)
+    solicitudes?: SolicitudesAccesoComponent;
+    filtroForm = this.fb.group({
+        tipoCaso: [''], estado: [''], origenAlerta: [''], casaHogar: [''], fechaInicio: [null as Date | null], fechaFin: [null as Date | null], investigador: [''], origenCaso: ['']
     });
-  }
-
-  resetearFiltros() {
-    this.filtroForm.reset();
-    this.estados = [];
-    this.filtroRapido = '';
-    this.dataSource.data = [];
-    this.dataSource.filter = '';
-    this.busquedaRealizada = false;
-    if (this.paginator) this.paginator.firstPage();
-  }
-
-  getNombre(row: any): string {
-    return row.nombreDesaparecido
-      || row.victimas?.[0]?.nombre
-      || row.infractores?.[0]?.nombre
-      || '—';
-  }
-
-  getOrigenAlerta(row: any): string {
-    if (!String(row.tipo || '').toLowerCase().includes('alerta')) return '—';
-    if (row.origenAlerta === 'Casa hogar' && row.casaHogar) return `${row.origenAlerta} - ${row.casaHogar}`;
-    return row.origenAlerta || 'Sin clasificar';
-  }
-
-  estadoClass(estado: string): string {
-    const e = (estado || '').toLowerCase();
-    if (e === 'informado')   return 'estado-informado';
-    if (e === 'remitido')    return 'estado-remitido';
-    if (e === 'concluido')   return 'estado-concluido';
-    if (e === 'desestimado') return 'estado-desestimado';
-    return '';
-  }
-
-  tipoClass(tipo: string): string {
-    const t = (tipo || '').toLowerCase();
-    if (t.includes('alerta')) return 'tipo-alerta';
-    if (t === 'maltrato')     return 'tipo-maltrato';
-    if (t === 'conflicto')    return 'tipo-conflicto';
-    return '';
-  }
-
-  obtenerGoogleDriveId(fileUrl: string | string[]): string {
-    const url = Array.isArray(fileUrl) ? fileUrl[0] : fileUrl;
-    if (!url) return '';
-    const match = url.match(/id=([^&]+)/);
-    return match ? match[1] : '';
-  }
+    resultados: any[] = [];
+    investigadores: any[] = [];
+    isLoading = false;
+    busquedaRealizada = false;
+    error = '';
+    filtroRapido = '';
+    avanzados = false;
+    pagina = 0;
+    tamano = 10;
+    origenesAlerta = ['Casa hogar', 'Constatacion PGN', 'Desaparicion del hogar', 'Otro'];
+    casasHogar = [
+        'Diamante I', 'Diamante II', 'Diamante III', 'Diamante IV', 'Diamante V', 'Zafiro I', 'Zafiro II', 'Zafiro III', 'Zafiro IV', 'Zafiro V'
+    ];
+    get institucional() {
+        return ['Analista', 'Jefe', 'Administrador'].includes(this.auth.getCurrentUser()?.role || '');
+    }
+    ngOnInit() {
+        if (this.institucional)
+            this.acceso.investigadores().subscribe({ next: r => this.investigadores = r, error: () => this.error = 'No se pudo cargar el listado de investigadores. Puedes usar los otros filtros.' });
+    }
+    get estados() {
+        const t = this.filtroForm.value.tipoCaso;
+        return t === 'Alerta Alba-Keneth' ? ['Informado', 'Remitido', 'Concluido'] : t ? ['Informado', 'Desestimado'] : ['Informado', 'Remitido', 'Concluido', 'Desestimado'];
+    }
+    get filtrados() {
+        const t = this.filtroRapido.trim().toLowerCase();
+        return this.resultados.filter(c => [
+            c.numeroDeic, c.numeroMp, c.numeroAlerta, c.tipo, c.investigador?.nombre, c.estadoInvestigacion, c.nombreDesaparecido, ...(c.victimas || []).map((p: any) => p.nombre), ...(c.infractores || []).map((p: any) => p.nombre)
+        ].some(v => String(v || '').toLowerCase().includes(t)));
+    }
+    get visibles() {
+        return this.filtrados.slice(this.pagina * this.tamano, (this.pagina + 1) * this.tamano);
+    }
+    onTipoCasoChange() {
+        this.filtroForm.patchValue({
+            estado: '', origenAlerta: '', casaHogar: ''
+        });
+    }
+    cambiarPagina(e: PageEvent) {
+        this.pagina = e.pageIndex;
+        this.tamano = e.pageSize;
+    }
+    buscarCasos() {
+        if (this.isLoading)
+            return;
+        this.error = '';
+        const f = this.filtroForm.value;
+        if (this.filtroForm.invalid) {
+            this.error = 'Revisa las fechas ingresadas.';
+            return;
+        }
+        if (f.fechaInicio && f.fechaFin && f.fechaInicio > f.fechaFin) {
+            this.error = 'La fecha inicial debe ser anterior o igual a la fecha final.';
+            return;
+        }
+        this.isLoading = true;
+        this.api.buscarCasosFiltrados({ ...f, ...(!this.institucional ? { investigador: '', origenCaso: '' } : {}) }).subscribe({ next: r => {
+                this.resultados = r;
+                this.pagina = 0;
+                this.isLoading = false;
+                this.busquedaRealizada = true;
+            }, error: () => {
+                this.isLoading = false;
+                this.error = 'No se pudo completar la búsqueda. Intenta nuevamente.';
+            } });
+    }
+    resetearFiltros() {
+        if (this.isLoading)
+            return;
+        this.filtroForm.reset();
+        this.resultados = [];
+        this.filtroRapido = '';
+        this.pagina = 0;
+        this.busquedaRealizada = false;
+        this.error = '';
+    }
+    abrir(c: any) {
+        this.dialog.open(ExpedienteDialogComponent, {
+            data: c, width: '960px', maxWidth: 'calc(100vw - 24px)', maxHeight: '92dvh'
+        });
+    }
+    solicitar(c: any) {
+        this.dialog.open(SolicitarAccesoDialogComponent, {
+            data: c, width: '540px', maxWidth: 'calc(100vw - 24px)'
+        }).afterClosed().subscribe(s => {
+            if (s) {
+                c.solicitud = s;
+                this.solicitudes?.cargar();
+            }
+        });
+    }
 }

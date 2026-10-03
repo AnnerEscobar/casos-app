@@ -24,6 +24,15 @@ export const routes: Routes = [
     loadComponent: () => import('./casos/dashboard-case.component'),
     children: [
       {
+  path: 'documentacion-inicial',
+  loadComponent: () =>
+    import(
+      './documentacion-inicial/pages/nueva-documentacion/nueva-documentacion.component'
+    ).then(
+      (m) => m.NuevaDocumentacionComponent
+    ),
+},
+      {
         path: 'registrar',
         title: 'Registrar caso',
 
@@ -110,6 +119,11 @@ export const routes: Routes = [
         path: 'busqueda-avanzada',
         title: 'Busqueda Avanzada',
         loadComponent: () => import('./busquedas/busqueda-avanzada/busqueda-avanzada.component')
+      },
+      {
+        path: 'expedientes-compartidos',
+        title: 'Expedientes compartidos',
+        loadComponent: () => import('./busquedas/expedientes-compartidos.component')
       },
       {
         path: 'caratulas',
@@ -212,10 +226,7 @@ export const routes: Routes = [
     path: 'change-password',
     loadComponent: () => import('./auth/pages/change-password/change-password.component')
   },
-  {
-    path: 'recover-password',
-    loadComponent: () => import('./auth/pages/recover-password/recover-password.component')
-  },
+
 
   {
     path: '',

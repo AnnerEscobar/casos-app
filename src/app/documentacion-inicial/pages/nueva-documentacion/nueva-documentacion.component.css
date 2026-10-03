@@ -1,0 +1,802 @@
+/* =========================================================
+   CONTENEDOR GENERAL
+========================================================= */
+
+.documentacion-container {
+  width: 100%;
+  max-width: 1450px;
+  margin: 0 auto;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   ENCABEZADO
+========================================================= */
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.header-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef3f8;
+  flex-shrink: 0;
+}
+
+.header-icon mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.header-text h1 {
+  margin: 0;
+  font-size: 1.65rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.header-text p {
+  margin: 6px 0 0;
+  color: #667085;
+  font-size: 0.95rem;
+}
+
+
+/* =========================================================
+   INFORMACIÓN DEL BORRADOR
+========================================================= */
+
+.draft-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 18px;
+  padding: 12px 16px;
+
+  border: 1px solid #d5dde5;
+  border-radius: 10px;
+
+  background: #f8fafc;
+}
+
+.draft-info mat-icon {
+  color: #44546a;
+}
+
+.draft-info div {
+  display: flex;
+  flex-direction: column;
+}
+
+.draft-info strong {
+  font-size: 0.9rem;
+}
+
+.draft-info span {
+  color: #667085;
+  font-size: 0.85rem;
+  margin-top: 2px;
+}
+
+
+/* =========================================================
+   TARJETA PRINCIPAL
+========================================================= */
+
+.stepper-card {
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+
+/* =========================================================
+   CONTENIDO DEL PASO
+========================================================= */
+
+.step-content {
+  padding: 28px 18px 20px;
+}
+
+.step-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.step-number {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #263b50;
+  color: white;
+
+  font-weight: 600;
+  font-size: 1rem;
+
+  flex-shrink: 0;
+}
+
+.step-title h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.step-title p {
+  margin: 5px 0 0;
+  color: #667085;
+  line-height: 1.45;
+  font-size: 0.92rem;
+}
+
+
+/* =========================================================
+   FORMULARIO
+========================================================= */
+
+.form-section {
+  margin-top: 26px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  column-gap: 18px;
+  row-gap: 4px;
+
+  margin-bottom: 12px;
+}
+
+.field-wide {
+  grid-column: span 1;
+}
+
+.field-full {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+
+/* =========================================================
+   ENCABEZADOS DE SECCIÓN
+========================================================= */
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 18px;
+  margin-bottom: 16px;
+
+  padding-bottom: 9px;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.section-header mat-icon {
+  color: #44546a;
+}
+
+.section-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.section-header span {
+  display: block;
+  color: #667085;
+  font-size: 0.82rem;
+  margin-top: 2px;
+}
+
+
+/* =========================================================
+   MODALIDAD DE MALTRATO
+========================================================= */
+
+.special-section {
+  padding: 17px;
+  margin: 10px 0 22px;
+
+  border: 1px solid #d9e0e7;
+  border-radius: 10px;
+
+  background: #fafbfc;
+}
+
+.section-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.section-label mat-icon {
+  color: #44546a;
+  margin-top: 1px;
+}
+
+.section-label div {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-label strong {
+  font-size: 0.95rem;
+}
+
+.section-label span {
+  color: #667085;
+  font-size: 0.82rem;
+  margin-top: 3px;
+}
+
+.radio-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+}
+
+
+/* =========================================================
+   RESUMEN DEL CASO
+========================================================= */
+
+.case-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+
+  margin: 18px 0 22px;
+
+  padding: 14px 18px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e1e6eb;
+  border-radius: 10px;
+}
+
+.case-summary div {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+}
+
+.case-summary span {
+  color: #667085;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.case-summary strong {
+  margin-top: 4px;
+  font-size: 0.94rem;
+}
+
+
+/* =========================================================
+   TÍTULO DEL DOCUMENTO
+========================================================= */
+
+.document-title {
+  text-align: center;
+
+  margin: 26px auto;
+
+  max-width: 950px;
+
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 600;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   PLAN DE INVESTIGACIÓN
+========================================================= */
+
+.plan-container {
+  padding-top: 4px;
+}
+
+.plan-item {
+  margin-bottom: 18px;
+
+  border: 1px solid #dfe4e9;
+  border-radius: 10px;
+
+  overflow: hidden;
+}
+
+.plan-item-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 12px 14px;
+
+  background: #f6f8fa;
+
+  border-bottom: 1px solid #e1e5e9;
+}
+
+.plan-index {
+  width: 28px;
+  height: 28px;
+
+  border-radius: 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #263b50;
+  color: white;
+
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  flex-shrink: 0;
+}
+
+.plan-item-header strong {
+  font-size: 0.92rem;
+}
+
+.plan-fields {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 14px;
+
+  padding: 16px;
+}
+
+.plan-fields mat-form-field {
+  width: 100%;
+}
+
+.plan-observations {
+  margin-top: 4px;
+}
+
+
+/* =========================================================
+   RÚBRICA
+========================================================= */
+
+.rubrica-container {
+  margin-top: 10px;
+}
+
+
+/* Pregunta del protocolo */
+
+.protocol-question {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr) auto;
+
+  gap: 22px;
+
+  align-items: center;
+
+  padding: 17px;
+
+  margin-bottom: 18px;
+
+  border: 1px solid #dce2e8;
+  border-radius: 10px;
+
+  background: #f8fafc;
+}
+
+.protocol-text {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  line-height: 1.45;
+  font-size: 0.9rem;
+}
+
+.protocol-text mat-icon {
+  flex-shrink: 0;
+  color: #44546a;
+}
+
+
+/* Sí / No */
+
+.yes-no-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  white-space: nowrap;
+}
+
+
+/* Secciones internas */
+
+.rubrica-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin: 22px 0 8px;
+
+  padding: 12px 14px;
+
+  background: #e9eef3;
+
+  border-radius: 8px;
+
+  font-size: 0.9rem;
+}
+
+.rubrica-section mat-icon {
+  color: #44546a;
+}
+
+
+/* Fila de rúbrica */
+
+.rubrica-item {
+  display: grid;
+
+  grid-template-columns:
+    minmax(280px, 1fr)
+    170px
+    minmax(230px, 0.8fr);
+
+  gap: 18px;
+
+  align-items: center;
+
+  padding: 12px 14px;
+
+  border-bottom: 1px solid #e7eaee;
+}
+
+.rubrica-item:hover {
+  background: #fafbfc;
+}
+
+.rubrica-description {
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.rubrica-answer {
+  display: flex;
+  justify-content: center;
+}
+
+.rubrica-observation mat-form-field {
+  width: 100%;
+  margin-bottom: -18px;
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+.step-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  gap: 12px;
+
+  margin-top: 24px;
+}
+
+.split-actions {
+  justify-content: space-between;
+}
+
+.step-actions button {
+  min-height: 42px;
+}
+
+.step-actions button mat-icon {
+  margin-right: 6px;
+}
+
+.step-actions mat-spinner {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+
+/* =========================================================
+   SECCIÓN FINAL
+========================================================= */
+
+.final-section {
+  display: grid;
+
+  grid-template-columns:
+    auto
+    minmax(0, 1fr)
+    auto;
+
+  gap: 15px;
+
+  align-items: center;
+
+  margin-top: 28px;
+
+  padding: 18px;
+
+  border: 1px solid #ccd8ce;
+
+  border-radius: 10px;
+
+  background: #f6faf7;
+}
+
+.final-section > mat-icon {
+  font-size: 30px;
+  width: 30px;
+  height: 30px;
+  color: #3f6947;
+}
+
+.final-section h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.final-section p {
+  margin: 4px 0 0;
+
+  color: #667085;
+
+  font-size: 0.84rem;
+}
+
+
+/* =========================================================
+   CARGA
+========================================================= */
+
+.loading-container {
+  min-height: 250px;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  gap: 14px;
+
+  color: #667085;
+}
+
+
+/* =========================================================
+   MATERIAL STEPPER
+========================================================= */
+
+:host ::ng-deep
+.mat-horizontal-stepper-header-container {
+  border-bottom: 1px solid #e6e9ed;
+  padding: 4px 8px;
+}
+
+:host ::ng-deep
+.mat-horizontal-content-container {
+  padding-bottom: 10px;
+}
+
+:host ::ng-deep
+.mat-step-header {
+  border-radius: 8px;
+}
+
+:host ::ng-deep
+.mat-step-header:hover {
+  background: #f6f8fa;
+}
+
+
+/* =========================================================
+   TEXTAREA
+========================================================= */
+
+textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+
+/* =========================================================
+   RESPONSIVE - TABLET
+========================================================= */
+
+@media (max-width: 1050px) {
+
+  .plan-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .rubrica-item {
+    grid-template-columns:
+      minmax(0, 1fr)
+      160px;
+  }
+
+  .rubrica-observation {
+    grid-column: 1 / -1;
+  }
+
+  .protocol-question {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - MÓVIL
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .documentacion-container {
+    padding: 12px;
+  }
+
+  .page-header {
+    align-items: flex-start;
+  }
+
+  .header-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .header-text h1 {
+    font-size: 1.35rem;
+  }
+
+  .stepper-card {
+    border-radius: 8px;
+  }
+
+  .step-content {
+    padding:
+      22px
+      4px
+      14px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .field-wide,
+  .field-full {
+    grid-column: auto;
+  }
+
+  .radio-options {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .case-summary {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .case-summary div {
+    min-width: 0;
+  }
+
+  .plan-fields {
+    padding: 12px;
+  }
+
+  .rubrica-item {
+    grid-template-columns: 1fr;
+    gap: 8px;
+
+    padding:
+      14px
+      8px;
+  }
+
+  .rubrica-answer {
+    justify-content: flex-start;
+  }
+
+  .rubrica-observation {
+    grid-column: auto;
+  }
+
+  .yes-no-group {
+    flex-wrap: wrap;
+  }
+
+  .step-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .step-actions button {
+    width: 100%;
+  }
+
+  .final-section {
+    grid-template-columns:
+      auto
+      1fr;
+  }
+
+  .final-section button {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+}
+
+
+/* =========================================================
+   AJUSTE DEL STEPPER EN PANTALLAS PEQUEÑAS
+========================================================= */
+
+@media (max-width: 600px) {
+
+  :host ::ng-deep
+  .mat-horizontal-stepper-header-container {
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+
+  :host ::ng-deep
+  .mat-step-header {
+    min-width: 130px;
+  }
+
+}

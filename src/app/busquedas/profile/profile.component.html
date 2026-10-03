@@ -2,7 +2,7 @@
 
   <!-- Header -->
   <div class="page-header">
-    <button mat-icon-button class="back-btn" (click)="volver()">
+    <button mat-icon-button class="back-btn" aria-label="Volver a la búsqueda" (click)="volver()">
       <mat-icon>arrow_back</mat-icon>
     </button>
     <div class="header-icon">
@@ -106,27 +106,8 @@
         <span>No se encontraron otros casos relacionados</span>
       </div>
 
-      <div class="casos-grid" *ngIf="!isLoading && casosRelacionados.length">
-        <div class="caso-card" *ngFor="let caso of casosRelacionados">
-          <div class="caso-top">
-            <span class="tipo-chip" [ngClass]="tipoClass(caso.tipo)">{{ caso.tipo }}</span>
-            <span class="estado-chip" [ngClass]="estadoClass(caso.estadoInvestigacion)">
-              {{ caso.estadoInvestigacion }}
-            </span>
-          </div>
-          <div class="caso-nums">
-            <span class="num-label">DEIC</span>
-            <span class="num-value mono">{{ caso.numeroDeic || '—' }}</span>
-            <span class="num-label">MP</span>
-            <span class="num-value mono">{{ caso.numeroMp || '—' }}</span>
-          </div>
-          <div class="caso-footer" *ngIf="caso.fileUrls?.length">
-            <button mat-stroked-button class="btn-download"
-                    (click)="descargarArchivo(caso.fileUrls[0])">
-              <mat-icon>download</mat-icon> Descargar
-            </button>
-          </div>
-        </div>
+      <div class="results-grid" *ngIf="!isLoading && casosRelacionados.length">
+        <app-resultado-expediente *ngFor="let caso of casosRelacionados" [caso]="caso" [institucional]="institucional" (abrir)="abrir($event)" />
       </div>
     </div>
 

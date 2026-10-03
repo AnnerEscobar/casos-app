@@ -1,0 +1,153 @@
+<div class="dialog-heading">
+<div>
+<p>Consulta de expediente · {{ data.tipo }}</p>
+<h2 mat-dialog-title>{{ data.numeroDeic }}</h2>
+</div>
+<button mat-icon-button mat-dialog-close aria-label="Cerrar expediente">
+<mat-icon>close</mat-icon>
+</button>
+</div>
+<mat-dialog-content>
+<div class="loading" *ngIf="loading">
+<mat-spinner diameter="30"/>
+<span>Cargando expediente…</span>
+</div>
+<p role="alert" *ngIf="error">{{ error }}</p>
+<ng-container *ngIf="caso">
+  <div class="summary">
+<span>{{ caso.estadoInvestigacion || 'Estado no registrado' }}</span>
+<span *ngIf="caso.origenCaso === 'HISTORICO'">Histórico · {{ caso.estadoExpedienteHistorico }}</span>
+<span *ngIf="caso.acceso === 'AUTORIZADO'">Acceso autorizado</span>
+<span *ngIf="caso.acceso === 'SEGUIMIENTO_ASIGNADO'">Seguimiento asignado</span>
+</div>
+  <section>
+<h3>Información del caso</h3>
+<dl>
+<div><dt>Fecha de registro</dt><dd>{{ caso.createdAt ? (caso.createdAt | date:'dd/MM/yyyy · HH:mm') : 'No registrada' }}</dd></div>
+<div><dt>Última actualización</dt><dd>{{ caso.updatedAt ? (caso.updatedAt | date:'dd/MM/yyyy · HH:mm') : 'No registrada' }}</dd></div>
+<div><dt>Registrado por</dt><dd>{{ caso.registradoPorNombre || 'No registrado' }}</dd></div>
+<div><dt>Estado del registro</dt><dd>{{ caso.estadoRegistro || 'No registrado' }}</dd></div>
+<div>
+<dt>Expediente MP</dt>
+<dd>{{ caso.numeroMp || 'No registrado' }}</dd>
+</div>
+<div>
+<dt>Investigador</dt>
+<dd>{{ caso.investigador?.nombre || 'Sin investigador registrado' }}</dd>
+</div>
+<div *ngIf="caso.numeroAlerta">
+<dt>Alerta Alba-Keneth</dt>
+<dd>{{ caso.numeroAlerta }}</dd>
+</div>
+<div *ngIf="caso.origenAlerta">
+<dt>Origen de la alerta</dt>
+<dd>{{ caso.origenAlerta }} {{ caso.casaHogar || '' }}</dd>
+</div>
+<div *ngIf="caso.ubicacionGps">
+<dt>Ubicación GPS</dt>
+<dd>{{ caso.ubicacionGps }}</dd>
+</div>
+<div *ngIf="caso.direccion || caso.lugarHechos">
+<dt>Lugar registrado</dt>
+<dd>{{ direccion(caso.direccion || caso.lugarHechos) }}</dd>
+</div>
+<div *ngIf="caso.direccionLocalizacion">
+<dt>Lugar de localización</dt>
+<dd>{{ caso.direccionLocalizacion }}</dd>
+</div>
+</dl>
+</section>
+<section *ngIf="caso.denunciante">
+<h3>Denunciante</h3>
+<dl><div><dt>Nombre</dt><dd>{{ caso.denunciante.nombre || 'No registrado' }}</dd></div><div><dt>CUI / DPI</dt><dd>{{ caso.denunciante.cui || 'No registrado' }}</dd></div><div><dt>Teléfono</dt><dd>{{ caso.denunciante.telefono || 'No registrado' }}</dd></div></dl>
+</section>
+<section *ngIf="tipo === 'alerta'">
+<h3>Localización</h3>
+<dl>
+<div><dt>Dirección</dt><dd>{{ caso.direccionLocalizacion || 'No registrada' }}</dd></div>
+<div><dt>Fecha</dt><dd>{{ caso.fechaLocalizacion ? (caso.fechaLocalizacion | date:'dd/MM/yyyy') : 'No registrada' }}</dd></div>
+<div><dt>Hora</dt><dd>{{ caso.horaLocalizacion || 'No registrada' }}</dd></div>
+<div><dt>Acompañante</dt><dd>{{ caso.nombreAcompanante || 'No registrado' }}</dd></div>
+<div><dt>Teléfono</dt><dd>{{ caso.telefono || 'No registrado' }}</dd></div>
+</dl>
+</section>
+<section *ngIf="caso.origenCaso === 'HISTORICO'">
+<h3>Información histórica</h3>
+<dl>
+<div><dt>Año del caso</dt><dd>{{ caso.anioCaso || 'No registrado' }}</dd></div>
+<div><dt>Estado del expediente físico</dt><dd>{{ caso.estadoExpedienteHistorico || 'No registrado' }}</dd></div>
+<div><dt>Investigador original</dt><dd>{{ caso.investigadorOriginal?.nombre || caso.investigador?.nombre || 'No registrado' }}</dd></div>
+<div><dt>Fuente de información</dt><dd>{{ caso.fuenteInformacionHistorica || 'No registrada' }}</dd></div>
+<div><dt>Incorporación al sistema</dt><dd>{{ caso.fechaIncorporacionSistema ? (caso.fechaIncorporacionSistema | date:'dd/MM/yyyy · HH:mm') : 'No registrada' }}</dd></div>
+<div><dt>Observaciones</dt><dd>{{ caso.observacionHistorica || 'Sin observaciones' }}</dd></div>
+</dl>
+</section>
+  <section>
+<h3>Personas relacionadas</h3>
+<div class="people">
+<article *ngFor="let p of personas">
+<span class="role">{{ p.rol }}</span>
+<h4>{{ p.nombre || 'Nombre no registrado' }}</h4>
+<p *ngIf="p.cui">CUI / DPI {{ p.cui }}</p>
+<p *ngIf="p.fecha_Nac">Nacimiento {{ p.fecha_Nac | date:'dd/MM/yyyy' }}</p>
+<p *ngIf="p.direccion">{{ direccion(p.direccion) }}</p>
+<button mat-button (click)="perfil(p)" *ngIf="p.nombre">Ver perfil</button>
+</article>
+</div>
+<p *ngIf="!personas.length" class="muted">No hay personas registradas.</p>
+</section>
+  <section>
+<h3>Documentos del expediente</h3>
+<p class="muted">Seleccione un documento para abrir el archivo en una nueva pestaña.</p>
+<div class="documents">
+<a mat-stroked-button *ngFor="let url of caso.fileUrls; let i=index" [href]="verArchivo(url)" target="_blank" rel="noopener noreferrer">
+<mat-icon>picture_as_pdf</mat-icon>Documento {{ i+1 }}<mat-icon>open_in_new</mat-icon>
+</a>
+</div>
+<p *ngIf="!caso.fileUrls?.length" class="muted">No hay documentos principales asociados.</p>
+</section>
+  <section>
+<h3>Historial de seguimientos <span>{{ caso.seguimientos?.length || 0 }}</span>
+</h3>
+<ol class="timeline">
+<li *ngFor="let s of caso.seguimientos; let i=index">
+<div class="timeline-title">
+<h4>Seguimiento {{ i+1 }}</h4>
+<span>{{ s.nuevoEstado || s.estado || 'Sin estado' }}</span>
+</div>
+<p class="muted">{{ s.fecha | date:'dd/MM/yyyy · HH:mm' }}</p>
+<p *ngIf="s.registradoPorNombre">Registrado por: {{ s.registradoPorNombre }}</p>
+<p *ngIf="s.investigadorAsignadoNombre">Investigador asignado: {{ s.investigadorAsignadoNombre }}</p>
+<p *ngIf="s.fechaLocalizacion">Fecha de localización: {{ s.fechaLocalizacion | date:'dd/MM/yyyy' }}</p>
+<p *ngIf="s.horaLocalizacion">Hora de localización: {{ s.horaLocalizacion }}</p>
+<p *ngIf="s.direccionLocalizacion">Dirección: {{ s.direccionLocalizacion }}</p>
+<p *ngIf="s.nombreAcompanante">Acompañante: {{ s.nombreAcompanante }}</p>
+<p *ngIf="s.telefono">Teléfono: {{ s.telefono }}</p>
+<div class="documents">
+<a mat-stroked-button *ngFor="let url of s.archivos; let j=index" [href]="verArchivo(url)" target="_blank" rel="noopener noreferrer">
+<mat-icon>attach_file</mat-icon>Documento {{ j+1 }}</a>
+</div>
+<p class="muted" *ngIf="!s.archivos?.length">Este seguimiento no tiene archivos adjuntos.</p>
+</li>
+</ol>
+<p class="muted" *ngIf="!caso.seguimientos?.length">Este caso aún no tiene seguimientos registrados.</p>
+</section>
+<section>
+<h3>Revisión del registro</h3>
+<dl><div><dt>Revisado por</dt><dd>{{ caso.revisadoPorNombre || 'No registrado' }}</dd></div><div><dt>Fecha de revisión</dt><dd>{{ caso.fechaRevision ? (caso.fechaRevision | date:'dd/MM/yyyy · HH:mm') : 'No registrada' }}</dd></div><div *ngIf="caso.motivoRechazo"><dt>Motivo de rechazo</dt><dd>{{ caso.motivoRechazo }}</dd></div></dl>
+<ol class="timeline">
+<li *ngFor="let r of caso.historialRevisiones; let i=index">
+<h4>Revisión {{ i+1 }} · {{ r.tipo }}</h4>
+<p>{{ r.usuarioNombre || 'Usuario no registrado' }} · {{ r.fecha | date:'dd/MM/yyyy · HH:mm' }}</p>
+<p *ngIf="r.observacion">{{ r.observacion }}</p>
+<a mat-stroked-button *ngIf="r.archivoUrl" [href]="verArchivo(r.archivoUrl)" target="_blank" rel="noopener noreferrer"><mat-icon>attach_file</mat-icon>Abrir documento de revisión {{ i+1 }}</a>
+</li>
+</ol>
+<p class="muted" *ngIf="!caso.historialRevisiones?.length">No hay revisiones registradas.</p>
+</section>
+</ng-container>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+<button mat-button mat-dialog-close>Cerrar</button>
+<button mat-flat-button *ngIf="caso && puedeSeguimiento" (click)="seguimiento()">Ir a seguimientos</button>
+</mat-dialog-actions>

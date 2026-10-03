@@ -80,9 +80,7 @@ export class AuthService {
     return this.http.patch(`${this.apiUrl}/change-password`, data);
   }
 
-  recoverPassword(email: string) {
-    return this.http.post(`${this.apiUrl}/recover-password`, { email });
-  }
+
 
   private finishLogout(): void {
     this.loggedIn.next(false);

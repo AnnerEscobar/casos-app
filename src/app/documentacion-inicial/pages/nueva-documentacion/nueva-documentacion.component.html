@@ -1,0 +1,1162 @@
+<div class="documentacion-container">
+
+  <!-- =====================================================
+       ENCABEZADO
+  ====================================================== -->
+
+  <div class="page-header">
+
+    <div class="header-icon">
+      <mat-icon>description</mat-icon>
+    </div>
+
+    <div class="header-text">
+      <h1>Documentación inicial</h1>
+
+      <p>
+        Elaboración de carátula, plan de investigación
+        y rúbrica del expediente.
+      </p>
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       INFORMACIÓN DEL BORRADOR
+  ====================================================== -->
+
+  <div
+    class="draft-info"
+    *ngIf="documentacionId"
+  >
+
+    <mat-icon>save</mat-icon>
+
+    <div>
+      <strong>Borrador guardado</strong>
+
+      <span>
+        {{ caratulaForm.get('numeroDeic')?.value }}
+      </span>
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       STEPPER
+  ====================================================== -->
+
+  <mat-card class="stepper-card">
+
+    <mat-horizontal-stepper
+      #stepper
+      [linear]="false"
+    >
+
+
+      <!-- =================================================
+           PASO 1
+           CARÁTULA
+      ================================================== -->
+
+      <mat-step>
+
+        <ng-template matStepLabel>
+          Carátula
+        </ng-template>
+
+
+        <div class="step-content">
+
+          <div class="step-title">
+
+            <div class="step-number">
+              1
+            </div>
+
+            <div>
+
+              <h2>
+                Datos de la carátula
+              </h2>
+
+              <p>
+                Ingrese los datos principales del expediente.
+                Esta información será reutilizada en los
+                siguientes documentos.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <mat-divider></mat-divider>
+
+
+          <form
+            [formGroup]="caratulaForm"
+            class="form-section"
+          >
+
+
+            <!-- ============================================
+                 TIPO DE CASO
+            ============================================= -->
+
+            <div class="form-grid">
+
+              <mat-form-field
+                appearance="outline"
+              >
+
+                <mat-label>
+                  Tipo de caso
+                </mat-label>
+
+                <mat-select
+                  formControlName="tipoCaso"
+                >
+
+                  <mat-option
+                    value="Alerta"
+                  >
+                    Alerta Alba-Keneth
+                  </mat-option>
+
+                  <mat-option
+                    value="Maltrato"
+                  >
+                    Maltrato
+                  </mat-option>
+
+                  <mat-option
+                    value="Conflicto"
+                  >
+                    Adolescente en conflicto con la ley
+                  </mat-option>
+
+                </mat-select>
+
+                <mat-error>
+                  Seleccione el tipo de caso.
+                </mat-error>
+
+              </mat-form-field>
+
+
+              <!-- ==========================================
+                   DEIC
+              =========================================== -->
+
+              <mat-form-field
+                appearance="outline"
+              >
+
+                <mat-label>
+                  Número DEIC
+                </mat-label>
+
+                <input
+                  matInput
+                  formControlName="numeroDeic"
+                  placeholder="DEIC51-2026-..."
+                >
+
+                <mat-icon matSuffix>
+                  tag
+                </mat-icon>
+
+                <mat-error>
+                  El número DEIC es obligatorio.
+                </mat-error>
+
+              </mat-form-field>
+
+
+              <!-- ==========================================
+                   MP
+              =========================================== -->
+
+              <mat-form-field
+                appearance="outline"
+              >
+
+                <mat-label>
+                  Expediente del Ministerio Público
+                </mat-label>
+
+                <input
+                  matInput
+                  formControlName="numeroMp"
+                  placeholder="M0030-2026-..."
+                >
+
+                <mat-icon matSuffix>
+                  folder
+                </mat-icon>
+
+              </mat-form-field>
+
+
+              <!-- ==========================================
+                   ALERTA
+              =========================================== -->
+
+              <mat-form-field
+                appearance="outline"
+                *ngIf="esAlerta"
+              >
+
+                <mat-label>
+                  Número de Alerta Alba-Keneth
+                </mat-label>
+
+                <input
+                  matInput
+                  formControlName="numeroAlerta"
+                  placeholder="0000-2026"
+                >
+
+                <mat-icon matSuffix>
+                  notification_important
+                </mat-icon>
+
+                <mat-error>
+                  El número de alerta es obligatorio.
+                </mat-error>
+
+              </mat-form-field>
+
+            </div>
+
+
+            <!-- ============================================
+                 MODALIDAD MALTRATO
+            ============================================= -->
+
+            <div
+              class="special-section"
+              *ngIf="esMaltrato"
+            >
+
+              <div class="section-label">
+
+                <mat-icon>
+                  account_balance
+                </mat-icon>
+
+                <div>
+                  <strong>
+                    Modalidad de investigación
+                  </strong>
+
+                  <span>
+                    Seleccione la modalidad que corresponde
+                    al expediente de maltrato.
+                  </span>
+                </div>
+
+              </div>
+
+
+              <mat-radio-group
+                formControlName="modalidadMaltrato"
+                class="radio-options"
+              >
+
+                <mat-radio-button
+                  value="OFICIO"
+                >
+                  De oficio
+                </mat-radio-button>
+
+                <mat-radio-button
+                  value="REQUERIMIENTO"
+                >
+                  A requerimiento del Ministerio Público
+                </mat-radio-button>
+
+              </mat-radio-group>
+
+            </div>
+
+
+            <!-- ============================================
+                 PERSONA PRINCIPAL
+            ============================================= -->
+
+            <div class="section-header">
+
+              <mat-icon>
+                person
+              </mat-icon>
+
+              <div>
+
+                <h3>
+                  Persona principal
+                </h3>
+
+                <span *ngIf="esAlerta">
+                  Datos del niño, niña o adolescente desaparecido.
+                </span>
+
+                <span *ngIf="esMaltrato">
+                  Datos de la víctima.
+                </span>
+
+                <span *ngIf="esConflicto">
+                  Datos del adolescente relacionado con el caso.
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+              <mat-form-field
+                appearance="outline"
+                class="field-wide"
+              >
+
+                <mat-label>
+                  Nombre completo
+                </mat-label>
+
+                <input
+                  matInput
+                  formControlName="nombre"
+                >
+
+                <mat-icon matSuffix>
+                  badge
+                </mat-icon>
+
+                <mat-error>
+                  El nombre es obligatorio.
+                </mat-error>
+
+              </mat-form-field>
+
+
+              <mat-form-field
+                appearance="outline"
+              >
+
+                <mat-label>
+                  Edad
+                </mat-label>
+
+                <input
+                  matInput
+                  formControlName="edad"
+                  placeholder="15"
+                >
+
+                <mat-error>
+                  La edad es obligatoria.
+                </mat-error>
+
+              </mat-form-field>
+
+            </div>
+
+
+            <!-- ============================================
+                 LUGAR
+            ============================================= -->
+
+            <div class="section-header">
+
+              <mat-icon>
+                location_on
+              </mat-icon>
+
+              <div>
+
+                <h3>
+                  {{ esAlerta
+                    ? 'Lugar de la desaparición'
+                    : 'Lugar de los hechos'
+                  }}
+                </h3>
+
+                <span>
+                  Ingrese la dirección conocida del caso.
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+              <mat-form-field
+                appearance="outline"
+                class="field-full"
+              >
+
+                <mat-label>
+                  {{ esAlerta
+                    ? 'Lugar de la desaparición'
+                    : 'Lugar de los hechos'
+                  }}
+                </mat-label>
+
+                <textarea
+                  matInput
+                  formControlName="lugar"
+                  rows="3"
+                ></textarea>
+
+                <mat-error>
+                  El lugar es obligatorio.
+                </mat-error>
+
+              </mat-form-field>
+
+
+              <mat-form-field
+                appearance="outline"
+              >
+
+                <mat-label>
+                  Departamento
+                </mat-label>
+
+                <input
+                  matInput
+                  formControlName="departamento"
+                >
+
+              </mat-form-field>
+
+
+              <mat-form-field
+                appearance="outline"
+              >
+
+                <mat-label>
+                  Municipio
+                </mat-label>
+
+                <input
+                  matInput
+                  formControlName="municipio"
+                >
+
+              </mat-form-field>
+
+            </div>
+
+
+            <!-- ============================================
+                 OBSERVACIONES
+            ============================================= -->
+
+            <mat-form-field
+              appearance="outline"
+              class="field-full"
+            >
+
+              <mat-label>
+                Observaciones
+              </mat-label>
+
+              <textarea
+                matInput
+                formControlName="observaciones"
+                rows="3"
+                placeholder="Ejemplo: Informado"
+              ></textarea>
+
+            </mat-form-field>
+
+
+            <!-- ============================================
+                 ACCIONES
+            ============================================= -->
+
+            <div class="step-actions">
+
+              <button
+                mat-raised-button
+                color="primary"
+                type="button"
+                (click)="guardarCaratula()"
+                [disabled]="guardando"
+              >
+
+                <mat-spinner
+                  *ngIf="guardando"
+                  diameter="20"
+                ></mat-spinner>
+
+                <mat-icon
+                  *ngIf="!guardando"
+                >
+                  save
+                </mat-icon>
+
+                <span>
+                  {{
+                    documentacionId
+                      ? 'Guardar cambios y continuar'
+                      : 'Guardar y continuar'
+                  }}
+                </span>
+
+              </button>
+
+            </div>
+
+          </form>
+
+        </div>
+
+      </mat-step>
+
+
+
+      <!-- =================================================
+           PASO 2
+           PLAN DE INVESTIGACIÓN
+      ================================================== -->
+
+      <mat-step>
+
+        <ng-template matStepLabel>
+          Plan de investigación
+        </ng-template>
+
+
+        <div class="step-content">
+
+          <div class="step-title">
+
+            <div class="step-number">
+              2
+            </div>
+
+            <div>
+
+              <h2>
+                Plan de investigación
+              </h2>
+
+              <p>
+                Complete la información disponible,
+                la información pendiente y las diligencias
+                que realizará para obtenerla.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <!-- =============================================
+               RESUMEN DE CASO
+          ============================================== -->
+
+          <div
+            class="case-summary"
+            *ngIf="documentacionId"
+          >
+
+            <div>
+
+              <span>
+                Caso
+              </span>
+
+              <strong>
+                {{
+                  caratulaForm
+                    .get('numeroDeic')
+                    ?.value
+                }}
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Tipo
+              </span>
+
+              <strong>
+                {{ tipoCaso }}
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <mat-divider></mat-divider>
+
+
+          <!-- =============================================
+               CARGANDO
+          ============================================== -->
+
+          <div
+            class="loading-container"
+            *ngIf="cargandoPlan"
+          >
+
+            <mat-spinner
+              diameter="45"
+            ></mat-spinner>
+
+            <span>
+              Cargando plan de investigación...
+            </span>
+
+          </div>
+
+
+          <!-- =============================================
+               PLAN
+          ============================================== -->
+
+          <div
+            class="plan-container"
+            *ngIf="
+              !cargandoPlan &&
+              elementosPlan.length > 0
+            "
+          >
+
+            <h3 class="document-title">
+              {{ tituloPlan }}
+            </h3>
+
+
+            <div
+              class="plan-item"
+              *ngFor="
+                let elemento of elementosPlan;
+                let i = index;
+                trackBy: identificarElementoPlan
+              "
+            >
+
+              <div class="plan-item-header">
+
+                <span class="plan-index">
+                  {{ i + 1 }}
+                </span>
+
+                <strong>
+                  {{ elemento.elemento }}
+                </strong>
+
+              </div>
+
+
+              <div class="plan-fields">
+
+                <mat-form-field
+                  appearance="outline"
+                >
+
+                  <mat-label>
+                    Información obtenida
+                  </mat-label>
+
+                  <textarea
+                    matInput
+                    [(ngModel)]="
+                      elemento.informacionObtenida
+                    "
+                    rows="5"
+                  ></textarea>
+
+                </mat-form-field>
+
+
+                <mat-form-field
+                  appearance="outline"
+                >
+
+                  <mat-label>
+                    Información que se necesita obtener
+                  </mat-label>
+
+                  <textarea
+                    matInput
+                    [(ngModel)]="
+                      elemento.informacionNecesitaObtener
+                    "
+                    rows="5"
+                  ></textarea>
+
+                </mat-form-field>
+
+
+                <mat-form-field
+                  appearance="outline"
+                >
+
+                  <mat-label>
+                    Diligencias a realizar
+                  </mat-label>
+
+                  <textarea
+                    matInput
+                    [(ngModel)]="
+                      elemento.diligenciasRealizar
+                    "
+                    rows="5"
+                  ></textarea>
+
+                </mat-form-field>
+
+              </div>
+
+            </div>
+
+
+            <!-- ===========================================
+                 OBSERVACIONES PLAN
+            ============================================ -->
+
+            <mat-form-field
+              appearance="outline"
+              class="field-full plan-observations"
+            >
+
+              <mat-label>
+                Observaciones del plan
+              </mat-label>
+
+              <textarea
+                matInput
+                [(ngModel)]="
+                  observacionesPlan
+                "
+                rows="4"
+              ></textarea>
+
+            </mat-form-field>
+
+
+            <!-- ===========================================
+                 ACCIONES
+            ============================================ -->
+
+            <div class="step-actions split-actions">
+
+              <button
+                mat-stroked-button
+                type="button"
+                matStepperPrevious
+              >
+
+                <mat-icon>
+                  arrow_back
+                </mat-icon>
+
+                Regresar
+
+              </button>
+
+
+              <button
+                mat-raised-button
+                color="primary"
+                type="button"
+                (click)="guardarPlan()"
+                [disabled]="guardando"
+              >
+
+                <mat-spinner
+                  *ngIf="guardando"
+                  diameter="20"
+                ></mat-spinner>
+
+                <mat-icon
+                  *ngIf="!guardando"
+                >
+                  save
+                </mat-icon>
+
+                Guardar y continuar
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </mat-step>
+
+
+
+      <!-- =================================================
+           PASO 3
+           RÚBRICA
+      ================================================== -->
+
+      <mat-step>
+
+        <ng-template matStepLabel>
+          Rúbrica
+        </ng-template>
+
+
+        <div class="step-content">
+
+          <div class="step-title">
+
+            <div class="step-number">
+              3
+            </div>
+
+            <div>
+
+              <h2>
+                Rúbrica de evaluación
+              </h2>
+
+              <p>
+                Marque Sí o No según corresponda
+                y agregue observaciones cuando sea necesario.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div
+            class="case-summary"
+            *ngIf="documentacionId"
+          >
+
+            <div>
+
+              <span>
+                Caso
+              </span>
+
+              <strong>
+                {{
+                  caratulaForm
+                    .get('numeroDeic')
+                    ?.value
+                }}
+              </strong>
+
+            </div>
+
+            <div>
+
+              <span>
+                Tipo
+              </span>
+
+              <strong>
+                {{ tipoCaso }}
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <mat-divider></mat-divider>
+
+
+          <!-- =============================================
+               CARGANDO
+          ============================================== -->
+
+          <div
+            class="loading-container"
+            *ngIf="cargandoRubrica"
+          >
+
+            <mat-spinner
+              diameter="45"
+            ></mat-spinner>
+
+            <span>
+              Cargando rúbrica...
+            </span>
+
+          </div>
+
+
+          <!-- =============================================
+               CONTENIDO RÚBRICA
+          ============================================== -->
+
+          <div
+            class="rubrica-container"
+            *ngIf="
+              !cargandoRubrica &&
+              itemsRubrica.length > 0
+            "
+          >
+
+            <h3 class="document-title">
+              {{ tituloRubrica }}
+            </h3>
+
+
+            <!-- ===========================================
+                 CONOCIMIENTO PROTOCOLO
+            ============================================ -->
+
+            <div class="protocol-question">
+
+              <div class="protocol-text">
+
+                <mat-icon>
+                  fact_check
+                </mat-icon>
+
+                <span>
+                  {{ preguntaProtocolo }}
+                </span>
+
+              </div>
+
+
+              <mat-radio-group
+                [(ngModel)]="
+                  conoceProtocolo
+                "
+                class="yes-no-group"
+              >
+
+                <mat-radio-button
+                  value="SI"
+                >
+                  Sí
+                </mat-radio-button>
+
+                <mat-radio-button
+                  value="NO"
+                >
+                  No
+                </mat-radio-button>
+
+              </mat-radio-group>
+
+            </div>
+
+
+            <!-- ===========================================
+                 ITEMS
+            ============================================ -->
+
+            <div
+              *ngFor="
+                let item of itemsRubrica;
+                trackBy: identificarItemRubrica
+              "
+            >
+
+              <!-- SECCIÓN -->
+
+              <div
+                class="rubrica-section"
+                *ngIf="
+                  item.tipo === 'SECCION'
+                "
+              >
+
+                <mat-icon>
+                  topic
+                </mat-icon>
+
+                <strong>
+                  {{ item.descripcion }}
+                </strong>
+
+              </div>
+
+
+              <!-- ITEM -->
+
+              <div
+                class="rubrica-item"
+                *ngIf="
+                  item.tipo === 'ITEM'
+                "
+              >
+
+                <div class="rubrica-description">
+
+                  {{ item.descripcion }}
+
+                </div>
+
+
+                <div class="rubrica-answer">
+
+                  <mat-radio-group
+                    [(ngModel)]="
+                      item.respuesta
+                    "
+                    class="yes-no-group"
+                  >
+
+                    <mat-radio-button
+                      value="SI"
+                    >
+                      Sí
+                    </mat-radio-button>
+
+                    <mat-radio-button
+                      value="NO"
+                    >
+                      No
+                    </mat-radio-button>
+
+                  </mat-radio-group>
+
+                </div>
+
+
+                <div class="rubrica-observation">
+
+                  <mat-form-field
+                    appearance="outline"
+                  >
+
+                    <mat-label>
+                      Observación
+                    </mat-label>
+
+                    <input
+                      matInput
+                      [(ngModel)]="
+                        item.observaciones
+                      "
+                    >
+
+                  </mat-form-field>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- ===========================================
+                 ACCIONES
+            ============================================ -->
+
+            <div class="step-actions split-actions">
+
+              <button
+                mat-stroked-button
+                type="button"
+                matStepperPrevious
+              >
+
+                <mat-icon>
+                  arrow_back
+                </mat-icon>
+
+                Regresar
+
+              </button>
+
+
+              <button
+                mat-raised-button
+                color="primary"
+                type="button"
+                (click)="guardarRubrica()"
+                [disabled]="guardando"
+              >
+
+                <mat-spinner
+                  *ngIf="guardando"
+                  diameter="20"
+                ></mat-spinner>
+
+                <mat-icon
+                  *ngIf="!guardando"
+                >
+                  save
+                </mat-icon>
+
+                Guardar rúbrica
+
+              </button>
+
+            </div>
+
+
+            <!-- ===========================================
+                 FINAL
+            ============================================ -->
+
+            <div
+              class="final-section"
+              *ngIf="rubricaGuardada"
+            >
+
+              <mat-icon>
+                check_circle
+              </mat-icon>
+
+              <div>
+
+                <h3>
+                  Documentación completada
+                </h3>
+
+                <p>
+                  Los tres pasos fueron guardados correctamente.
+                </p>
+
+              </div>
+
+
+              <button
+                mat-raised-button
+                color="primary"
+                type="button"
+                disabled
+              >
+
+                <mat-icon>
+                  picture_as_pdf
+                </mat-icon>
+
+                Generar documentación PDF
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </mat-step>
+
+    </mat-horizontal-stepper>
+
+  </mat-card>
+
+</div>

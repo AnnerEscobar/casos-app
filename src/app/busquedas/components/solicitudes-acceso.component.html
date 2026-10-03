@@ -1,0 +1,46 @@
+<section class="section-card requests">
+<div class="requests-heading">
+<div>
+<h2 class="section-title">Solicitudes y permisos <span class="results-badge">{{ pendientes }} {{ pendientes === 1 ? 'pendiente' : 'pendientes' }}</span>
+</h2>
+<p class="section-caption">Consulta tus solicitudes y las que puedes resolver.</p>
+</div>
+<div>
+<button mat-icon-button (click)="cargar()" [disabled]="cargando" aria-label="Actualizar solicitudes">
+<mat-icon>refresh</mat-icon>
+</button>
+<button mat-button (click)="expandido=!expandido" [attr.aria-expanded]="expandido" aria-controls="lista-solicitudes">{{ expandido?'Ocultar':'Ver solicitudes' }}<mat-icon>{{ expandido?'expand_less':'expand_more' }}</mat-icon>
+</button>
+</div>
+</div>
+<p *ngIf="error" role="alert">{{ error }}</p>
+<div id="lista-solicitudes" *ngIf="expandido">
+<p *ngIf="cargando" role="status">Cargando solicitudes…</p>
+<p *ngIf="!cargando && !solicitudes.length" class="section-caption">No hay solicitudes de acceso.</p>
+<div class="request-grid">
+<article *ngFor="let s of solicitudes">
+<div class="request-head">
+<strong>{{ s.solicitante?.nombre || 'Investigador' }}</strong>
+<span class="status">{{ s.estado | titlecase }}</span>
+</div>
+<p class="section-caption">solicita acceso a</p>
+<h3>{{ s.numeroDeic }}</h3>
+<blockquote>{{ s.motivo }}</blockquote>
+<p class="section-caption">{{ s.fechaSolicitud | date:'dd/MM/yyyy · HH:mm' }}</p>
+<p *ngIf="s.fechaRevocacion" class="section-caption">Última revocación: {{ s.fechaRevocacion | date:'dd/MM/yyyy · HH:mm' }}</p>
+<div *ngIf="puedeRevocar(s)">
+<button mat-stroked-button *ngIf="confirmarRevocacion !== s._id" [disabled]="!!procesando" (click)="confirmarRevocacion=s._id">{{ s.solicitante?._id === usuario?.userId ? 'Renunciar al permiso' : 'Revocar permiso' }}</button>
+<div *ngIf="confirmarRevocacion === s._id">
+<p>Se retirará el acceso concedido por esta solicitud. Si existe un seguimiento asignado, ese acceso se conserva.</p>
+<button mat-button [disabled]="!!procesando" (click)="confirmarRevocacion=''">Cancelar</button>
+<button mat-flat-button [disabled]="!!procesando" (click)="revocar(s)">Confirmar revocación</button>
+</div>
+</div>
+<div class="actions" *ngIf="puedeResolver(s)">
+<button mat-stroked-button [disabled]="!!procesando" (click)="resolver(s,'RECHAZADA')">Rechazar</button>
+<button mat-flat-button [disabled]="!!procesando" (click)="resolver(s,'AUTORIZADA')">{{ procesando===s._id?'Procesando…':'Autorizar' }}</button>
+</div>
+</article>
+</div>
+</div>
+</section>

@@ -23,6 +23,7 @@ export default class SettingsComponent {
   private auth = inject(AuthService);
   private router = inject(Router);
   UserRole = UserRole;
+  get usuario() { return this.auth.getCurrentUser(); }
 
   toggleDark() { this.theme.toggle(); }
   goBack() { this.router.navigate(['/casos']); }

@@ -1,3 +1,7 @@
+import { MatDialog } from '@angular/material/dialog';
+import { ResultadoExpedienteComponent } from '../components/resultado-expediente.component';
+import { ExpedienteDialogComponent } from '../components/expediente-dialog.component';
+import { AuthService } from '../../auth/auth-service/auth.service';
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -11,13 +15,16 @@ import { BusquedaService } from '../search-profile/busqueda.service';
   selector: 'app-profile',
   imports: [
     CommonModule, MatIconModule, MatButtonModule,
-    MatProgressSpinnerModule, MatSnackBarModule,
+    MatProgressSpinnerModule, MatSnackBarModule, ResultadoExpedienteComponent,
   ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })
 export default class ProfileComponent implements OnInit {
 
+  dialog = inject(MatDialog); auth = inject(AuthService);
+  get institucional() { return ['Analista','Jefe','Administrador'].includes(this.auth.getCurrentUser()?.role || ''); }
+  abrir(caso: any) { this.dialog.open(ExpedienteDialogComponent, { data: caso, width: '960px', maxWidth: 'calc(100vw - 24px)', maxHeight: '92dvh' }); }
   persona: any = null;
   casosRelacionados: any[] = [];
   isLoading = false;
@@ -32,7 +39,7 @@ export default class ProfileComponent implements OnInit {
       this.persona = state.persona;
       this.buscarCasosRelacionados(this.persona.nombre);
     } else {
-      this.router.navigate(['/busquedas']);
+      this.router.navigate(['/casos/Busquedas']);
     }
   }
 
@@ -67,6 +74,7 @@ export default class ProfileComponent implements OnInit {
         || caso.victimas?.some((v: any) => checar(v.nombre))
       )
       .map(caso => ({
+        ...caso,
         tipo:                caso.tipo,
         numeroMp:            caso.numeroMp,
         numeroDeic:          caso.numeroDeic,

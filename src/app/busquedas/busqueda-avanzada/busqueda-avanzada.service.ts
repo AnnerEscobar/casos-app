@@ -35,13 +35,14 @@ export class BusquedaAvanzadaService {
     }
 
     if (filtros.fechaInicio) {
-      params = params.set('fechaInicio', filtros.fechaInicio);
+      params = params.set('fechaInicio', this.fecha(filtros.fechaInicio));
     }
 
     if (filtros.fechaFin) {
-      params = params.set('fechaFin', filtros.fechaFin);
+      params = params.set('fechaFin', this.fecha(filtros.fechaFin, true));
     }
 
+    for (const campo of ['investigador','origenCaso']) if (filtros[campo]) params = params.set(campo, filtros[campo]);
     return this.http.get<any[]>(`${this.baseUrl}/buscar`, { params });
   }
 
@@ -49,4 +50,10 @@ export class BusquedaAvanzadaService {
 
 
 
+  private fecha(valor: Date | string, fin = false): string {
+    if (typeof valor === 'string') return valor;
+    const fecha = new Date(valor);
+    fecha.setHours(fin ? 23 : 0, fin ? 59 : 0, fin ? 59 : 0, fin ? 999 : 0);
+    return fecha.toISOString();
+  }
 }

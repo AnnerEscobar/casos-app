@@ -1,208 +1,127 @@
-<div class="page-container">
-
-  <!-- Header -->
-  <div class="page-header">
-    <div class="header-icon">
-      <mat-icon>youtube_searched_for</mat-icon>
-    </div>
-    <div>
-      <h2 class="page-title">Búsqueda Avanzada</h2>
-      <p class="page-sub">Aplica filtros combinados para encontrar casos específicos</p>
-    </div>
-  </div>
-
-  <!-- Filtros -->
-  <div class="section-card">
-    <div class="section-header">
-      <mat-icon class="section-icon">filter_list</mat-icon>
-      <span class="section-title">Filtros de búsqueda</span>
-    </div>
-
-    <form [formGroup]="filtroForm" (ngSubmit)="buscarCasos()">
-      <div class="filters-grid">
-
-        <!-- Tipo de caso -->
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Tipo de caso</mat-label>
-          <mat-select formControlName="tipoCaso" (selectionChange)="onTipoCasoChange()">
-            <mat-option value="">Todos los tipos</mat-option>
-            <mat-option value="Alerta Alba-Keneth">Alerta Alba-Keneth</mat-option>
-            <mat-option value="Maltrato">Maltrato</mat-option>
-            <mat-option value="Conflicto">Conflicto</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <!-- Estado (condicional) -->
-        <mat-form-field appearance="outline" class="w-full" *ngIf="estados.length">
-          <mat-label>Estado de investigación</mat-label>
-          <mat-select formControlName="estado">
-            <mat-option value="">Todos los estados</mat-option>
-            <mat-option *ngFor="let e of estados" [value]="e">{{ e }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-full" *ngIf="filtroForm.value.tipoCaso === 'Alerta Alba-Keneth'">
-          <mat-label>Origen de la alerta</mat-label>
-          <mat-select formControlName="origenAlerta">
-            <mat-option value="">Todos los origenes</mat-option>
-            <mat-option *ngFor="let origen of origenesAlerta" [value]="origen">{{ origen }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-full" *ngIf="filtroForm.value.tipoCaso === 'Alerta Alba-Keneth' && filtroForm.value.origenAlerta === 'Casa hogar'">
-          <mat-label>Casa hogar</mat-label>
-          <mat-select formControlName="casaHogar">
-            <mat-option value="">Todas las casas hogar</mat-option>
-            <mat-option *ngFor="let casa of casasHogar" [value]="casa">{{ casa }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <!-- Rango de fechas -->
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Fecha desde</mat-label>
-          <input matInput [matDatepicker]="picker1" formControlName="fechaInicio">
-          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-          <mat-datepicker #picker1></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Fecha hasta</mat-label>
-          <input matInput [matDatepicker]="picker2" formControlName="fechaFin">
-          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-          <mat-datepicker #picker2></mat-datepicker>
-        </mat-form-field>
-
-      </div>
-
-      <div class="filter-actions">
-        <button mat-stroked-button type="button" class="btn-clear" (click)="resetearFiltros()">
-          <mat-icon>clear</mat-icon> Limpiar filtros
-        </button>
-        <button mat-flat-button type="submit" class="btn-search" [disabled]="isLoading">
-          <mat-spinner *ngIf="isLoading" diameter="18"></mat-spinner>
-          <mat-icon *ngIf="!isLoading">search</mat-icon>
-          {{ isLoading ? 'Buscando...' : 'Buscar casos' }}
-        </button>
-      </div>
-    </form>
-  </div>
-
-  <!-- Resultados -->
-  <div class="section-card results-card" *ngIf="busquedaRealizada && !isLoading">
-    <div class="section-header">
-      <mat-icon class="section-icon">table_chart</mat-icon>
-      <span class="section-title">Resultados</span>
-      <span class="results-badge">{{ dataSource.filteredData.length }}</span>
-    </div>
-
-    <!-- Filtro rápido -->
-    <div class="quick-filter-row">
-      <mat-form-field appearance="outline" class="quick-filter-field">
-        <mat-label>Filtrar resultados</mat-label>
-        <input matInput [(ngModel)]="filtroRapido" (input)="applyFilter($event)"
-               placeholder="Nombre, DEIC, MP..." />
-        <mat-icon matSuffix>filter_list</mat-icon>
-      </mat-form-field>
-    </div>
-
-    <!-- Tabla -->
-    <div class="table-wrapper">
-      <table mat-table [dataSource]="dataSource" matSort class="results-table">
-
-        <!-- Tipo -->
-        <ng-container matColumnDef="tipo">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
-          <td mat-cell *matCellDef="let row">
-            <span class="tipo-chip" [ngClass]="tipoClass(row.tipo)">{{ row.tipo }}</span>
-          </td>
-        </ng-container>
-
-        <!-- Nombre -->
-        <ng-container matColumnDef="nombre">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
-          <td mat-cell *matCellDef="let row">{{ getNombre(row) }}</td>
-        </ng-container>
-
-        <!-- N° DEIC -->
-        <ng-container matColumnDef="numeroDeic">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>N° DEIC</th>
-          <td mat-cell *matCellDef="let row" class="mono-cell">{{ row.numeroDeic }}</td>
-        </ng-container>
-
-        <!-- N° Alerta -->
-        <ng-container matColumnDef="numeroAlerta">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>N° Alerta</th>
-          <td mat-cell *matCellDef="let row" class="mono-cell">{{ row.numeroAlerta || '—' }}</td>
-        </ng-container>
-
-        <!-- Origen -->
-        <ng-container matColumnDef="origenAlerta">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Origen</th>
-          <td mat-cell *matCellDef="let row">{{ getOrigenAlerta(row) }}</td>
-        </ng-container>
-
-        <!-- Estado -->
-        <ng-container matColumnDef="estadoInvestigacion">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
-          <td mat-cell *matCellDef="let row">
-            <span class="estado-chip" [ngClass]="estadoClass(row.estadoInvestigacion)">
-              {{ row.estadoInvestigacion }}
-            </span>
-          </td>
-        </ng-container>
-
-        <!-- N° MP -->
-        <ng-container matColumnDef="numeroMp">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>N° MP</th>
-          <td mat-cell *matCellDef="let row" class="mono-cell">{{ row.numeroMp }}</td>
-        </ng-container>
-
-        <!-- Acciones -->
-        <ng-container matColumnDef="acciones">
-          <th mat-header-cell *matHeaderCellDef>Acciones</th>
-          <td mat-cell *matCellDef="let row">
-            <ng-container *ngIf="obtenerGoogleDriveId(row.fileUrls) as fileId">
-              <a *ngIf="fileId"
-                 [href]="'https://drive.google.com/file/d/' + fileId + '/view'"
-                 target="_blank">
-                <button mat-icon-button matTooltip="Ver documento">
-                  <mat-icon>visibility</mat-icon>
-                </button>
-              </a>
-              <a *ngIf="fileId"
-                 [href]="'https://drive.google.com/uc?export=download&id=' + fileId"
-                 download>
-                <button mat-icon-button matTooltip="Descargar">
-                  <mat-icon>download</mat-icon>
-                </button>
-              </a>
-            </ng-container>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-        <!-- No data row -->
-        <tr class="mat-row" *matNoDataRow>
-          <td class="no-data-cell" [attr.colspan]="displayedColumns.length">
-            <div class="no-results-inline">
-              <mat-icon>search_off</mat-icon>
-              <span>Sin resultados para "{{ filtroRapido }}"</span>
-            </div>
-          </td>
-        </tr>
-      </table>
-
-      <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 50]"
-                     showFirstLastButtons></mat-paginator>
-    </div>
-  </div>
-
-  <!-- Estado vacío inicial -->
-  <div class="empty-state" *ngIf="!busquedaRealizada">
-    <mat-icon>manage_search</mat-icon>
-    <span>Aplica los filtros y presiona <strong>Buscar casos</strong> para ver resultados</span>
-  </div>
-
+<main class="page-container">
+<header class="page-header">
+<div class="header-icon">
+<mat-icon>tune</mat-icon>
 </div>
+<div>
+<p class="eyebrow">Consulta de expedientes</p>
+<h1 class="page-title">Búsqueda avanzada</h1>
+<p class="page-sub">Combine criterios para encontrar los expedientes que necesita.</p>
+</div>
+<a mat-button routerLink="/casos/Busquedas" class="header-link">
+<mat-icon>search</mat-icon>Buscar por número o persona</a>
+</header>
+<p><a mat-stroked-button routerLink="/casos/expedientes-compartidos">Expedientes compartidos y permisos</a></p>
+<section class="section-card">
+<div class="section-header">
+<mat-icon class="section-icon">filter_list</mat-icon>
+<div>
+<h2 class="section-title">Filtros de búsqueda</h2>
+<p class="section-caption">{{ institucional?'Consulta institucional por tipo, estado, investigador y fechas.':'Consulte sus expedientes y aquellos a los que tiene acceso.' }}</p>
+</div>
+</div>
+<form [formGroup]="filtroForm" (ngSubmit)="buscarCasos()">
+<div class="filters-grid">
+<mat-form-field appearance="outline">
+<mat-label>Tipo de caso</mat-label>
+<mat-select formControlName="tipoCaso" (selectionChange)="onTipoCasoChange()">
+<mat-option value="">Todos los tipos</mat-option>
+<mat-option value="Alerta Alba-Keneth">Alerta Alba-Keneth</mat-option>
+<mat-option value="Maltrato">Maltrato</mat-option>
+<mat-option value="Conflicto">Conflicto</mat-option>
+</mat-select>
+</mat-form-field>
+<mat-form-field appearance="outline">
+<mat-label>Estado</mat-label>
+<mat-select formControlName="estado">
+<mat-option value="">Todos los estados</mat-option>
+<mat-option *ngFor="let e of estados" [value]="e">{{ e }}</mat-option>
+</mat-select>
+</mat-form-field>
+<mat-form-field appearance="outline" *ngIf="institucional">
+<mat-label>Investigador</mat-label>
+<mat-select formControlName="investigador">
+<mat-option value="">Todos los investigadores</mat-option>
+<mat-option *ngFor="let i of investigadores" [value]="i._id">{{ i.nombre }}</mat-option>
+</mat-select>
+</mat-form-field>
+</div>
+<button mat-button class="advanced-toggle" type="button" (click)="avanzados=!avanzados" [attr.aria-expanded]="avanzados" aria-controls="filtros-adicionales">
+<mat-icon>{{ avanzados?'expand_less':'expand_more' }}</mat-icon>{{ avanzados?'Menos filtros':'Más filtros' }}</button>
+<div class="advanced-panel" id="filtros-adicionales" [hidden]="!avanzados">
+<h3>Fechas y criterios adicionales</h3>
+<div class="filters-grid">
+<mat-form-field appearance="outline">
+<mat-label>Fecha de registro desde</mat-label>
+<input matInput [matDatepicker]="inicio" formControlName="fechaInicio">
+<mat-datepicker-toggle matSuffix [for]="inicio"/>
+<mat-datepicker #inicio/>
+<mat-error>Ingrese una fecha válida.</mat-error>
+</mat-form-field>
+<mat-form-field appearance="outline">
+<mat-label>Fecha de registro hasta</mat-label>
+<input matInput [matDatepicker]="fin" formControlName="fechaFin">
+<mat-datepicker-toggle matSuffix [for]="fin"/>
+<mat-datepicker #fin/>
+<mat-error>Ingrese una fecha válida.</mat-error>
+</mat-form-field>
+<mat-form-field appearance="outline" *ngIf="institucional">
+<mat-label>Origen del expediente</mat-label>
+<mat-select formControlName="origenCaso">
+<mat-option value="">Todos los orígenes</mat-option>
+<mat-option value="SISTEMA">Sistema</mat-option>
+<mat-option value="HISTORICO">Histórico</mat-option>
+</mat-select>
+</mat-form-field>
+<mat-form-field appearance="outline" *ngIf="filtroForm.value.tipoCaso==='Alerta Alba-Keneth'">
+<mat-label>Origen de la alerta</mat-label>
+<mat-select formControlName="origenAlerta" (selectionChange)="filtroForm.patchValue({casaHogar:''})">
+<mat-option value="">Todos los orígenes</mat-option>
+<mat-option *ngFor="let o of origenesAlerta" [value]="o">{{ o }}</mat-option>
+</mat-select>
+</mat-form-field>
+<mat-form-field appearance="outline" *ngIf="filtroForm.value.tipoCaso==='Alerta Alba-Keneth' && filtroForm.value.origenAlerta==='Casa hogar'">
+<mat-label>Casa hogar</mat-label>
+<mat-select formControlName="casaHogar">
+<mat-option value="">Todas las casas hogar</mat-option>
+<mat-option *ngFor="let c of casasHogar" [value]="c">{{ c }}</mat-option>
+</mat-select>
+</mat-form-field>
+</div>
+</div>
+<div class="filter-actions">
+<p class="filter-note">Las fechas corresponden al registro en el sistema. Puede usar uno o ambos extremos del rango.</p>
+<div>
+<button mat-stroked-button type="button" (click)="resetearFiltros()" [disabled]="isLoading">Limpiar filtros</button>
+<button mat-flat-button type="submit" [disabled]="isLoading">
+<mat-icon>search</mat-icon>{{ isLoading?'Buscando…':'Buscar expedientes' }}</button>
+</div>
+</div>
+</form>
+</section>
+<div class="error-state" *ngIf="error" role="alert">
+<mat-icon>error_outline</mat-icon>{{ error }}</div>
+<section [attr.aria-busy]="isLoading">
+<div class="loading-status" *ngIf="isLoading" role="status">
+<mat-spinner diameter="20"/>Buscando expedientes…</div>
+<div class="results-header" *ngIf="busquedaRealizada">
+<div>
+<h2>Resultados</h2>
+<p aria-live="polite">{{ filtrados.length }} expedientes encontrados</p>
+</div>
+<mat-form-field appearance="outline" class="quick-filter" *ngIf="resultados.length">
+<mat-label>Filtrar estos resultados</mat-label>
+<input matInput [(ngModel)]="filtroRapido" (ngModelChange)="pagina=0" placeholder="DEIC, MP, nombre…">
+<mat-icon matSuffix>filter_list</mat-icon>
+</mat-form-field>
+</div>
+<app-tabla-expedientes *ngIf="visibles.length" [casos]="visibles" (abrir)="abrir($event)"/>
+<mat-paginator *ngIf="filtrados.length" [length]="filtrados.length" [pageIndex]="pagina" [pageSize]="tamano" [pageSizeOptions]="[5,10,25,50]" (page)="cambiarPagina($event)" aria-label="Paginación de expedientes"/>
+<div class="empty-state" *ngIf="!isLoading && !error && !filtrados.length">
+<mat-icon>{{ busquedaRealizada?'search_off':'manage_search' }}</mat-icon>
+<h2>{{ busquedaRealizada?'No se encontraron expedientes':'Una búsqueda a su medida' }}</h2>
+<p>{{ busquedaRealizada?'Verifique los filtros o utilice otros criterios de búsqueda.':'Seleccione los filtros y presione Buscar expedientes. Los filtros adicionales son opcionales.' }}</p>
+</div>
+</section>
+<app-solicitudes-acceso (cambio)="buscarCasos()"/>
+</main>

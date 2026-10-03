@@ -90,9 +90,7 @@
           </mat-error>
         </mat-form-field>
 
-        <div class="form-actions">
-          <a routerLink="/recover-password">Olvide mi contrasena</a>
-        </div>
+
 
         <button mat-flat-button type="submit" class="submit-btn" [disabled]="loginForm.invalid || loading">
           <ng-container *ngIf="!loading; else loadingTpl">
