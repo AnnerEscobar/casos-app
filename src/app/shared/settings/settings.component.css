@@ -44,3 +44,4 @@ h3 { margin:0; font-size:14px; font-weight:600; }
 :host-context(.dark-theme) { --surface:#1e293b; --page:#0f172a; --text:#f1f5f9; --muted:#cbd5e1; --border:#334155; --accent:#93c5fd; --soft:#172f50; }
 @media(max-width:800px) { .settings-grid { grid-template-columns:1fr; } .account-summary { text-align:left; display:grid; grid-template-columns:64px minmax(0,1fr); column-gap:18px; } .avatar { grid-row:1/4; margin:0; } .role { justify-self:start; } .email { margin:4px 0 10px; } .account-caption { grid-column:1/-1; } }
 @media(max-width:480px) { .settings-page { padding:18px 16px 32px; } .section-card { padding:20px; } h1 { font-size:23px; } .header-icon { display:none; } .settings-header { margin-bottom:22px; } .action-row { gap:10px; } }
+:host-context(.dark-theme) .logout .action-icon { color:#fca5a5; background:#450a0a; }

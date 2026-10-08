@@ -1,0 +1,25 @@
+@use '@angular/material' as mat;
+
+/* El tema claro existente se conserva; los overlays heredan estas variables de html. */
+html.dark-theme {
+  color-scheme: dark;
+  @include mat.system-level-colors(mat.define-theme((color: (theme-type: dark, primary: mat.$azure-palette, tertiary: mat.$blue-palette))));
+}
+
+/* Pantallas y diálogos que usan utilidades Tailwind en lugar de CSS local.
+   No se cambian blancos sobre botones sólidos ni sus colores de identidad. */
+html.dark-theme {
+  .bg-white { background-color: var(--v3-surface); }
+  @each $palette in "slate", "gray", "zinc", "neutral" {
+    :is(.bg-#{$palette}-50, .bg-#{$palette}-100, .bg-#{$palette}-200) { background-color: var(--v3-soft); }
+    :is(.border-#{$palette}-50, .border-#{$palette}-100, .border-#{$palette}-200) { border-color: var(--v3-border); }
+    :is(.hover\:bg-#{$palette}-50, .hover\:bg-#{$palette}-100, .hover\:bg-#{$palette}-200):hover { background-color: var(--v3-soft); }
+    :is(.text-#{$palette}-400, .text-#{$palette}-500, .text-#{$palette}-600) { color: var(--v3-muted); }
+    :is(.text-#{$palette}-700, .text-#{$palette}-800, .text-#{$palette}-900, .text-#{$palette}-950) { color: var(--v3-text); }
+  }
+  @each $palette, $token in ("blue": "blue", "indigo": "blue", "sky": "blue", "green": "green", "emerald": "green", "teal": "green", "yellow": "amber", "orange": "amber", "amber": "amber", "red": "red", "rose": "red", "purple": "purple", "violet": "purple", "pink": "pink") {
+    :is(.bg-#{$palette}-50, .bg-#{$palette}-100) { background-color: var(--ui-#{$token}-soft); }
+    :is(.border-#{$palette}-100, .border-#{$palette}-200, .border-#{$palette}-300) { border-color: var(--ui-#{$token}); }
+    :is(.text-#{$palette}-500, .text-#{$palette}-600, .text-#{$palette}-700, .text-#{$palette}-800, .text-#{$palette}-900) { color: var(--ui-#{$token}); }
+  }
+}

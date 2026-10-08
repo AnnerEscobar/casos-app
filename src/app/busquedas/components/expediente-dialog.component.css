@@ -1,4 +1,5 @@
 :host {
+  color: var(--v3-text);
   display: block;
   min-width: 0;
 }
@@ -11,7 +12,7 @@
 }
 .dialog-heading p {
   font-size: 12px;
-  color: #64748b;
+  color: var(--v3-muted);
   margin: 0;
 }
 .dialog-heading h2 {
@@ -33,21 +34,21 @@
 }
 .summary span,.timeline-title>span {
   font-size: 12px;
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--v3-soft);
+  color: var(--v3-muted);
   border-radius: 6px;
   padding: 5px 9px;
 }
 section {
   padding: 24px 0;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--v3-border);
 }
 h3 {
   font-size: 15px;
   margin: 0 0 18px;
 }
 h3>span {
-  color: #64748b;
+  color: var(--v3-muted);
   margin-left: 8px;
 }
 dl,.people {
@@ -57,7 +58,7 @@ dl,.people {
   margin: 0;
 }
 dt,.role,.muted {
-  color: #64748b;
+  color: var(--v3-muted);
   font-size: 12px;
 }
 dd {
@@ -67,7 +68,7 @@ dd {
 }
 .people article {
   padding: 16px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--v3-border);
   border-radius: 12px;
 }
 h4 {
@@ -91,7 +92,7 @@ h4 {
 }
 .timeline li {
   padding: 0 0 22px 18px;
-  border-left: 2px solid #e2e8f0;
+  border-left: 2px solid var(--v3-border);
   margin-top: 16px;
 }
 .timeline-title {
@@ -101,9 +102,7 @@ h4 {
   gap: 8px;
   flex-wrap: wrap;
 }
-:host-context(.dark-theme) .muted,:host-context(.dark-theme) dt {
-  color: #cbd5e1;
-}
+
 @media(max-width:600px) {
   dl,.people {
     grid-template-columns: 1fr;

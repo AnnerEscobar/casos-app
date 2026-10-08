@@ -1,0 +1,36 @@
+<main class="page-container">
+  <header class="page-header">
+    <div><p class="eyebrow">Expedientes y permisos</p><h1 class="page-title">Solicitudes de acceso</h1><p class="page-sub">Revisa solicitudes y administra permisos sin buscar cada expediente.</p></div>
+    <a mat-stroked-button routerLink="/casos/expedientes-compartidos"><mat-icon>folder_shared</mat-icon>Expedientes compartidos</a>
+  </header>
+  <section class="section-card">
+    <div class="inbox-heading"><div><h2>Bandeja de solicitudes</h2><p class="section-caption">El contador muestra las solicitudes que puedes autorizar.</p></div><button mat-stroked-button (click)="actualizar()" [disabled]="cargando || procesando"><mat-icon>refresh</mat-icon>Actualizar</button></div>
+    <mat-tab-group [selectedIndex]="tab" (selectedIndexChange)="cambiarTab($event)">
+      <mat-tab [label]="'Por autorizar (' + pendientes.length + ')'"/>
+      <mat-tab [label]="'Mis solicitudes (' + propias.length + ')'"/>
+      <mat-tab [label]="'Accesos vigentes (' + vigentes.length + ')'"/>
+    </mat-tab-group>
+    <div class="inbox-filter"><mat-form-field appearance="outline"><mat-label>Filtrar listado</mat-label><input matInput [(ngModel)]="filtro" (ngModelChange)="pagina=0" placeholder="DEIC, persona, investigador o estado"><mat-icon matPrefix>search</mat-icon></mat-form-field><span>{{ filtradas.length }} registros</span></div>
+    <p *ngIf="cargando" role="status">Cargando solicitudes…</p>
+    <p *ngIf="errorCarga" class="inbox-error" role="alert">No se pudieron cargar las solicitudes. Pulsa Actualizar para volver a intentar.</p>
+    <p *ngIf="mensaje" class="inbox-success" role="status">{{ mensaje }}</p>
+    <p *ngIf="error" class="inbox-error" role="alert">{{ error }}</p>
+    <div *ngIf="confirmacion as c" class="confirmation" role="region" aria-label="Confirmar cambio de permiso">
+      <div><strong>{{ verbo }}</strong><p>{{ c.solicitud.numeroDeic }} · {{ c.solicitud.solicitante?.nombre || 'Usuario no disponible' }}</p><small *ngIf="c.accion === 'REVOCADA'">Se retirará este permiso de consulta. Las asignaciones de seguimiento se gestionan por separado.</small></div>
+      <div class="row-actions"><button mat-button (click)="confirmacion=null" [disabled]="procesando">Cancelar</button><button mat-flat-button (click)="confirmar()" [disabled]="procesando">{{ procesando ? 'Guardando…' : 'Confirmar' }}</button></div>
+    </div>
+    <div class="inbox-table" *ngIf="visibles.length" tabindex="0" role="region" aria-label="Listado de solicitudes de acceso">
+      <table><thead><tr><th scope="col">Expediente / persona</th><th scope="col">Solicitante</th><th scope="col">Responsable</th><th scope="col">Motivo</th><th scope="col">Fecha</th><th scope="col">Estado</th><th scope="col">Acciones</th></tr></thead>
+        <tbody><tr *ngFor="let s of visibles">
+          <td><button *ngIf="s.puedeVer; else numero" mat-button class="case-link" (click)="abrir(s)">{{ s.numeroDeic }}</button><ng-template #numero><strong>{{ s.numeroDeic }}</strong></ng-template><small>{{ s.tipo | titlecase }} · {{ s.persona || (s.puedeVer ? 'Sin nombre registrado' : 'Información disponible al obtener acceso') }}</small></td>
+          <td>{{ s.solicitante?.nombre || 'Usuario no disponible' }}<small *ngIf="s.propia">Tu solicitud</small></td>
+          <td>{{ s.responsable?.nombre || 'Sin responsable asignado' }}</td><td class="reason">{{ s.motivo }}</td><td class="date">{{ s.fechaSolicitud | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td><span class="status" [class.pending]="s.estado==='PENDIENTE'" [class.approved]="s.estado==='AUTORIZADA'">{{ estados[s.estado] }}</span></td>
+          <td><div class="row-actions"><button mat-button *ngIf="s.puedeVer" (click)="abrir(s)">Ver expediente</button><ng-container *ngIf="s.puedeResolver"><button mat-flat-button [disabled]="procesando" (click)="preparar(s,'AUTORIZADA')">Autorizar</button><button mat-button [disabled]="procesando" (click)="preparar(s,'RECHAZADA')">Rechazar</button></ng-container><button mat-button *ngIf="s.puedeRevocar" [disabled]="procesando" (click)="preparar(s,'REVOCADA')">{{ s.propia ? 'Renunciar al permiso' : 'Revocar permiso' }}</button><small *ngIf="!s.puedeVer && !s.puedeResolver && !s.puedeRevocar">{{ s.estado === 'PENDIENTE' ? 'En espera de revisión' : 'Sin acciones disponibles' }}</small></div></td>
+        </tr></tbody>
+      </table>
+    </div>
+    <div *ngIf="!cargando && !errorCarga && !filtradas.length" class="inbox-empty"><mat-icon>inbox</mat-icon><h3>{{ filtro ? 'No hay coincidencias' : 'No hay solicitudes en esta sección' }}</h3><p>{{ filtro ? 'Prueba con otro nombre o número de expediente.' : 'Las solicitudes aparecerán aquí cuando estén disponibles.' }}</p></div>
+    <mat-paginator *ngIf="filtradas.length" [length]="filtradas.length" [pageIndex]="pagina" [pageSize]="tamano" [pageSizeOptions]="[10,25,50]" (page)="pagina=$event.pageIndex; tamano=$event.pageSize" aria-label="Paginación de solicitudes"/>
+  </section>
+</main>

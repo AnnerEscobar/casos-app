@@ -1,3 +1,6 @@
+import { inject } from '@angular/core';
+import { ThemeService } from '../../shared/theme.service';
+import { map } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
 import {
@@ -98,6 +101,7 @@ const C = {
 })
 export default class EstadisticsComponent
   implements OnInit, OnDestroy {
+  readonly chartTheme$ = inject(ThemeService).isDark$.pipe(map(dark => ({ mode: dark ? 'dark' as const : 'light' as const })));
 
 
   /* =====================================================
@@ -407,9 +411,10 @@ export default class EstadisticsComponent
       chart: {
         type: 'bar',
         height: 310,
-        toolbar: {
-          show: false
-        },
+        // El panel usa filtros; no captura rueda ni gestos para zoom.
+        zoom: { enabled: false, allowMouseWheelZoom: false },
+        selection: { enabled: false },
+        toolbar: { show: false },
         redrawOnParentResize: true
       },
 
@@ -529,9 +534,10 @@ export default class EstadisticsComponent
         height: 310,
         stacked: true,
 
-        toolbar: {
-          show: false
-        },
+        // El panel usa filtros; no captura rueda ni gestos para zoom.
+        zoom: { enabled: false, allowMouseWheelZoom: false },
+        selection: { enabled: false },
+        toolbar: { show: false },
 
         redrawOnParentResize: true
 
@@ -643,9 +649,10 @@ export default class EstadisticsComponent
         type: 'area',
         height: 330,
 
-        toolbar: {
-          show: false
-        },
+        // El panel usa filtros; no captura rueda ni gestos para zoom.
+        zoom: { enabled: false, allowMouseWheelZoom: false },
+        selection: { enabled: false },
+        toolbar: { show: false },
 
         redrawOnParentResize: true
 
@@ -747,9 +754,10 @@ export default class EstadisticsComponent
         type: 'bar',
         height: 300,
 
-        toolbar: {
-          show: false
-        },
+        // El panel usa filtros; no captura rueda ni gestos para zoom.
+        zoom: { enabled: false, allowMouseWheelZoom: false },
+        selection: { enabled: false },
+        toolbar: { show: false },
 
         redrawOnParentResize: true
 

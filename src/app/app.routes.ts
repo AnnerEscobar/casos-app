@@ -126,6 +126,11 @@ export const routes: Routes = [
         loadComponent: () => import('./busquedas/expedientes-compartidos.component')
       },
       {
+        path: 'solicitudes-acceso',
+        title: 'Solicitudes de acceso',
+        loadComponent: () => import('./busquedas/solicitudes-acceso-page.component')
+      },
+      {
         path: 'caratulas',
         title: 'Generar Caratula',
         loadComponent: () => import('./caratulas/generar-caratula/generar-caratula.component')

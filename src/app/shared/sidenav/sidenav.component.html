@@ -120,6 +120,7 @@
                     <span>
                       {{ item.title }}
                     </span>
+                    <span *ngIf="pendientesDelItem(item) > 0" class="nav-badge" [attr.aria-label]="pendientesDelItem(item) + ' solicitudes pendientes'">{{ pendientesDelItem(item) }}</span>
 
                   </div>
 
@@ -222,6 +223,7 @@
       *ngIf="!collapsed"
       mat-icon-button
       class="user-menu-button"
+      aria-label="Abrir menú de mi cuenta"
       [matMenuTriggerFor]="settingsMenu">
 
       <mat-icon>
@@ -235,6 +237,12 @@
       #settingsMenu="matMenu"
       class="user-menu">
 
+      <div class="user-menu-heading" role="presentation">
+        <span class="user-menu-eyebrow">MI CUENTA</span>
+        <strong>{{ user.email }}</strong>
+        <span>{{ user.role }}</span>
+      </div>
+
 
       <button
         mat-menu-item
@@ -242,9 +250,7 @@
 
         <mat-icon>settings</mat-icon>
 
-        <span>
-          Configuraciones
-        </span>
+        <span class="user-menu-copy"><strong>Configuraciones</strong><small>Apariencia y preferencias</small></span>
 
       </button>
 
@@ -253,24 +259,21 @@
         mat-menu-item
         routerLink="/change-password">
 
-        <mat-icon>password</mat-icon>
+        <mat-icon>lock_reset</mat-icon>
 
-        <span>
-          Cambiar contraseña
-        </span>
+        <span class="user-menu-copy"><strong>Cambiar contraseña</strong><small>Seguridad de tu cuenta</small></span>
 
       </button>
 
 
       <button
         mat-menu-item
+        class="user-menu-logout"
         (click)="closeSession()">
 
         <mat-icon>logout</mat-icon>
 
-        <span>
-          Cerrar sesión
-        </span>
+        <span class="user-menu-copy"><strong>Cerrar sesión</strong><small>Salir del sistema</small></span>
 
       </button>
 

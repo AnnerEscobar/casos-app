@@ -29,7 +29,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #eef3f8;
+  background: var(--ui-soft, #eef3f8);
   flex-shrink: 0;
 }
 
@@ -48,7 +48,7 @@
 
 .header-text p {
   margin: 6px 0 0;
-  color: #667085;
+  color: var(--ui-muted, #667085);
   font-size: 0.95rem;
 }
 
@@ -65,14 +65,14 @@
   margin-bottom: 18px;
   padding: 12px 16px;
 
-  border: 1px solid #d5dde5;
+  border: 1px solid var(--ui-border, #d5dde5);
   border-radius: 10px;
 
-  background: #f8fafc;
+  background: var(--ui-surface, #f8fafc);
 }
 
 .draft-info mat-icon {
-  color: #44546a;
+  color: var(--ui-text, #44546a);
 }
 
 .draft-info div {
@@ -85,7 +85,7 @@
 }
 
 .draft-info span {
-  color: #667085;
+  color: var(--ui-muted, #667085);
   font-size: 0.85rem;
   margin-top: 2px;
 }
@@ -146,7 +146,7 @@
 
 .step-title p {
   margin: 5px 0 0;
-  color: #667085;
+  color: var(--ui-muted, #667085);
   line-height: 1.45;
   font-size: 0.92rem;
 }
@@ -199,11 +199,11 @@ mat-form-field {
 
   padding-bottom: 9px;
 
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--ui-border, #e5e7eb);
 }
 
 .section-header mat-icon {
-  color: #44546a;
+  color: var(--ui-text, #44546a);
 }
 
 .section-header h3 {
@@ -214,7 +214,7 @@ mat-form-field {
 
 .section-header span {
   display: block;
-  color: #667085;
+  color: var(--ui-muted, #667085);
   font-size: 0.82rem;
   margin-top: 2px;
 }
@@ -228,10 +228,10 @@ mat-form-field {
   padding: 17px;
   margin: 10px 0 22px;
 
-  border: 1px solid #d9e0e7;
+  border: 1px solid var(--ui-border, #d9e0e7);
   border-radius: 10px;
 
-  background: #fafbfc;
+  background: var(--ui-surface, #fafbfc);
 }
 
 .section-label {
@@ -242,7 +242,7 @@ mat-form-field {
 }
 
 .section-label mat-icon {
-  color: #44546a;
+  color: var(--ui-text, #44546a);
   margin-top: 1px;
 }
 
@@ -256,7 +256,7 @@ mat-form-field {
 }
 
 .section-label span {
-  color: #667085;
+  color: var(--ui-muted, #667085);
   font-size: 0.82rem;
   margin-top: 3px;
 }
@@ -281,9 +281,9 @@ mat-form-field {
 
   padding: 14px 18px;
 
-  background: #f8fafc;
+  background: var(--ui-surface, #f8fafc);
 
-  border: 1px solid #e1e6eb;
+  border: 1px solid var(--ui-border, #e1e6eb);
   border-radius: 10px;
 }
 
@@ -294,7 +294,7 @@ mat-form-field {
 }
 
 .case-summary span {
-  color: #667085;
+  color: var(--ui-muted, #667085);
   font-size: 0.76rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -336,7 +336,7 @@ mat-form-field {
 .plan-item {
   margin-bottom: 18px;
 
-  border: 1px solid #dfe4e9;
+  border: 1px solid var(--ui-border, #dfe4e9);
   border-radius: 10px;
 
   overflow: hidden;
@@ -349,9 +349,9 @@ mat-form-field {
 
   padding: 12px 14px;
 
-  background: #f6f8fa;
+  background: var(--ui-soft, #f6f8fa);
 
-  border-bottom: 1px solid #e1e5e9;
+  border-bottom: 1px solid var(--ui-border, #e1e5e9);
 }
 
 .plan-index {
@@ -422,10 +422,10 @@ mat-form-field {
 
   margin-bottom: 18px;
 
-  border: 1px solid #dce2e8;
+  border: 1px solid var(--ui-border, #dce2e8);
   border-radius: 10px;
 
-  background: #f8fafc;
+  background: var(--ui-surface, #f8fafc);
 }
 
 .protocol-text {
@@ -439,7 +439,7 @@ mat-form-field {
 
 .protocol-text mat-icon {
   flex-shrink: 0;
-  color: #44546a;
+  color: var(--ui-text, #44546a);
 }
 
 
@@ -464,7 +464,7 @@ mat-form-field {
 
   padding: 12px 14px;
 
-  background: #e9eef3;
+  background: var(--ui-soft, #e9eef3);
 
   border-radius: 8px;
 
@@ -472,7 +472,7 @@ mat-form-field {
 }
 
 .rubrica-section mat-icon {
-  color: #44546a;
+  color: var(--ui-text, #44546a);
 }
 
 
@@ -492,11 +492,11 @@ mat-form-field {
 
   padding: 12px 14px;
 
-  border-bottom: 1px solid #e7eaee;
+  border-bottom: 1px solid var(--ui-border, #e7eaee);
 }
 
 .rubrica-item:hover {
-  background: #fafbfc;
+  background: var(--ui-surface, #fafbfc);
 }
 
 .rubrica-description {
@@ -567,18 +567,18 @@ mat-form-field {
 
   padding: 18px;
 
-  border: 1px solid #ccd8ce;
+  border: 1px solid var(--ui-border, #ccd8ce);
 
   border-radius: 10px;
 
-  background: #f6faf7;
+  background: var(--ui-soft, #f6faf7);
 }
 
 .final-section > mat-icon {
   font-size: 30px;
   width: 30px;
   height: 30px;
-  color: #3f6947;
+  color: var(--ui-text, #3f6947);
 }
 
 .final-section h3 {
@@ -589,7 +589,7 @@ mat-form-field {
 .final-section p {
   margin: 4px 0 0;
 
-  color: #667085;
+  color: var(--ui-muted, #667085);
 
   font-size: 0.84rem;
 }
@@ -610,7 +610,7 @@ mat-form-field {
 
   gap: 14px;
 
-  color: #667085;
+  color: var(--ui-muted, #667085);
 }
 
 
@@ -620,7 +620,7 @@ mat-form-field {
 
 :host ::ng-deep
 .mat-horizontal-stepper-header-container {
-  border-bottom: 1px solid #e6e9ed;
+  border-bottom: 1px solid var(--ui-border, #e6e9ed);
   padding: 4px 8px;
 }
 
@@ -636,7 +636,7 @@ mat-form-field {
 
 :host ::ng-deep
 .mat-step-header:hover {
-  background: #f6f8fa;
+  background: var(--ui-soft, #f6f8fa);
 }
 
 

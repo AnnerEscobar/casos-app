@@ -168,6 +168,7 @@ import { SharedService } from '../shared.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../auth/auth-service/auth.service';
 import { Subscription } from 'rxjs';
+import { BandejaAccesosService } from '../../busquedas/bandeja-accesos.service';
 import { UserRole } from '../../auth/enums/user-role.enum';
 
 
@@ -205,12 +206,14 @@ export class SidenavComponent implements OnDestroy {
   @Input() collapsed = true;
   @Output() collapsedChange = new EventEmitter<boolean>();
   private pendientesSubscription?: Subscription;
+  private accesosSubscription?: Subscription;
 
   constructor(
     private caratulaService: CaratulaService,
     private router: Router,
     private shared: SharedService,
-    private authService: AuthService
+    private authService: AuthService,
+    private bandejaAccesos: BandejaAccesosService
   ) { }
 
   ngOnInit() {
@@ -218,12 +221,20 @@ export class SidenavComponent implements OnDestroy {
       this.updatePendientesBadge(count);
     });
     this.caratulaService.refreshPendientesCount();
+    this.accesosSubscription = this.bandejaAccesos.estado$.subscribe(({ solicitudes, error }) => {
+      const count = error ? 0 : solicitudes.filter(s => s.puedeResolver).length;
+      this.menuItems = this.menuItems.map(item => ({ ...item, children: item.children.map(sub =>
+        sub.path === 'solicitudes-acceso' ? { ...sub, badge: count } : sub) }));
+    });
     this.loadUser();
   }
 
   ngOnDestroy() {
     this.pendientesSubscription?.unsubscribe();
+    this.accesosSubscription?.unsubscribe();
   }
+
+  pendientesDelItem(item: MenuItem) { return item.children.reduce((total, sub) => total + (sub.badge || 0), 0); }
 
   toggleCollapsed() {
     this.collapsed = !this.collapsed;
@@ -284,6 +295,13 @@ export class SidenavComponent implements OnDestroy {
       children: [
         { title: 'Busquedas', path: 'Busquedas' },
         { title: 'Busqueda Avanzada', path: 'busqueda-avanzada' }
+      ]
+    },
+    {
+      title: 'Accesos a expedientes', icon: 'folder_shared',
+      children: [
+        { title: 'Solicitudes de acceso', path: 'solicitudes-acceso', badge: 0 },
+        { title: 'Expedientes compartidos', path: 'expedientes-compartidos' },
       ]
     },
     {

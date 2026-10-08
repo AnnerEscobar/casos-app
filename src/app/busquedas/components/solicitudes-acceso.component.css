@@ -16,7 +16,7 @@
   margin-top: 20px;
 }
 .request-grid article {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--v3-border);
   border-radius: 12px;
   padding: 18px;
   min-width: 0;
@@ -26,8 +26,8 @@
 }
 .status {
   font-size: 11px;
-  color: #475569;
-  background: #f1f5f9;
+  color: var(--v3-muted);
+  background: var(--v3-soft);
   padding: 4px 8px;
   border-radius: 6px;
 }
@@ -37,10 +37,10 @@ h3 {
   overflow-wrap: anywhere;
 }
 blockquote {
-  border-left: 3px solid #e2e8f0;
+  border-left: 3px solid var(--v3-border);
   padding-left: 12px;
   margin: 16px 0;
-  color: #64748b;
+  color: var(--v3-muted);
   font-size: 13px;
   line-height: 1.6;
   white-space: pre-wrap;

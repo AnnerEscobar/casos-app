@@ -23,7 +23,7 @@
   flex: 1;
   min-width: 0;
   overflow-y: auto;
-  background: #f4f6fb;
+  background: var(--ui-soft, #f4f6fb);
   padding: 24px;
 }
 

@@ -1,12 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subject, tap } from 'rxjs';
 import { environment } from '../../../environment.prod';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BusquedaService {
+  private cambiosAcceso = new Subject<void>();
+  readonly cambiosAcceso$ = this.cambiosAcceso.asObservable();
 
   private baseUrl = environment.apiUrl + '/busquedas'; // URL base de la API
 
@@ -50,11 +52,12 @@ export class BusquedaService {
   }
 
   detalle(tipo: string, id: string) { return this.http.get<any>(`${this.baseUrl}/expediente/${tipo}/${id}`); }
-  solicitar(datos: { tipo: string; casoId: string; motivo: string }) { return this.http.post<any>(`${this.baseUrl}/solicitudes`, datos); }
+  solicitar(datos: { tipo: string; casoId: string; motivo: string }) { return this.http.post<any>(`${this.baseUrl}/solicitudes`, datos).pipe(tap(() => this.cambiosAcceso.next())); }
   investigadores() { return this.http.get<any[]>(`${this.baseUrl}/investigadores`); }
   compartidos() { return this.http.get<any[]>(`${this.baseUrl}/compartidos`); }
-  revocar(id: string) { return this.http.patch<any>(`${this.baseUrl}/solicitudes/${id}/revocar`, {}); }
+  revocar(id: string) { return this.http.patch<any>(`${this.baseUrl}/solicitudes/${id}/revocar`, {}).pipe(tap(() => this.cambiosAcceso.next())); }
   solicitudes() { return this.http.get<any[]>(`${this.baseUrl}/solicitudes`); }
-  resolver(id: string, estado: 'AUTORIZADA' | 'RECHAZADA') { return this.http.patch<any>(`${this.baseUrl}/solicitudes/${id}`, { estado }); }
+  resolver(id: string, estado: 'AUTORIZADA' | 'RECHAZADA') { return this.http.patch<any>(`${this.baseUrl}/solicitudes/${id}`, { estado }).pipe(tap(() => this.cambiosAcceso.next())); }
+  bandejaAccesos() { return this.http.get<any[]>(`${this.baseUrl}/bandeja-accesos`); }
 }
 

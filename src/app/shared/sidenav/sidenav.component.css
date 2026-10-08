@@ -17,9 +17,9 @@
 
   overflow: hidden;
 
-  background: #ffffff;
+  background: var(--ui-surface, #ffffff);
 
-  border-right: 1px solid #e7e9ed;
+  border-right: 1px solid var(--ui-border, #e7e9ed);
 
   transition: width 0.22s ease;
 }
@@ -44,7 +44,7 @@
 
   padding: 0 16px;
 
-  border-bottom: 1px solid #edf0f2;
+  border-bottom: 1px solid var(--ui-border, #edf0f2);
 
   flex-shrink: 0;
 }
@@ -92,7 +92,7 @@
 
   gap: 6px;
 
-  color: #262a31;
+  color: var(--ui-text, #262a31);
 
   font-size: 17px;
   font-weight: 700;
@@ -103,9 +103,9 @@
 
   border-radius: 5px;
 
-  background: #edf1f6;
+  background: var(--ui-soft, #edf1f6);
 
-  color: #66717e;
+  color: var(--ui-muted, #66717e);
 
   font-size: 9px;
   font-weight: 700;
@@ -120,7 +120,7 @@
 
   overflow: hidden;
 
-  color: #8a9099;
+  color: var(--ui-muted, #8a9099);
 
   font-size: 10.5px;
 
@@ -150,7 +150,7 @@
 
   background: transparent;
 
-  color: #777f8b;
+  color: var(--ui-muted, #777f8b);
 
   cursor: pointer;
 
@@ -160,9 +160,9 @@
 }
 
 .collapse-button:hover {
-  background: #f2f4f6;
+  background: var(--ui-soft, #f2f4f6);
 
-  color: #333942;
+  color: var(--ui-text, #333942);
 }
 
 .collapse-button mat-icon {
@@ -212,7 +212,7 @@
 .nav-label {
   padding: 0 10px 9px;
 
-  color: #a0a6af;
+  color: var(--ui-muted, #a0a6af);
 
   font-size: 9.5px;
   font-weight: 700;
@@ -238,7 +238,7 @@
 }
 
 :host ::ng-deep .mat-expansion-indicator::after {
-  color: #9299a3;
+  color: var(--ui-muted, #9299a3);
 }
 
 :host ::ng-deep .mat-expansion-panel-spacing {
@@ -270,13 +270,13 @@
 }
 
 .nav-panel-header:hover {
-  background: #f5f6f8 !important;
+  background: var(--ui-soft, #f5f6f8) !important;
 }
 
 :host ::ng-deep
 .nav-panel
 .mat-expansion-panel-header.mat-expanded {
-  background: #f5f6f8;
+  background: var(--ui-soft, #f5f6f8);
 }
 
 .nav-panel-title {
@@ -285,7 +285,7 @@
 
   gap: 11px;
 
-  color: #535b67;
+  color: var(--ui-muted, #535b67);
 
   font-size: 13px;
   font-weight: 500;
@@ -301,7 +301,7 @@
 
   border-radius: 7px;
 
-  color: #737c89;
+  color: var(--ui-muted, #737c89);
 }
 
 .nav-icon mat-icon {
@@ -322,7 +322,7 @@
   margin-left: 24px;
   padding-left: 12px;
 
-  border-left: 1px solid #e7e9ed;
+  border-left: 1px solid var(--ui-border, #e7e9ed);
 }
 
 .submenu-item {
@@ -335,7 +335,7 @@
 
   border-radius: 8px;
 
-  color: #747b85 !important;
+  color: var(--ui-muted, #747b85) !important;
 
   transition:
     background .15s ease,
@@ -343,9 +343,9 @@
 }
 
 .submenu-item:hover {
-  background: #f6f7f9;
+  background: var(--ui-surface, #f6f7f9);
 
-  color: #333941 !important;
+  color: var(--ui-text, #333941) !important;
 }
 
 .submenu-title {
@@ -373,9 +373,9 @@
 /* ACTIVO */
 
 .submenu-active {
-  background: #eef1f5 !important;
+  background: var(--ui-soft, #eef1f5) !important;
 
-  color: #272c34 !important;
+  color: var(--ui-text, #272c34) !important;
 
   font-weight: 600;
 }
@@ -403,9 +403,9 @@
 
   border-radius: 10px;
 
-  background: #fff0e8;
+  background: var(--ui-soft, #fff0e8);
 
-  color: #c56a28;
+  color: var(--ui-amber, #c56a28);
 
   font-size: 10px;
   font-weight: 700;
@@ -434,7 +434,7 @@
 
   border-radius: 10px;
 
-  color: #747d89;
+  color: var(--ui-muted, #747d89);
 
   text-decoration: none;
 
@@ -444,15 +444,15 @@
 }
 
 .collapsed-nav-item:hover {
-  background: #f3f5f7;
+  background: var(--ui-soft, #f3f5f7);
 
-  color: #2f353d;
+  color: var(--ui-text, #2f353d);
 }
 
 .collapsed-nav-active {
-  background: #edf0f4;
+  background: var(--ui-soft, #edf0f4);
 
-  color: #252b35;
+  color: var(--ui-text, #252b35);
 }
 
 .collapsed-nav-item mat-icon {
@@ -477,7 +477,7 @@
 
   padding: 0 4px;
 
-  border: 2px solid #ffffff;
+  border: 2px solid var(--ui-border, #ffffff);
   border-radius: 9px;
 
   background: #e97a34;
@@ -503,9 +503,9 @@
 
   padding: 12px 14px;
 
-  border-top: 1px solid #e9ebee;
+  border-top: 1px solid var(--ui-border, #e9ebee);
 
-  background: #fcfcfd;
+  background: var(--ui-surface, #fcfcfd);
 
   flex-shrink: 0;
 }
@@ -522,9 +522,9 @@
 
   border-radius: 10px;
 
-  background: #edf0f4;
+  background: var(--ui-soft, #edf0f4);
 
-  color: #626c79;
+  color: var(--ui-muted, #626c79);
 }
 
 .user-avatar mat-icon {
@@ -546,7 +546,7 @@
 .user-email {
   overflow: hidden;
 
-  color: #3b4048;
+  color: var(--ui-text, #3b4048);
 
   font-size: 11.5px;
   font-weight: 600;
@@ -558,13 +558,13 @@
 .user-role {
   margin-top: 2px;
 
-  color: #9399a1;
+  color: var(--ui-muted, #9399a1);
 
   font-size: 10.5px;
 }
 
 .user-error {
-  color: #b94d4d;
+  color: var(--ui-red, #b94d4d);
 
   font-size: 10.5px;
 }
@@ -572,7 +572,7 @@
 .user-menu-button {
   flex-shrink: 0;
 
-  color: #818894;
+  color: var(--ui-muted, #818894);
 }
 
 

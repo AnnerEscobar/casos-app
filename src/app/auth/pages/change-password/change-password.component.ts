@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../auth-service/auth.service';
+import { ErrorStateMatcher } from '@angular/material/core';
 
 @Component({
   selector: 'app-change-password',
@@ -31,6 +32,11 @@ export default class ChangePasswordComponent {
   hideCurrent = true;
   hideNew     = true;
   hideConfirm = true;
+
+  readonly confirmMatcher: ErrorStateMatcher = {
+    isErrorState: (control, form) => !!(control && (control.touched || form?.submitted) &&
+      (control.invalid || control.parent?.hasError('mismatch'))),
+  };
 
   form = this.fb.group({
     currentPassword: ['', Validators.required],

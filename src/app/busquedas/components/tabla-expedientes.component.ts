@@ -42,7 +42,7 @@ import { personaExpediente } from '../persona-expediente';
         <tr mat-row *matRowDef="let row; columns: columnas"></tr>
       </table>
     </div>`,
-  styles: [`:host{display:block;min-width:0}.table-scroll{width:100%;overflow-x:auto;border:1px solid #e2e8f0;border-radius:12px}.table-scroll:focus-visible{outline:2px solid #2563eb;outline-offset:2px}table{width:100%;min-width:960px}th{white-space:nowrap}td,th{padding:12px 16px}td{max-width:300px;overflow-wrap:anywhere}small{display:block;color:#64748b;margin-top:4px}button{white-space:nowrap}`],
+  styles: [`:host{display:block;min-width:0}.table-scroll{width:100%;overflow-x:auto;border:1px solid var(--v3-border);border-radius:12px}.table-scroll:focus-visible{outline:2px solid #2563eb;outline-offset:2px}table{width:100%;min-width:960px}th{white-space:nowrap}td,th{padding:12px 16px}td{max-width:300px;overflow-wrap:anywhere}small{display:block;color:var(--v3-muted);margin-top:4px}button{white-space:nowrap}`],
 })
 export class TablaExpedientesComponent {
   @Input() casos: any[] = [];

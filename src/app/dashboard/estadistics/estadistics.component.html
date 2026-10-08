@@ -237,7 +237,7 @@
 
     <div class="chart-card">
 
-      <apx-chart
+      <apx-chart [theme]="(chartTheme$ | async)!"
         #barChart
 
         [series]="barChartOptions.series"
@@ -271,7 +271,7 @@
 
     <div class="chart-card">
 
-      <apx-chart
+      <apx-chart [theme]="(chartTheme$ | async)!"
         #stackedChart
 
         [series]="stackedChartOptions.series"
@@ -338,7 +338,7 @@
     </div>
 
 
-    <apx-chart
+    <apx-chart [theme]="(chartTheme$ | async)!"
       #areaChart
 
       [series]="areaChartOptions.series"
@@ -427,7 +427,7 @@
 
       <div class="chart-card chart-full">
 
-        <apx-chart
+        <apx-chart [theme]="(chartTheme$ | async)!"
           #investigatorChart
 
           [series]="investigatorChartOptions.series"

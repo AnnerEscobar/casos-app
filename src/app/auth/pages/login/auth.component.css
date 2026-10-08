@@ -208,12 +208,6 @@
   color: #64748b;
 }
 
-:host ::ng-deep .login-field .mdc-notched-outline__leading,
-:host ::ng-deep .login-field .mdc-notched-outline__notch,
-:host ::ng-deep .login-field .mdc-notched-outline__trailing {
-  border-color: #cbd5e1;
-}
-
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -298,21 +292,14 @@
   background: #0f172a !important;
 }
 
-:host-context(.dark-theme) ::ng-deep .login-field .mat-mdc-input-element,
-:host-context(.dark-theme) ::ng-deep .login-field .mat-mdc-floating-label {
-  color: #f1f5f9 !important;
-}
+
 
 :host-context(.dark-theme) ::ng-deep .login-field .mat-mdc-form-field-icon-prefix,
 :host-context(.dark-theme) ::ng-deep .login-field .mat-mdc-form-field-icon-suffix {
   color: #cbd5e1 !important;
 }
 
-:host-context(.dark-theme) ::ng-deep .login-field .mdc-notched-outline__leading,
-:host-context(.dark-theme) ::ng-deep .login-field .mdc-notched-outline__notch,
-:host-context(.dark-theme) ::ng-deep .login-field .mdc-notched-outline__trailing {
-  border-color: #475569 !important;
-}
+
 
 @media (max-width: 860px) {
   .login-page {

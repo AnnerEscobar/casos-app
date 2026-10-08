@@ -18,18 +18,18 @@
   width: 52px; height: 52px;
   border-radius: 14px;
   background: rgba(0,137,123,.12);
-  color: #00897b;
+  color: var(--ui-green, #00897b);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
 .header-icon mat-icon { font-size: 28px; width: 28px; height: 28px; }
-.page-title { margin: 0; font-size: 20px; font-weight: 700; color: #1e2432; }
-.page-sub   { margin: 3px 0 0; font-size: 13px; color: #7a828e; }
+.page-title { margin: 0; font-size: 20px; font-weight: 700; color: var(--ui-text, #1e2432); }
+.page-sub   { margin: 3px 0 0; font-size: 13px; color: var(--ui-muted, #7a828e); }
 
 /* ── Section card ─────────────────────────────────────────────────────── */
 .section-card {
-  background: #fff;
-  border: 1px solid #e5e7eb;
+  background: var(--ui-surface, #fff);
+  border: 1px solid var(--ui-border, #e5e7eb);
   border-radius: 14px;
   padding: 20px;
   display: flex;
@@ -41,10 +41,10 @@
   align-items: center;
   gap: 8px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #f0f2f5;
+  border-bottom: 1px solid var(--ui-border, #f0f2f5);
 }
-.section-icon  { font-size: 20px; width: 20px; height: 20px; color: #64748b; }
-.section-title { font-size: 14px; font-weight: 700; color: #1e2432; flex: 1; }
+.section-icon  { font-size: 20px; width: 20px; height: 20px; color: var(--ui-muted, #64748b); }
+.section-title { font-size: 14px; font-weight: 700; color: var(--ui-text, #1e2432); flex: 1; }
 
 /* ── Fields grids ─────────────────────────────────────────────────────── */
 .fields-grid { display: grid; gap: 4px 16px; }
@@ -74,12 +74,12 @@
   font-weight: 600 !important;
   display: flex; align-items: center; gap: 6px;
 }
-.btn-submit[disabled] { background: #e2e8f0 !important; color: #94a3b8 !important; }
+.btn-submit[disabled] { background: var(--ui-soft, #e2e8f0) !important; color: var(--ui-muted, #94a3b8) !important; }
 
 :host ::ng-deep .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-form-field-icon-suffix,
 :host ::ng-deep .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-form-field-icon-prefix,
 :host ::ng-deep .mat-mdc-form-field.mat-form-field-invalid .mat-icon {
-  color: #f44336 !important;
+  color: var(--ui-red, #f44336) !important;
 }
 
 /* ── Utility ──────────────────────────────────────────────────────────── */
