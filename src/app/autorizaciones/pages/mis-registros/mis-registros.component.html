@@ -34,8 +34,8 @@
           class="mt-1 text-sm
                  text-slate-500"
         >
-          Consulta el estado de los casos
-          que has enviado para autorización.
+          Consulta tus casos asignados, completa su registro
+          y revisa las entregas enviadas al analista.
         </p>
 
       </div>
@@ -58,6 +58,10 @@
   <!-- FILTROS -->
 
   <div class="mb-5 flex flex-wrap gap-2">
+    <button mat-stroked-button type="button" (click)="cambiarFiltro('Asignados')"
+      [class.!bg-slate-900]="filtro === 'Asignados'" [class.!text-white]="filtro === 'Asignados'">
+      Casos asignados <span class="ml-2">{{ contar('Asignados') }}</span>
+    </button>
 
     <button
       mat-stroked-button
@@ -81,7 +85,7 @@
       [class.!bg-amber-600]="filtro === 'Pendiente'"
       [class.!text-white]="filtro === 'Pendiente'"
     >
-      Pendientes
+      Pendientes de revisión
 
       <span class="ml-2">
         {{ contar('Pendiente') }}
@@ -326,7 +330,7 @@
                            bg-amber-500"
                   ></span>
 
-                  Pendiente
+                  {{ registro.caso.procesoAlerta && registro.caso.expedienteEnPreparacion ? 'Pendiente de entrega' : 'Pendiente' }}
                 </span>
 
               } @else {
@@ -379,12 +383,7 @@
                   visibility
                 </mat-icon>
 
-                {{
-                  registro.estadoRegistro ===
-                  'Rechazado'
-                    ? 'Ver corrección'
-                    : 'Ver detalle'
-                }}
+                {{ accionRegistro(registro) }}
 
               </button>
 

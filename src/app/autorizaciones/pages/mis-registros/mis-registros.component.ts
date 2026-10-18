@@ -24,10 +24,12 @@ import {
 import {
   RegistroPendiente
 } from '../../models/registro-pendiente.model';
+import { Router } from '@angular/router';
 
 
 type FiltroEstado =
   | 'Todos'
+  | 'Asignados'
   | 'Pendiente'
   | 'Rechazado';
 
@@ -51,6 +53,7 @@ type FiltroEstado =
 })
 export class MisRegistrosComponent
   implements OnInit {
+  private router=inject(Router);
 
   private autorizacionesService =
     inject(AutorizacionesService);
@@ -128,6 +131,10 @@ export class MisRegistrosComponent
 
 
   private aplicarFiltro(): void {
+    if(this.filtro==='Asignados'){
+      this.registrosFiltrados=this.registros.filter(r=>(r.caso.procesoAlerta || r.caso.procesoMaltrato || r.caso.procesoConflicto) && r.caso.expedienteEnPreparacion);
+      return;
+    }
 
     if (this.filtro === 'Todos') {
 
@@ -141,19 +148,21 @@ export class MisRegistrosComponent
     this.registrosFiltrados =
       this.registros.filter(
         registro =>
-          registro.estadoRegistro ===
-          this.filtro
+          registro.estadoRegistro === this.filtro &&
+          !(this.filtro==='Pendiente' && (registro.caso.procesoAlerta || registro.caso.procesoMaltrato || registro.caso.procesoConflicto) && registro.caso.expedienteEnPreparacion)
       );
   }
 
 
   contar(
-    estado: 'Pendiente' | 'Rechazado'
+    estado: 'Asignados' | 'Pendiente' | 'Rechazado'
   ): number {
 
     return this.registros.filter(
       registro =>
-        registro.estadoRegistro === estado
+        estado==='Asignados'
+          ? (registro.caso.procesoAlerta || registro.caso.procesoMaltrato || registro.caso.procesoConflicto) && registro.caso.expedienteEnPreparacion
+          : registro.estadoRegistro === estado && !(estado==='Pendiente' && (registro.caso.procesoAlerta || registro.caso.procesoMaltrato || registro.caso.procesoConflicto) && registro.caso.expedienteEnPreparacion)
     ).length;
   }
 
@@ -161,6 +170,10 @@ export class MisRegistrosComponent
  verDetalle(
   registro: RegistroPendiente
 ): void {
+  if((registro.tipoCaso==='Alerta' && registro.caso.procesoAlerta) || (registro.tipoCaso==='Maltrato' && registro.caso.procesoMaltrato) || (registro.tipoCaso==='Conflicto' && registro.caso.procesoConflicto)){
+    this.router.navigate([registro.tipoCaso==='Maltrato'?'/casos/maltrato-expediente':registro.tipoCaso==='Conflicto'?'/casos/conflicto-expediente':'/casos/alerta-expediente',registro._id]);
+    return;
+  }
 
   const dialogRef =
     this.dialog.open(
@@ -183,4 +196,12 @@ export class MisRegistrosComponent
 
     });
 }
+
+  accionRegistro(registro:RegistroPendiente):string {
+    if((registro.tipoCaso==='Alerta' && registro.caso.procesoAlerta) || (registro.tipoCaso==='Maltrato' && registro.caso.procesoMaltrato) || (registro.tipoCaso==='Conflicto' && registro.caso.procesoConflicto)){
+      if(registro.caso.expedienteEnPreparacion)return 'Registrar caso';
+      if(registro.estadoRegistro==='Rechazado')return 'Corregir caso';
+    }
+    return registro.estadoRegistro==='Rechazado'?'Ver corrección':'Ver detalle';
+  }
 }

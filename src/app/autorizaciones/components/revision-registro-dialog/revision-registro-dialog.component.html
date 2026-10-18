@@ -154,6 +154,7 @@
     <!-- ================================= -->
 
     @if (registro.tipoCaso === 'Maltrato') {
+      <app-maltrato-ficha-resumen [caso]="registro.caso" />
 
       <section class="mt-7">
 
@@ -235,6 +236,7 @@
     <!-- ================================= -->
 
     @if (registro.tipoCaso === 'Alerta') {
+      <app-alerta-ficha-resumen [caso]="registro.caso" />
 
       <section class="mt-7">
 
@@ -353,6 +355,7 @@
     <!-- ================================= -->
 
     @if (registro.tipoCaso === 'Conflicto') {
+      <app-conflicto-ficha-resumen [caso]="registro.caso" />
 
       <section class="mt-7">
 

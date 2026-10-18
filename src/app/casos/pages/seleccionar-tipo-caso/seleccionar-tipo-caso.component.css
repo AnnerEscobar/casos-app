@@ -117,6 +117,8 @@
 }
 
 .case-card {
+  color: inherit;
+  text-decoration: none;
   position: relative;
 
   min-height: 340px;
@@ -139,6 +141,11 @@
     transform .18s ease,
     box-shadow .18s ease,
     border-color .18s ease;
+}
+
+.case-card:focus-visible {
+  outline: 3px solid var(--ui-blue, #4b78aa);
+  outline-offset: 3px;
 }
 
 .case-card:hover {

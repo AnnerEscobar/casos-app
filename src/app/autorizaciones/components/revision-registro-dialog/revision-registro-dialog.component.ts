@@ -1,4 +1,7 @@
 import { Component, inject } from '@angular/core';
+import { ConflictoFichaResumenComponent } from '../../../casos/conflicto-gestion/conflicto-ficha-resumen.component';
+import { MaltratoFichaResumenComponent } from '../../../casos/maltrato-gestion/maltrato-ficha-resumen.component';
+import { AlertaFichaResumenComponent } from '../../../casos/alerta-gestion/alerta-ficha-resumen.component';
 import { DatePipe } from '@angular/common';
 
 import {
@@ -33,6 +36,9 @@ import {
   standalone: true,
 
   imports: [
+    ConflictoFichaResumenComponent,
+    MaltratoFichaResumenComponent,
+    AlertaFichaResumenComponent,
     DatePipe,
     ReactiveFormsModule,
     MatDialogModule,

@@ -1,0 +1,59 @@
+<main class="alerta-page">
+  <header><div><h1>{{ id ? editable ? 'Registrar Alerta Alba-Keneth' : 'Expediente de Alerta' : analista ? 'Registrar Alerta Alba-Keneth' : 'Alertas asignadas' }}</h1>
+    <p>{{ id ? analista ? 'Consulta los datos del expediente y la entrega del investigador.' : 'Los datos registrados por el analista ya están cargados. Completa lo que falte y envía el expediente para revisión.' : analista ? 'Registra el requerimiento y asigna un investigador. En esta etapa no se adjuntan archivos.' : 'Completa los casos que te asignó el analista.' }}</p></div>
+    @if(analista){<button mat-stroked-button [disabled]="ocupado" (click)="descargar()"><mat-icon>download</mat-icon>Exportar base Excel</button>}
+  </header>
+  @if(id && !analista){<a mat-button routerLink="/casos/mis-registros"><mat-icon>arrow_back</mat-icon>Volver a Mis registros</a>}
+  @if(error){<p role="alert" class="aviso error">{{ error }}</p>}
+  @if(cargando){<p role="status">Cargando alertas…</p>}
+  @if(caso){<p class="aviso">{{ caso.expedienteEnPreparacion ? 'Pendiente de entrega del investigador' : caso.estadoRegistro }}{{ caso.motivoRechazo && caso.estadoRegistro==='Rechazado' ? ': '+caso.motivoRechazo : '' }}</p>}
+  @if(caso && !analista){<nav class="acciones" aria-label="Documentación del caso"><a mat-stroked-button routerLink="/casos/documentacion-inicial">Preparar plan y carátula</a><a mat-stroked-button routerLink="/casos/crear-informe">Preparar informe</a></nav><p>Utiliza el número {{caso.numeroDeic}} al preparar los documentos.</p>}
+  @if((analista && !id) || caso){
+    <form [formGroup]="form" (ngSubmit)="guardar()">
+      <section><h2>Identificación y asignación</h2><div class="grid">
+        <mat-form-field appearance="outline" floatLabel="always"><mat-label>Número DEIC</mat-label><input matInput formControlName="numeroDeic" placeholder="DEIC52-2026-10-08-001"><mat-error>Ingresa un número DEIC válido.</mat-error></mat-form-field>
+        <mat-form-field appearance="outline" floatLabel="always"><mat-label>Número de requerimiento / MP</mat-label><input matInput formControlName="numeroMp" placeholder="M0030-2026-100"><mat-error>Formato M0030-AAAA-XXX.</mat-error></mat-form-field>
+        <mat-form-field appearance="outline" floatLabel="always"><mat-label>Número de alerta</mat-label><input matInput formControlName="numeroAlerta" placeholder="2664-2026"><mat-error>Formato XXXX-AAAA.</mat-error></mat-form-field>
+        <mat-form-field appearance="outline" floatLabel="always"><mat-label>Fecha de ingreso</mat-label><input matInput type="date" formControlName="fechaIngreso"><mat-error>La fecha de ingreso es obligatoria.</mat-error></mat-form-field>
+        @if(!id){<mat-form-field appearance="outline"><mat-label>Investigador asignado</mat-label><mat-select formControlName="investigadorAsignado">@for(u of investigadores;track u._id){<mat-option [value]="u._id">{{u.nombre}}</mat-option>}</mat-select><mat-error>Selecciona un investigador activo.</mat-error></mat-form-field>}
+        @if(id){<p>Investigador: {{ nombreInvestigador }}</p>}
+        <mat-form-field appearance="outline"><mat-label>Nombre de la persona desaparecida</mat-label><input matInput formControlName="nombreDesaparecido"><mat-error>El nombre es obligatorio.</mat-error></mat-form-field>
+        @if(id){<mat-form-field appearance="outline"><mat-label>Estado de investigación</mat-label><mat-select formControlName="estadoInvestigacion"><mat-option value="Informado">Informado</mat-option><mat-option value="Concluido">Concluido</mat-option><mat-option value="Remitido">Remitido</mat-option></mat-select></mat-form-field>}
+        @for(c of base;track c.key){<mat-form-field appearance="outline" floatLabel="always"><mat-label>{{c.label}}</mat-label>@if(opciones(c.key);as lista){<mat-select [formControlName]="c.key"><mat-option [value]="null">Sin indicar</mat-option>@for(opcion of lista;track opcion){<mat-option [value]="opcion">{{opcion}}</mat-option>}</mat-select>}@else{<input matInput [type]="c.type" [formControlName]="c.key">}</mat-form-field>}
+      </div></section>
+      @for(seccion of secciones;track seccion){@if(seccionVisible(seccion)){
+        <details formGroupName="fichaAlerta" [open]="seccion==='Recepción'"><summary>{{seccion}}</summary><div class="grid">
+          @for(c of camposSeccion(seccion);track c.key){<mat-form-field appearance="outline" floatLabel="always" [class.ancho]="c.type==='textarea'"><mat-label>{{c.label}}</mat-label>
+            @if(opciones(c.key,'fichaAlerta');as lista){<mat-select [formControlName]="c.key" (selectionChange)="c.key==='departamentoLocalizacion' && cambiarDepartamento('fichaAlerta')"><mat-option [value]="null">Sin indicar</mat-option>@for(opcion of lista;track opcion){<mat-option [value]="opcion">{{opcion}}</mat-option>}</mat-select>}
+            @else if(c.type==='textarea'){<textarea matInput rows="3" [formControlName]="c.key"></textarea>}
+            @else{<input matInput [type]="c.type" [formControlName]="c.key" [attr.min]="c.type==='number'?0:null" [attr.step]="c.type==='number'?1:null">}
+            <mat-error>Revisa el dato ingresado; las cantidades deben ser enteros no negativos.</mat-error>
+          </mat-form-field>}
+        </div></details>
+      }}
+      <section><h2>Lugar de desaparición</h2><div class="grid" formGroupName="direccion">
+        <mat-form-field appearance="outline"><mat-label>Departamento</mat-label><mat-select formControlName="departamento" (selectionChange)="cambiarDepartamento('direccion')"><mat-option [value]="null">Sin indicar</mat-option>@for(opcion of opciones('departamento','direccion');track opcion){<mat-option [value]="opcion">{{opcion}}</mat-option>}</mat-select></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Municipio</mat-label><mat-select formControlName="municipio" ><mat-option [value]="null">Sin indicar</mat-option>@for(opcion of opciones('municipio','direccion');track opcion){<mat-option [value]="opcion">{{opcion}}</mat-option>}</mat-select></mat-form-field>
+        <mat-form-field appearance="outline" class="ancho"><mat-label>Dirección detallada</mat-label><textarea matInput formControlName="direccionDetallada"></textarea></mat-form-field>
+      </div></section>
+      <section><h2>Denunciante, si se conoce</h2><div class="grid" formGroupName="denunciante">
+        <mat-form-field appearance="outline"><mat-label>Nombre</mat-label><input matInput formControlName="nombre"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>CUI</mat-label><input matInput formControlName="cui"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Teléfono</mat-label><input matInput formControlName="telefono"></mat-form-field>
+      </div></section>
+      @if(id){<section><h2>Datos de localización, cuando corresponda</h2><div class="grid">@for(c of localizacion;track c.key){<mat-form-field appearance="outline" floatLabel="always"><mat-label>{{c.label}}</mat-label><input matInput [type]="c.type" [formControlName]="c.key"></mat-form-field>}</div></section>}
+      @if(caso?.fileUrls?.length){<section><h2>Documentos entregados</h2>@for(url of caso.fileUrls;track $index){<a mat-stroked-button [href]="url" target="_blank" rel="noopener noreferrer">PDF {{$index+1}}</a>}</section>}
+      @if(editable){<section>
+        @if(id){<h2>Entrega para revisión</h2><p>Para entregar: completa MP, alerta, estado de investigación, lugar de desaparición y fecha de nacimiento. Estos datos son obligatorios para el investigador al enviar a revisión; puedes guardar datos parciales para continuar después.</p><label for="expediente-pdf">Expediente completo en PDF</label><input id="expediente-pdf" type="file" accept="application/pdf" [disabled]="ocupado" (change)="seleccionar($event)">}
+        <div class="acciones"><button mat-flat-button type="submit" [disabled]="ocupado">{{ocupado?'Procesando…':id?'Guardar datos':'Registrar y asignar'}}</button>
+        @if(id){<button mat-stroked-button type="button" [disabled]="ocupado || !file" (click)="guardar(true)">Registrar y enviar a revisión</button>}
+        </div>
+      </section>}
+    </form>
+  }
+  @if(!id){<section><h2>{{analista?'Control de alertas registradas':'Mis alertas asignadas'}}</h2>
+    @if(!cargando && !registros.length){<p>{{analista?'No hay alertas registradas.':'No tienes alertas asignadas.'}}</p>}
+    @for(r of registros;track r._id){<article class="registro"><div><strong>{{r.numeroDeic}}</strong><p>{{r.nombreDesaparecido}} · {{r.investigadorAsignado?.nombre || 'Sin nombre disponible'}}</p><span>{{r.expedienteEnPreparacion?'Pendiente de entrega':r.estadoRegistro}}</span></div><a mat-stroked-button [routerLink]="['/casos/alerta-expediente',r._id]">{{analista?'Ver expediente':'Completar / consultar'}}</a></article>}
+    @if(analista){<a mat-button routerLink="/casos/autorizaciones">Revisar entregas pendientes</a>}
+  </section>}
+</main>

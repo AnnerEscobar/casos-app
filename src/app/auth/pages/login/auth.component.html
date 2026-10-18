@@ -47,6 +47,11 @@
           <span>Tu sesion expiro. Inicia sesion nuevamente antes de continuar.</span>
         </div>
 
+        <div class="session-expired-alert" *ngIf="loginError" role="alert">
+          <mat-icon aria-hidden="true">error_outline</mat-icon>
+          <span>{{ loginError }}</span>
+        </div>
+
         <mat-form-field appearance="outline" class="login-field">
           <mat-label>Correo electronico</mat-label>
           <mat-icon matPrefix>mail</mat-icon>

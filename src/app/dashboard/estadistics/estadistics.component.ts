@@ -411,6 +411,7 @@ export default class EstadisticsComponent
       chart: {
         type: 'bar',
         height: 310,
+        background: 'transparent',
         // El panel usa filtros; no captura rueda ni gestos para zoom.
         zoom: { enabled: false, allowMouseWheelZoom: false },
         selection: { enabled: false },
@@ -532,6 +533,7 @@ export default class EstadisticsComponent
 
         type: 'bar',
         height: 310,
+        background: 'transparent',
         stacked: true,
 
         // El panel usa filtros; no captura rueda ni gestos para zoom.
@@ -648,6 +650,7 @@ export default class EstadisticsComponent
 
         type: 'area',
         height: 330,
+        background: 'transparent',
 
         // El panel usa filtros; no captura rueda ni gestos para zoom.
         zoom: { enabled: false, allowMouseWheelZoom: false },
@@ -753,6 +756,7 @@ export default class EstadisticsComponent
 
         type: 'bar',
         height: 300,
+        background: 'transparent',
 
         // El panel usa filtros; no captura rueda ni gestos para zoom.
         zoom: { enabled: false, allowMouseWheelZoom: false },

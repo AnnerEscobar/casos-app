@@ -49,6 +49,7 @@ export default class AuthComponent {
  */
 
 import { Component } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../auth-service/auth.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -83,6 +84,7 @@ export default class AuthComponent {
   loading = false;     // estado de carga
   submitted = false;   // para mostrar errores al enviar
   sessionExpired = false;
+  loginError = '';
   private returnUrl = '/casos';
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private route: ActivatedRoute) {
@@ -102,6 +104,7 @@ export default class AuthComponent {
     if (this.loginForm.invalid || this.loading) return;
 
     this.loading = true;
+    this.loginError = '';
     const { email, password } = this.loginForm.value;
 
     this.authService.login(email, password).subscribe({
@@ -109,9 +112,21 @@ export default class AuthComponent {
         this.loading = false;
         this.router.navigateByUrl(this.returnUrl);
       },
-      error: () => {
+      error: (error: HttpErrorResponse) => {
         this.loading = false;
-        alert('Credenciales incorrectas');
+        if (error.status === 429) {
+          this.loginError = 'Has alcanzado el límite de intentos de inicio de sesión. El acceso está bloqueado temporalmente. Espera unos minutos antes de volver a intentarlo; el límite se restablece dentro de los 15 minutos desde el primer intento.';
+        } else if (error.status === 401) {
+          this.loginError = error.error?.message === 'Usuario inactivo, contacte al administrador'
+            ? 'Tu cuenta está inactiva. Comunícate con el administrador para recuperar el acceso.'
+            : 'El correo o la contraseña son incorrectos. Revisa tus datos antes de volver a intentarlo.';
+        } else if (error.status === 0) {
+          this.loginError = 'No se pudo conectar con el servidor. Revisa tu conexión e intenta nuevamente.';
+        } else if (error.status === 403) {
+          this.loginError = 'No tienes acceso al sistema. Comunícate con el administrador para revisar el estado de tu cuenta.';
+        } else {
+          this.loginError = 'No se pudo iniciar sesión en este momento. Intenta nuevamente más tarde.';
+        }
       }
     });
   }

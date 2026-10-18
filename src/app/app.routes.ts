@@ -78,17 +78,44 @@ export const routes: Routes = [
       {
         path: 'add-case-alerta',
         title: 'Alerta Alba-Keneth',
-        loadComponent: () => import('./casos/pages/add-case-alerta/add-case-alerta.component')
+        canActivate: [roleGuard],
+        data: { roles: [UserRole.ANALISTA, UserRole.INVESTIGADOR] },
+        loadComponent: () => import('./casos/alerta-gestion/alerta-gestion.component')
+      },
+      {
+        path: 'alerta-expediente/:id',
+        title: 'Expediente de Alerta',
+        canActivate: [roleGuard],
+        data: { roles: [UserRole.ANALISTA, UserRole.INVESTIGADOR] },
+        loadComponent: () => import('./casos/alerta-gestion/alerta-gestion.component')
       },
       {
         path: 'add-case-maltrato',
         title: 'Maltrato',
-        loadComponent: () => import('./casos/pages/add-case-maltrato/add-case-maltrato.component')
+        canActivate: [roleGuard],
+        data: {roles:[UserRole.ANALISTA,UserRole.INVESTIGADOR]},
+        loadComponent: () => import('./casos/maltrato-gestion/maltrato-gestion.component')
+      },
+      {
+        path: 'maltrato-expediente/:id',
+        title: 'Expediente de maltrato',
+        canActivate: [roleGuard],
+        data: {roles:[UserRole.ANALISTA,UserRole.INVESTIGADOR]},
+        loadComponent: () => import('./casos/maltrato-gestion/maltrato-gestion.component')
       },
       {
         path: 'add-case-conflicto',
         title: 'Conflicto',
-        loadComponent: () => import('./casos/pages/add-case-conflicto/add-case-conflicto.component')
+        canActivate: [roleGuard],
+        data: {roles:[UserRole.ANALISTA,UserRole.INVESTIGADOR]},
+        loadComponent: () => import('./casos/conflicto-gestion/conflicto-gestion.component')
+      },
+      {
+        path: 'conflicto-expediente/:id',
+        title: 'Expediente de conflicto',
+        canActivate: [roleGuard],
+        data: {roles:[UserRole.ANALISTA,UserRole.INVESTIGADOR]},
+        loadComponent: () => import('./casos/conflicto-gestion/conflicto-gestion.component')
       },
       {
         path: 'seguimiento-alerta',

@@ -89,7 +89,7 @@
 
         <div class="v3-grid v3-grid-3">
 
-          <mat-form-field
+          <mat-form-field floatLabel="always"
             appearance="outline"
             class="w-full">
 
@@ -101,10 +101,6 @@
               formControlName="numeroDeic">
 
             <mat-icon matSuffix>numbers</mat-icon>
-
-            <mat-hint>
-              Formato: DEIC53-AAAA-MM-DD-XXX
-            </mat-hint>
 
             <mat-error
               *ngIf="myForm.get('numeroDeic')?.hasError('required')">
@@ -119,7 +115,7 @@
           </mat-form-field>
 
 
-          <mat-form-field
+          <mat-form-field floatLabel="always"
             appearance="outline"
             class="w-full">
 

@@ -50,9 +50,10 @@
 
 
     <!-- ALERTA -->
-    <article
+    <a
       class="case-card alerta"
-      (click)="seleccionar('alerta')">
+      routerLink="/casos/add-case-alerta"
+      aria-label="Registrar alerta Alba-Keneth">
 
       <div class="case-icon alerta-icon">
         <mat-icon>person_search</mat-icon>
@@ -99,13 +100,14 @@
         <mat-icon>arrow_forward</mat-icon>
       </div>
 
-    </article>
+    </a>
 
 
     <!-- MALTRATO -->
-    <article
+    <a
       class="case-card maltrato"
-      (click)="seleccionar('maltrato')">
+      routerLink="/casos/add-case-maltrato"
+      aria-label="Registrar caso de maltrato">
 
       <div class="case-icon maltrato-icon">
         <mat-icon>health_and_safety</mat-icon>
@@ -153,13 +155,14 @@
         <mat-icon>arrow_forward</mat-icon>
       </div>
 
-    </article>
+    </a>
 
 
     <!-- CONFLICTO -->
-    <article
+    <a
       class="case-card conflicto"
-      (click)="seleccionar('conflicto')">
+      routerLink="/casos/add-case-conflicto"
+      aria-label="Registrar caso de conflicto">
 
       <div class="case-icon conflicto-icon">
         <mat-icon>gavel</mat-icon>
@@ -206,7 +209,7 @@
         <mat-icon>arrow_forward</mat-icon>
       </div>
 
-    </article>
+    </a>
 
   </div>
 
