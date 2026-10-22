@@ -10,6 +10,17 @@
   background: var(--ui-soft, #eef3f8);
 }
 
+.documentos-impresion summary {
+  cursor: pointer;
+  font-weight: 500;
+  padding: 8px 0;
+}
+
+.documentos-impresion details p {
+  margin: 8px 0;
+  max-width: 75ch;
+}
+
 .documentacion-container {
   width: 100%;
   max-width: 1450px;

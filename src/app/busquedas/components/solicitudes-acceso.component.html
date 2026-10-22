@@ -3,7 +3,6 @@
 <div>
 <h2 class="section-title">Solicitudes y permisos <span class="results-badge">{{ pendientes }} {{ pendientes === 1 ? 'pendiente' : 'pendientes' }}</span>
 </h2>
-<p class="section-caption">Consulta tus solicitudes y las que puedes resolver.</p>
 </div>
 <div>
 <button mat-icon-button (click)="cargar()" [disabled]="cargando" aria-label="Actualizar solicitudes">
@@ -16,9 +15,9 @@
 <p *ngIf="error" role="alert">{{ error }}</p>
 <div id="lista-solicitudes" *ngIf="expandido">
 <p *ngIf="cargando" role="status">Cargando solicitudes…</p>
-<p *ngIf="!cargando && !solicitudes.length" class="section-caption">No hay solicitudes de acceso.</p>
+<p *ngIf="!cargando && !visibles.length" class="section-caption">No hay solicitudes de acceso.</p>
 <div class="request-grid">
-<article *ngFor="let s of solicitudes">
+<article *ngFor="let s of visibles">
 <div class="request-head">
 <strong>{{ s.solicitante?.nombre || 'Investigador' }}</strong>
 <span class="status">{{ s.estado | titlecase }}</span>
@@ -31,7 +30,7 @@
 <div *ngIf="puedeRevocar(s)">
 <button mat-stroked-button *ngIf="confirmarRevocacion !== s._id" [disabled]="!!procesando" (click)="confirmarRevocacion=s._id">{{ s.solicitante?._id === usuario?.userId ? 'Renunciar al permiso' : 'Revocar permiso' }}</button>
 <div *ngIf="confirmarRevocacion === s._id">
-<p>Se retirará el acceso concedido por esta solicitud. Si existe un seguimiento asignado, ese acceso se conserva.</p>
+<p>Se revocará este permiso. El acceso por seguimiento asignado se mantiene.</p>
 <button mat-button [disabled]="!!procesando" (click)="confirmarRevocacion=''">Cancelar</button>
 <button mat-flat-button [disabled]="!!procesando" (click)="revocar(s)">Confirmar revocación</button>
 </div>

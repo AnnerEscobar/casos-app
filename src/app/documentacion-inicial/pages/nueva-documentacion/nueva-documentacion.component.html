@@ -3,12 +3,16 @@
   <p *ngIf="cargandoCaso" role="status">Cargando documentos del caso…</p>
   <p *ngIf="errorContexto" role="alert">{{errorContexto}}</p>
   <section *ngIf="!errorContexto" class="documentos-impresion" aria-label="Preparación e impresión">
-    <p><strong>Datos del caso → Preparar documentos → Entrega del expediente</strong></p>
-    <p>Puedes guardar borradores y continuar después. Cuando estén completos, descarga el PDF de carátula, plan y rúbrica e imprímelo. Incorpora los documentos con las firmas correspondientes al expediente físico y regresa al caso para adjuntar el PDF completo escaneado.</p>
-    <p *ngIf="soloLectura">El expediente está en revisión o aprobado. Sus documentos son de consulta; un rechazo permite corregirlos.</p>
+    <p><strong>Guarda los tres documentos antes de descargar.</strong></p>
+    <p *ngIf="soloLectura">Solo lectura: expediente en revisión o aprobado.</p>
     <button mat-stroked-button type="button" (click)="descargarDocumentos()" [disabled]="cargandoCaso || imprimiendo || guardando || !caratulaGuardada || !planGuardado || !rubricaGuardada"><mat-icon>print</mat-icon>{{imprimiendo ? 'Generando PDF…' : 'Descargar PDF para imprimir'}}</button>
-    <p>Guarda los cambios de los tres documentos antes de descargar. Imprimir no envía el expediente al analista.</p>
-    <p>El PDF conserva los formatos originales. Escribe de forma breve para que cada dato quepa en su espacio. Las firmas se agregan físicamente.</p>
+    <p>Descargar el PDF no envía el expediente a revisión.</p>
+    <details>
+      <summary>Ayuda para imprimir y entregar</summary>
+      <p>Puedes guardar un borrador y continuar después. Usa textos breves para respetar los espacios del formato original.</p>
+      <p>Imprime y reúne las firmas físicas. Luego vuelve al expediente y adjunta un único PDF escaneado con carátula, plan, rúbrica, informe y anexos para enviarlo a revisión.</p>
+      <p>Si el analista rechaza el expediente, podrás corregir los documentos.</p>
+    </details>
   </section>
 
   <!-- =====================================================
@@ -22,11 +26,10 @@
     </div>
 
     <div class="header-text">
-      <h1>Documentación inicial</h1>
+      <h1>Preparar documentos</h1>
 
       <p>
-        Elaboración de carátula, plan de investigación
-        y rúbrica del expediente.
+        Carátula, plan de investigación y rúbrica.
       </p>
     </div>
 
@@ -93,11 +96,6 @@
                 Datos de la carátula
               </h2>
 
-              <p>
-                Ingrese los datos principales del expediente.
-                Esta información será reutilizada en los
-                siguientes documentos.
-              </p>
 
             </div>
 
@@ -561,11 +559,6 @@
                 Plan de investigación
               </h2>
 
-              <p>
-                Complete la información disponible,
-                la información pendiente y las diligencias
-                que realizará para obtenerla.
-              </p>
 
             </div>
 
@@ -751,7 +744,6 @@
             <mat-form-field appearance="outline" class="field-full">
               <mat-label>Nombre del mando, si se conoce</mat-label>
               <input matInput [(ngModel)]="mandoNombre" (ngModelChange)="planGuardado = false" [disabled]="soloLectura || guardando">
-              <mat-hint>Se imprime en el espacio del mando. La firma se agrega físicamente.</mat-hint>
             </mat-form-field>
             <mat-form-field
               appearance="outline"
@@ -855,10 +847,6 @@
                 Rúbrica de evaluación
               </h2>
 
-              <p>
-                Marque Sí o No según corresponda
-                y agregue observaciones cuando sea necesario.
-              </p>
 
             </div>
 
@@ -943,7 +931,7 @@
             <mat-form-field appearance="outline" class="field-full">
               <mat-label>Nombre del supervisor, si se conoce</mat-label>
               <input matInput [(ngModel)]="supervisorNombre" (ngModelChange)="rubricaGuardada = false" [disabled]="soloLectura || guardando">
-              <mat-hint>La firma se agrega físicamente; no se usa el nombre del investigador como supervisor.</mat-hint>
+              <mat-hint>Indica al supervisor, no al investigador asignado.</mat-hint>
             </mat-form-field>
             <h3 class="document-title">
               {{ tituloRubrica }}
@@ -1165,7 +1153,7 @@
                 </h3>
 
                 <p>
-                  Completa los tres documentos antes de descargar el PDF para imprimir.
+                  Puedes continuar después o descargar el PDF si está completo.
                 </p>
 
               </div>

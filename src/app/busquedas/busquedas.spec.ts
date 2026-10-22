@@ -206,6 +206,23 @@ describe('Búsquedas V3', () => {
             http.expectOne(r => r.url.endsWith('/solicitudes')).flush([{ ...s, estado: 'REVOCADA' }]);
             expect(f.componentInstance.puedeRevocar({ ...s, estado: 'REVOCADA' })).toBeFalse();
         });
+        it('oculta el permiso revocado incluso después de refrescar sin eliminar el historial', () => {
+            const f = TestBed.createComponent(SolicitudesAccesoComponent);
+            f.componentRef.setInput('expandido', true);
+            f.componentRef.setInput('ocultarRevocadas', true);
+            const s = { _id: 'permiso', numeroDeic: 'DEIC-REVOCADO', estado: 'AUTORIZADA', solicitante: { _id: 'owner' }, responsable: { _id: 'other' } };
+            f.detectChanges();
+            http.expectOne(r => r.url.endsWith('/solicitudes')).flush([s]); f.detectChanges();
+            expect(f.nativeElement.textContent).toContain('DEIC-REVOCADO');
+            f.componentInstance.revocar(s);
+            http.expectOne(r => r.url.endsWith('/permiso/revocar') && r.method === 'PATCH').flush({ estado: 'REVOCADA' });
+            f.detectChanges(); expect(f.nativeElement.textContent).not.toContain('DEIC-REVOCADO');
+            http.expectOne(r => r.url.endsWith('/solicitudes')).flush([{ ...s, estado: 'REVOCADA' }]);
+            f.detectChanges();
+            expect(f.componentInstance.solicitudes.length).toBe(1);
+            expect(f.nativeElement.textContent).not.toContain('DEIC-REVOCADO');
+            expect(f.nativeElement.textContent).toContain('No hay solicitudes');
+        });
         it('solicitud envía motivo sin suplantar identidad y bloquea doble envío', () => {
             const ref = dialogRef;
             const f = TestBed.createComponent(SolicitarAccesoDialogComponent);

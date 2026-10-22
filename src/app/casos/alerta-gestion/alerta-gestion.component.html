@@ -7,7 +7,7 @@
   @if(error){<p role="alert" class="aviso error">{{ error }}</p>}
   @if(cargando){<p role="status">Cargando alertas…</p>}
   @if(caso){<p class="aviso">{{ caso.expedienteEnPreparacion ? 'Pendiente de entrega del investigador' : caso.estadoRegistro }}{{ caso.motivoRechazo && caso.estadoRegistro==='Rechazado' ? ': '+caso.motivoRechazo : '' }}</p>}
-  @if(caso && !analista){<section><h2>Preparar documentos</h2><p>Guarda los datos del caso antes de abrir los documentos. La carátula se precarga con la última información guardada.</p><nav class="acciones" aria-label="Documentación del caso"><a mat-stroked-button routerLink="/casos/documentacion-inicial" [queryParams]="{tipo:'Alerta',casoId:id}">Carátula, plan y rúbrica</a><a mat-stroked-button routerLink="/casos/crear-informe">Preparar informe</a></nav><p>Completa, guarda e imprime los documentos de {{caso.numeroDeic}}. Incorpóralos al expediente físico y adjunta después el PDF completo para revisión.</p></section>}
+  @if(caso && !analista){<section><h2>Preparar documentos</h2><p>Guarda los datos del caso antes de preparar los documentos.</p><nav class="acciones" aria-label="Documentación del caso"><a mat-stroked-button routerLink="/casos/documentacion-inicial" [queryParams]="{tipo:'Alerta',casoId:id}">Carátula, plan y rúbrica</a><a mat-stroked-button routerLink="/casos/crear-informe">Preparar informe</a></nav></section>}
   @if((analista && !id) || caso){
     <form [formGroup]="form" (ngSubmit)="guardar()">
       <section><h2>Identificación y asignación</h2><div class="grid">

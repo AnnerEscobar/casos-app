@@ -17,17 +17,16 @@ import { personaExpediente } from './persona-expediente';
   imports: [CommonModule, FormsModule, RouterLink, MatButtonModule, MatFormFieldModule, MatInputModule, TablaExpedientesComponent, SolicitudesAccesoComponent],
   styleUrls: ['./busquedas-v3.css'],
   template: `<main class="page-container">
-    <header class="page-header"><div><h1 class="page-title">Expedientes compartidos</h1><p class="page-sub">Consulte los expedientes ajenos a los que tiene acceso y gestione los permisos.</p></div><a mat-button routerLink="/casos/Busquedas">Volver a búsquedas</a></header>
+    <header class="page-header"><div><h1 class="page-title">Expedientes compartidos</h1></div><a mat-button routerLink="/casos/Busquedas">Volver a búsquedas</a></header>
     <section class="section-card" *ngIf="investigador">
-      <div class="results-header"><h2>Expedientes a los que tengo acceso</h2><button mat-stroked-button [disabled]="cargando" (click)="cargar()">Actualizar</button></div>
-      <p class="section-caption">Presione el número DEIC o Ver expediente para consultar la información completa, los seguimientos y sus archivos. Las autorizaciones y los seguimientos asignados se identifican por separado.</p>
+      <div class="results-header"><h2>Mis accesos</h2><button mat-stroked-button [disabled]="cargando" (click)="cargar()">Actualizar</button></div>
       <mat-form-field appearance="outline"><mat-label>Filtrar expedientes</mat-label><input matInput [(ngModel)]="filtro" (ngModelChange)="pagina=0" placeholder="DEIC, MP o persona"></mat-form-field>
       <p *ngIf="cargando" role="status">Cargando expedientes…</p><p *ngIf="error" role="alert">{{ error }}</p>
       <app-tabla-expedientes *ngIf="visibles.length" [casos]="visibles" (abrir)="abrir($event)"/>
-      <p *ngIf="!cargando && !error && !filtrados.length">No hay expedientes compartidos que coincidan con esta consulta.</p>
+      <p *ngIf="!cargando && !error && !filtrados.length">No hay expedientes para esta búsqueda.</p>
       <div class="filter-actions" *ngIf="filtrados.length"><span>{{ filtrados.length }} expedientes · Página {{ pagina + 1 }} de {{ paginas }}</span><div><button mat-button [disabled]="pagina===0" (click)="pagina=pagina-1">Anterior</button><button mat-button [disabled]="pagina+1>=paginas" (click)="pagina=pagina+1">Siguiente</button></div></div>
     </section>
-    <app-solicitudes-acceso [expandido]="true" (cambio)="cargar()"/>
+    <app-solicitudes-acceso [expandido]="true" [ocultarRevocadas]="true" (cambio)="cargar()"/>
   </main>`,
 })
 export default class ExpedientesCompartidosComponent implements OnInit {

@@ -17,6 +17,10 @@ export class SolicitudesAccesoComponent implements OnInit {
     procesando = '';
     error = '';
     @Input() expandido = false;
+    @Input() ocultarRevocadas = false;
+    get visibles() {
+        return this.ocultarRevocadas ? this.solicitudes.filter(s => s.estado !== 'REVOCADA') : this.solicitudes;
+    }
     confirmarRevocacion = '';
     puedeRevocar(s: any) {
         return s.estado === 'AUTORIZADA' && (['Analista', 'Jefe', 'Administrador'].includes(this.usuario?.role || '') || s.responsable?._id === this.usuario?.userId || s.solicitante?._id === this.usuario?.userId);
@@ -28,6 +32,7 @@ export class SolicitudesAccesoComponent implements OnInit {
         this.api.revocar(s._id).subscribe({ next: () => {
             this.procesando = '';
             this.confirmarRevocacion = '';
+            this.solicitudes = this.solicitudes.filter(item => item._id !== s._id);
             this.cargar();
             this.cambio.emit();
         }, error: e => {
