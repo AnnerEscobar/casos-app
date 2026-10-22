@@ -230,7 +230,6 @@
           </div>
 
         </div>
-
       </section>
 
     }
@@ -433,103 +432,9 @@
         </p>
 
 
-        @if (!archivoSeleccionado) {
-
-          <label
-            class="mt-5 flex cursor-pointer
-                   flex-col items-center
-                   justify-center rounded-xl
-                   border-2 border-dashed
-                   border-slate-300
-                   p-6 text-center
-                   transition hover:bg-slate-50"
-          >
-
-            <mat-icon
-              class="mb-2 text-slate-500"
-            >
-              upload_file
-            </mat-icon>
-
-
-            <span
-              class="text-sm font-medium
-                     text-slate-700"
-            >
-              Seleccionar PDF corregido
-            </span>
-
-
-            <span
-              class="mt-1 text-xs
-                     text-slate-500"
-            >
-              Haz clic para seleccionar
-              el documento
-            </span>
-
-
-            <input
-              type="file"
-              accept="application/pdf"
-              class="hidden"
-              (change)="seleccionarArchivo($event)"
-            >
-
-          </label>
-
-        } @else {
-
-          <div
-            class="mt-5 flex items-center
-                   justify-between gap-4
-                   rounded-xl
-                   border border-slate-200
-                   bg-slate-50 p-4"
-          >
-
-            <div
-              class="flex min-w-0
-                     items-center gap-3"
-            >
-
-              <mat-icon class="text-red-500">
-                picture_as_pdf
-              </mat-icon>
-
-
-              <div class="min-w-0">
-
-                <p
-                  class="truncate text-sm
-                         font-medium
-                         text-slate-800"
-                >
-                  {{ archivoSeleccionado.name }}
-                </p>
-
-                <p
-                  class="text-xs
-                         text-slate-500"
-                >
-                  Documento corregido
-                </p>
-
-              </div>
-
-            </div>
-
-
-            <button
-              mat-icon-button
-              type="button"
-              (click)="quitarArchivo()"
-            >
-              <mat-icon>close</mat-icon>
-            </button>
-
-          </div>
-
+        <app-carga-archivo class="mt-5" [archivos]="archivoSeleccionado ? [archivoSeleccionado] : []" titulo="Selecciona el PDF corregido" [disabled]="procesando" (seleccion)="seleccionarArchivo($event)" />
+        @if (archivoSeleccionado) {
+          <button mat-button type="button" [disabled]="procesando" (click)="quitarArchivo()">Quitar archivo</button>
         }
 
       </section>

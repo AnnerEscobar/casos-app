@@ -1,0 +1,16 @@
+<input #selector type="file" hidden [accept]="accept" [multiple]="multiple"
+  [disabled]="disabled" (change)="seleccionar($event)">
+
+<button type="button" class="zona" [class.con-archivo]="archivos.length > 0"
+  [disabled]="disabled" (click)="selector.click()"
+  [attr.aria-label]="archivos.length ? 'Cambiar archivo: ' + nombres : titulo">
+  <span class="icono" aria-hidden="true">
+    <mat-icon>{{ archivos.length ? 'task_alt' : 'cloud_upload' }}</mat-icon>
+  </span>
+  <span class="contenido" aria-live="polite">
+    <strong>{{ archivos.length ? nombres : titulo }}</strong>
+    <span>{{ archivos.length ? (multiple ? 'Archivos listos para subir' : 'Archivo listo para subir') : 'Haz clic para buscar en tu equipo' }}</span>
+    <small>{{ formatos }}</small>
+  </span>
+  <span class="accion">{{ archivos.length ? 'Cambiar selección' : 'Seleccionar archivo' }}</span>
+</button>

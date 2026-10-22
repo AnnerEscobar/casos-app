@@ -1,3 +1,4 @@
+import { CargaArchivoComponent } from '../../../shared/components/carga-archivo/carga-archivo.component';
 import { Input, Output, EventEmitter, DestroyRef } from '@angular/core';
 import { HistoricoDataComponent } from '../../historicos/historico-data.component';
 import { HistoricoFormulario, quitarRequeridos, mensajeError, normalizarNumeroCaso } from '../../historicos/historico-formulario';
@@ -24,7 +25,7 @@ import { InformeService } from '../../../informes/services/informe.service';
 @Component({
   selector: 'app-add-case-maltrato',
   providers: [provideNativeDateAdapter()],
-  imports: [HistoricoDataComponent,
+  imports: [CargaArchivoComponent,HistoricoDataComponent,
     MatFormFieldModule, MatSelectModule, ReactiveFormsModule,
     MatSlideToggleModule, MatInputModule, MatIconModule,
     MatButtonModule, MatDatepickerModule, CommonModule,

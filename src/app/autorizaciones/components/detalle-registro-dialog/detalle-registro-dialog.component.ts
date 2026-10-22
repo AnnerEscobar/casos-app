@@ -1,3 +1,4 @@
+import { CargaArchivoComponent } from '../../../shared/components/carga-archivo/carga-archivo.component';
 import {
   Component,
   inject
@@ -39,7 +40,7 @@ import {
 
   standalone: true,
 
-  imports: [
+  imports: [CargaArchivoComponent,
     DatePipe,
     MatDialogModule,
     MatButtonModule,

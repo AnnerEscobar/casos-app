@@ -1,3 +1,4 @@
+import { CargaArchivoComponent } from '../../shared/components/carga-archivo/carga-archivo.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -17,7 +18,7 @@ import { GEOGRAFIA_ALERTA, OPCIONES_ALERTA } from './alerta-catalogos';
 
 @Component({
   selector:'app-alerta-gestion',
-  imports:[CommonModule,ReactiveFormsModule,RouterLink,MatFormFieldModule,MatInputModule,MatSelectModule,MatButtonModule,MatIconModule],
+  imports:[CargaArchivoComponent,CommonModule,ReactiveFormsModule,RouterLink,MatFormFieldModule,MatInputModule,MatSelectModule,MatButtonModule,MatIconModule],
   templateUrl:'./alerta-gestion.component.html',styleUrl:'./alerta-gestion.component.css',
 })
 export default class AlertaGestionComponent implements OnInit {

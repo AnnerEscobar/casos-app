@@ -1,3 +1,4 @@
+import { CargaArchivoComponent } from '../../shared/components/carga-archivo/carga-archivo.component';
 import { SeguimientoParticipantesComponent } from '../seguimiento-participantes.component';
 import { ultimoSeguimiento, estaCerrado } from '../seguimiento-terminal';
 import { inject } from '@angular/core';
@@ -39,7 +40,7 @@ import {
 @Component({
   selector: 'app-seguimiento-alerta',
 
-  imports: [SeguimientoParticipantesComponent, HistoricoInfoComponent, ResponsableSeguimientoComponent,
+  imports: [CargaArchivoComponent,SeguimientoParticipantesComponent, HistoricoInfoComponent, ResponsableSeguimientoComponent,
     CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,

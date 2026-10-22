@@ -174,6 +174,23 @@ describe('Búsquedas V3', () => {
             f.detectChanges();
             expect(f.nativeElement.querySelectorAll('tr.mat-mdc-row').length).toBe(2);
         });
+        it('mostrar, filtrar y paginar resultados no carga detalles; solo abrir un expediente', () => {
+            const f = abrir();
+            const dialog = spyOn(TestBed.inject(MatDialog), 'open');
+            f.componentInstance.buscarCasos();
+            http.expectOne(r => r.url.endsWith('/buscar')).flush(
+                Array.from({ length: 12 }, (_, i) => ({ ...own, _id: String(i) }))
+            );
+            f.detectChanges();
+            f.componentInstance.filtroRapido = own.numeroDeic;
+            f.componentInstance.cambiarPagina({ pageIndex: 1, pageSize: 10, length: 12 });
+            f.detectChanges();
+            http.expectNone(r => r.url.includes('/expediente/'));
+            expect(dialog).not.toHaveBeenCalled();
+            f.nativeElement.querySelector('button[aria-label="Ver expediente ' + own.numeroDeic + '"]').click();
+            expect(dialog).toHaveBeenCalledTimes(1);
+            expect(dialog).toHaveBeenCalledWith(ExpedienteDialogComponent, jasmine.objectContaining({ data: jasmine.objectContaining({ _id: '10' }) }));
+        });
     });
     describe('Solicitud y detalle', () => {
         it('identifica desaparecido, víctimas y adolescentes sin exponer nombres restringidos', () => {

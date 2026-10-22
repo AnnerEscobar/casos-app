@@ -1,3 +1,4 @@
+import { CargaArchivoComponent } from '../../shared/components/carga-archivo/carga-archivo.component';
 import { SeguimientoParticipantesComponent } from '../seguimiento-participantes.component';
 import { ultimoSeguimiento, estaCerrado } from '../seguimiento-terminal';
 import { inject } from '@angular/core';
@@ -33,7 +34,7 @@ import { SeguimientoMaltratoService } from '../seguimiento-services/seguimiento-
 @Component({
   selector: 'app-seguimiento-maltrato',
 
-  imports: [SeguimientoParticipantesComponent, HistoricoInfoComponent, ResponsableSeguimientoComponent,
+  imports: [CargaArchivoComponent,SeguimientoParticipantesComponent, HistoricoInfoComponent, ResponsableSeguimientoComponent,
     CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,

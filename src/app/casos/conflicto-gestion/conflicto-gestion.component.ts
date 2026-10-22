@@ -1,3 +1,4 @@
+import { CargaArchivoComponent } from '../../shared/components/carga-archivo/carga-archivo.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -22,7 +23,7 @@ const OPCIONES:Record<string,readonly string[]>={...OPCIONES_CONFLICTO,tipoPerso
 
 @Component({
   selector:'app-conflicto-gestion',
-  imports:[CommonModule,ReactiveFormsModule,RouterLink,MatFormFieldModule,MatInputModule,MatSelectModule,MatButtonModule,MatIconModule],
+  imports:[CargaArchivoComponent,CommonModule,ReactiveFormsModule,RouterLink,MatFormFieldModule,MatInputModule,MatSelectModule,MatButtonModule,MatIconModule],
   templateUrl:'./conflicto-gestion.component.html',styleUrl:'./conflicto-gestion.component.css',
 })
 export default class ConflictoGestionComponent implements OnInit {

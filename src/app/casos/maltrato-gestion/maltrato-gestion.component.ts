@@ -1,3 +1,4 @@
+import { CargaArchivoComponent } from '../../shared/components/carga-archivo/carga-archivo.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -29,7 +30,7 @@ const OPCIONES:Record<string,readonly string[]>={
 
 @Component({
   selector:'app-maltrato-gestion',
-  imports:[CommonModule,ReactiveFormsModule,RouterLink,MatFormFieldModule,MatInputModule,MatSelectModule,MatButtonModule,MatIconModule],
+  imports:[CargaArchivoComponent,CommonModule,ReactiveFormsModule,RouterLink,MatFormFieldModule,MatInputModule,MatSelectModule,MatButtonModule,MatIconModule],
   templateUrl:'./maltrato-gestion.component.html',styleUrl:'./maltrato-gestion.component.css',
 })
 export default class MaltratoGestionComponent implements OnInit {
