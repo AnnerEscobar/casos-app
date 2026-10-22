@@ -41,6 +41,7 @@ export interface DatosCaratula {
 
 
 export interface CrearDocumentacionInicial {
+  casoId?: string;
   tipoCaso: TipoCaso;
 
   numeroDeic: string;
@@ -69,6 +70,7 @@ export interface ElementoPlan {
 
 
 export interface PlanInvestigacionResponse {
+  mandoNombre?: string;
   documentacionId: string;
 
   numeroDeic: string;
@@ -95,6 +97,7 @@ export interface RespuestaPlan {
 
 
 export interface GuardarPlan {
+  mandoNombre?: string;
   elementos: RespuestaPlan[];
 
   observaciones?: string;
@@ -127,6 +130,8 @@ export interface ItemRubrica {
 
 
 export interface RubricaResponse {
+  dependenciaSupervisada?: string;
+  supervisorNombre?: string;
   documentacionId: string;
 
   numeroDeic: string;
@@ -153,7 +158,7 @@ export interface RubricaResponse {
 export interface RespuestaRubrica {
   codigo: string;
 
-  respuesta:
+  respuesta?:
     | 'SI'
     | 'NO';
 
@@ -162,7 +167,9 @@ export interface RespuestaRubrica {
 
 
 export interface GuardarRubrica {
-  conoceProtocolo:
+  dependenciaSupervisada?: string;
+  supervisorNombre?: string;
+  conoceProtocolo?:
     | 'SI'
     | 'NO';
 

@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import {
   FormsModule,
@@ -56,6 +57,7 @@ import {
 
   imports: [
     CommonModule,
+    RouterLink,
     FormsModule,
     ReactiveFormsModule,
     MatStepperModule,
@@ -75,6 +77,53 @@ import {
   styleUrl: './nueva-documentacion.component.css',
 })
 export class NuevaDocumentacionComponent implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  casoId: string | null = null;
+  tipoVinculado: TipoCaso | null = null;
+  volverExpediente: string[] | null = null;
+  cargandoCaso = false;
+  soloLectura = false;
+  imprimiendo = false;
+  errorContexto = '';
+
+  private cargarDocumento(documentacion: any, datosIniciales?: any): void {
+    const base = documentacion?.caratula || datosIniciales || {};
+    this.caratulaForm.patchValue({ ...base, tipoCaso: this.tipoVinculado || documentacion?.tipoCaso,
+      numeroDeic: documentacion?.numeroDeic || datosIniciales?.numeroDeic,
+      modalidadMaltrato: documentacion?.modalidadMaltrato || '' });
+    this.documentacionId = documentacion?._id || null;
+    this.caratulaGuardada = !!documentacion;
+    this.planGuardado = (documentacion?.pasoActual || 0) >= 2;
+    this.rubricaGuardada = !!documentacion?.rubrica?.conoceProtocolo;
+    this.caratulaForm.get('tipoCaso')?.disable({ emitEvent: false });
+    if (this.casoId) this.caratulaForm.get('numeroDeic')?.disable({ emitEvent: false });
+    if (this.soloLectura) this.caratulaForm.disable({ emitEvent: false });
+    if (this.documentacionId) {
+      this.cargarPlan();
+      if (!this.esMaltrato || documentacion?.modalidadMaltrato) this.cargarRubrica();
+    }
+  }
+
+  descargarDocumentos(): void {
+    if (!this.documentacionId || this.imprimiendo || this.guardando || !this.caratulaGuardada || !this.planGuardado || !this.rubricaGuardada) return;
+    this.imprimiendo = true;
+    this.documentacionService.descargarPdf(this.documentacionId).pipe(finalize(() => this.imprimiendo = false)).subscribe({
+      next: blob => {
+        const url = URL.createObjectURL(blob), enlace = document.createElement('a');
+        enlace.href = url;
+        enlace.download = `documentacion-${this.caratulaForm.get('numeroDeic')?.value}.pdf`;
+        enlace.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        this.mostrarMensaje('PDF descargado. Puedes imprimirlo e incorporarlo al expediente físico.');
+      },
+      error: async error => {
+        if (error?.error instanceof Blob) {
+          try { error = { error: JSON.parse(await error.error.text()) }; } catch { /* Conservar mensaje genérico. */ }
+        }
+        this.mostrarError(error, 'No se pudo generar el PDF. Guarda y completa los tres documentos.');
+      },
+    });
+  }
 
   @ViewChild('stepper')
   stepper?: MatStepper;
@@ -159,6 +208,9 @@ export class NuevaDocumentacionComponent implements OnInit {
   elementosPlan: ElementoPlan[] = [];
 
   observacionesPlan = '';
+  mandoNombre = '';
+  dependenciaSupervisada = '';
+  supervisorNombre = '';
 
 
   /* ======================================================
@@ -181,6 +233,58 @@ export class NuevaDocumentacionComponent implements OnInit {
   ngOnInit(): void {
 
     this.escucharTipoCaso();
+    // Los borradores pueden guardarse con datos pendientes; el PDF valida que
+    // estén completos antes de imprimir. No se inventa edad ni ubicación.
+    this.caratulaForm.get('edad')?.clearValidators();
+    this.caratulaForm.get('lugar')?.clearValidators();
+    this.caratulaForm.get('edad')?.updateValueAndValidity();
+    this.caratulaForm.get('lugar')?.updateValueAndValidity();
+    this.caratulaForm.valueChanges.subscribe(() => this.caratulaGuardada = false);
+    const params = this.route.snapshot.queryParamMap;
+    const casoId = params?.get('casoId'), tipo = params?.get('tipo');
+    if (casoId || tipo) {
+      if (!casoId || !['Alerta', 'Maltrato', 'Conflicto'].includes(tipo || '')) {
+        this.errorContexto = 'No se pudo identificar el expediente. Regresa a Mis registros.';
+        this.soloLectura = true; this.caratulaForm.disable(); return;
+      }
+      this.casoId = casoId; this.tipoVinculado = tipo as TipoCaso;
+      this.volverExpediente = ['/casos', `${tipo!.toLowerCase()}-expediente`, casoId];
+      this.cargandoCaso = true; this.caratulaForm.disable({ emitEvent: false });
+      this.documentacionService.paraCaso(tipo!, casoId).subscribe({
+        next: contexto => {
+          this.soloLectura = !contexto.editable;
+          if (!this.soloLectura) this.caratulaForm.enable({ emitEvent: false });
+          this.cargarDocumento(contexto.documentacion, { ...contexto.caratula, numeroDeic: contexto.numeroDeic });
+          this.cargandoCaso = false;
+        },
+        error: error => {
+          this.cargandoCaso = false; this.soloLectura = true;
+          this.errorContexto = 'No se pudo abrir la documentación del caso. Regresa al expediente e intenta nuevamente.';
+          this.mostrarError(error, this.errorContexto);
+        },
+      });
+    } else if (params?.get('id')) {
+      this.cargandoCaso = true;
+      this.documentacionService.obtenerUno(params.get('id')!).subscribe({
+        next: d => {
+          this.soloLectura = ['REGISTRADO', 'EN_REVISION'].includes(d.estado);
+          this.casoId = d.casoId || null; this.tipoVinculado = d.tipoCaso;
+          if (d.casoId) {
+            this.volverExpediente = ['/casos', `${d.tipoCaso.toLowerCase()}-expediente`, d.casoId];
+            this.documentacionService.paraCaso(d.tipoCaso, d.casoId).subscribe({
+              next: contexto => {
+                this.soloLectura = !contexto.editable || this.soloLectura;
+                this.cargarDocumento(contexto.documentacion || d); this.cargandoCaso = false;
+              },
+              error: e => { this.cargandoCaso = false; this.soloLectura = true; this.errorContexto = 'No se pudo abrir el expediente vinculado.'; this.caratulaForm.disable(); this.mostrarError(e, this.errorContexto); },
+            });
+            return;
+          }
+          this.cargarDocumento(d); this.cargandoCaso = false;
+        },
+        error: e => { this.cargandoCaso = false; this.soloLectura = true; this.caratulaForm.disable(); this.mostrarError(e, 'No se pudo recuperar el borrador.'); },
+      });
+    }
 
   }
 
@@ -248,9 +352,8 @@ export class NuevaDocumentacionComponent implements OnInit {
 
         if (tipo === 'Alerta') {
 
-          alertaControl?.setValidators([
-            Validators.required,
-          ]);
+          if (this.casoId) alertaControl?.clearValidators();
+          else alertaControl?.setValidators([Validators.required]);
 
         } else {
 
@@ -307,6 +410,7 @@ export class NuevaDocumentacionComponent implements OnInit {
   ====================================================== */
 
   guardarCaratula(): void {
+    if (this.guardando || this.soloLectura || this.cargandoCaso) return;
 
     if (this.caratulaForm.invalid) {
 
@@ -322,6 +426,7 @@ export class NuevaDocumentacionComponent implements OnInit {
 
     const value =
       this.caratulaForm.getRawValue();
+    const revisionCaratula = JSON.stringify(value);
 
 
     const caratula = {
@@ -384,6 +489,7 @@ export class NuevaDocumentacionComponent implements OnInit {
     if (idActual) {
 
       const payload = {
+        ...(this.casoId ? { casoId: this.casoId } : {}),
 
         numeroDeic:
           this.normalizarTexto(
@@ -421,7 +527,7 @@ export class NuevaDocumentacionComponent implements OnInit {
 
           next: () => {
 
-            this.caratulaGuardada = true;
+            this.caratulaGuardada = JSON.stringify(this.caratulaForm.getRawValue()) === revisionCaratula;
 
             this.mostrarMensaje(
               'Carátula actualizada correctamente.',
@@ -453,6 +559,7 @@ export class NuevaDocumentacionComponent implements OnInit {
 
     const payload:
       CrearDocumentacionInicial = {
+      ...(this.casoId ? { casoId: this.casoId } : {}),
 
       tipoCaso:
         value.tipoCaso as TipoCaso,
@@ -525,8 +632,7 @@ export class NuevaDocumentacionComponent implements OnInit {
           this.documentacionId =
             documentacion._id;
 
-          this.caratulaGuardada =
-            true;
+          this.caratulaGuardada = JSON.stringify(this.caratulaForm.getRawValue()) === revisionCaratula;
 
 
           /*
@@ -599,6 +705,7 @@ export class NuevaDocumentacionComponent implements OnInit {
       .subscribe({
 
         next: (plan) => {
+          this.mandoNombre = plan.mandoNombre || '';
 
           this.tituloPlan =
             plan.titulo;
@@ -660,6 +767,7 @@ export class NuevaDocumentacionComponent implements OnInit {
   ====================================================== */
 
   guardarPlan(): void {
+    if (this.guardando || this.soloLectura || this.cargandoCaso) return;
 
     const id =
       this.documentacionId;
@@ -689,6 +797,7 @@ export class NuevaDocumentacionComponent implements OnInit {
 
     const payload:
       GuardarPlan = {
+      ...(this.mandoNombre.trim() ? { mandoNombre: this.normalizarTexto(this.mandoNombre) } : {}),
 
       elementos:
         this.elementosPlan.map(
@@ -804,6 +913,8 @@ export class NuevaDocumentacionComponent implements OnInit {
       .subscribe({
 
         next: (rubrica) => {
+          this.dependenciaSupervisada = rubrica.dependenciaSupervisada || '';
+          this.supervisorNombre = rubrica.supervisorNombre || '';
 
           this.tituloRubrica =
             rubrica.titulo;
@@ -864,6 +975,7 @@ export class NuevaDocumentacionComponent implements OnInit {
   ====================================================== */
 
   guardarRubrica(): void {
+    if (this.guardando || this.soloLectura || this.cargandoCaso) return;
 
     const id =
       this.documentacionId;
@@ -883,16 +995,6 @@ export class NuevaDocumentacionComponent implements OnInit {
       this.conoceProtocolo;
 
 
-    if (!conoceProtocolo) {
-
-      this.mostrarMensaje(
-        'Debe responder la pregunta sobre el conocimiento del protocolo.',
-      );
-
-      return;
-    }
-
-
     const itemsRespondibles =
       this.itemsRubrica.filter(
         (item) =>
@@ -900,42 +1002,21 @@ export class NuevaDocumentacionComponent implements OnInit {
       );
 
 
-    const incompletos =
-      itemsRespondibles.filter(
-        (item) =>
-          item.respuesta !== 'SI' &&
-          item.respuesta !== 'NO',
-      );
-
-
-    if (
-      incompletos.length > 0
-    ) {
-
-      this.mostrarMensaje(
-        `Debe responder Sí o No en todos los elementos de la rúbrica. Faltan ${incompletos.length}.`,
-      );
-
-      return;
-    }
-
-
     const payload:
       GuardarRubrica = {
+      ...(this.dependenciaSupervisada.trim() ? { dependenciaSupervisada: this.normalizarTexto(this.dependenciaSupervisada) } : {}),
+      ...(this.supervisorNombre.trim() ? { supervisorNombre: this.normalizarTexto(this.supervisorNombre) } : {}),
 
-      conoceProtocolo,
+      ...(conoceProtocolo ? { conoceProtocolo } : {}),
 
       respuestas:
-        itemsRespondibles.map(
+        itemsRespondibles.filter(item => item.respuesta === 'SI' || item.respuesta === 'NO' || item.observaciones?.trim()).map(
           (item) => ({
 
             codigo:
               item.codigo,
 
-            respuesta:
-              item.respuesta as
-                | 'SI'
-                | 'NO',
+            ...(item.respuesta === 'SI' || item.respuesta === 'NO' ? { respuesta: item.respuesta } : {}),
 
             observaciones:
               this.normalizarTexto(

@@ -7,7 +7,7 @@
   @if(error){<p role="alert" class="aviso error">{{ error }}</p>}
   @if(cargando){<p role="status">Cargando alertas…</p>}
   @if(caso){<p class="aviso">{{ caso.expedienteEnPreparacion ? 'Pendiente de entrega del investigador' : caso.estadoRegistro }}{{ caso.motivoRechazo && caso.estadoRegistro==='Rechazado' ? ': '+caso.motivoRechazo : '' }}</p>}
-  @if(caso && !analista){<nav class="acciones" aria-label="Documentación del caso"><a mat-stroked-button routerLink="/casos/documentacion-inicial">Preparar plan y carátula</a><a mat-stroked-button routerLink="/casos/crear-informe">Preparar informe</a></nav><p>Utiliza el número {{caso.numeroDeic}} al preparar los documentos.</p>}
+  @if(caso && !analista){<section><h2>Preparar documentos</h2><p>Guarda los datos del caso antes de abrir los documentos. La carátula se precarga con la última información guardada.</p><nav class="acciones" aria-label="Documentación del caso"><a mat-stroked-button routerLink="/casos/documentacion-inicial" [queryParams]="{tipo:'Alerta',casoId:id}">Carátula, plan y rúbrica</a><a mat-stroked-button routerLink="/casos/crear-informe">Preparar informe</a></nav><p>Completa, guarda e imprime los documentos de {{caso.numeroDeic}}. Incorpóralos al expediente físico y adjunta después el PDF completo para revisión.</p></section>}
   @if((analista && !id) || caso){
     <form [formGroup]="form" (ngSubmit)="guardar()">
       <section><h2>Identificación y asignación</h2><div class="grid">
@@ -44,7 +44,7 @@
       @if(id){<section><h2>Datos de localización, cuando corresponda</h2><div class="grid">@for(c of localizacion;track c.key){<mat-form-field appearance="outline" floatLabel="always"><mat-label>{{c.label}}</mat-label><input matInput [type]="c.type" [formControlName]="c.key"></mat-form-field>}</div></section>}
       @if(caso?.fileUrls?.length){<section><h2>Documentos entregados</h2>@for(url of caso.fileUrls;track $index){<a mat-stroked-button [href]="url" target="_blank" rel="noopener noreferrer">PDF {{$index+1}}</a>}</section>}
       @if(editable){<section>
-        @if(id){<h2>Entrega para revisión</h2><p>Para entregar: completa MP, alerta, estado de investigación, lugar de desaparición y fecha de nacimiento. Estos datos son obligatorios para el investigador al enviar a revisión; puedes guardar datos parciales para continuar después.</p><label for="expediente-pdf">Expediente completo en PDF</label><input id="expediente-pdf" type="file" accept="application/pdf" [disabled]="ocupado" (change)="seleccionar($event)">}
+        @if(id){<h2>Entrega del expediente para revisión</h2><p>Reúne carátula, rúbrica, plan de investigación, informe y anexos, con las firmas que correspondan, en un único PDF escaneado. Generar los documentos no envía el caso al analista.</p><p>Para entregar: completa MP, alerta, estado de investigación, lugar de desaparición y fecha de nacimiento. Puedes guardar avances para continuar después.</p><label for="expediente-pdf">Expediente completo en PDF</label><input id="expediente-pdf" type="file" accept="application/pdf" [disabled]="ocupado" (change)="seleccionar($event)">}
         <div class="acciones"><button mat-flat-button type="submit" [disabled]="ocupado">{{ocupado?'Procesando…':id?'Guardar datos':'Registrar y asignar'}}</button>
         @if(id){<button mat-stroked-button type="button" [disabled]="ocupado || !file" (click)="guardar(true)">Registrar y enviar a revisión</button>}
         </div>

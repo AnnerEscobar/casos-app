@@ -24,6 +24,13 @@ import { environment } from '../../../environment.prod';
   providedIn: 'root',
 })
 export class DocumentacionInicialService {
+  paraCaso(tipo: string, casoId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/para-caso/${encodeURIComponent(tipo)}/${encodeURIComponent(casoId)}`, { withCredentials: true });
+  }
+
+  descargarPdf(id: string): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${id}/pdf`, { responseType: 'blob', withCredentials: true });
+  }
 
   private readonly apiUrl =
     `${environment.apiUrl}/documentacion-inicial`;

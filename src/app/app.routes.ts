@@ -25,6 +25,8 @@ export const routes: Routes = [
     children: [
       {
   path: 'documentacion-inicial',
+  canActivate: [roleGuard],
+  data: { roles: [UserRole.INVESTIGADOR] },
   loadComponent: () =>
     import(
       './documentacion-inicial/pages/nueva-documentacion/nueva-documentacion.component'

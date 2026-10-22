@@ -1,4 +1,15 @@
 <div class="documentacion-container">
+  <a *ngIf="volverExpediente" mat-button [routerLink]="volverExpediente"><mat-icon>arrow_back</mat-icon>Volver al expediente</a>
+  <p *ngIf="cargandoCaso" role="status">Cargando documentos del caso…</p>
+  <p *ngIf="errorContexto" role="alert">{{errorContexto}}</p>
+  <section *ngIf="!errorContexto" class="documentos-impresion" aria-label="Preparación e impresión">
+    <p><strong>Datos del caso → Preparar documentos → Entrega del expediente</strong></p>
+    <p>Puedes guardar borradores y continuar después. Cuando estén completos, descarga el PDF de carátula, plan y rúbrica e imprímelo. Incorpora los documentos con las firmas correspondientes al expediente físico y regresa al caso para adjuntar el PDF completo escaneado.</p>
+    <p *ngIf="soloLectura">El expediente está en revisión o aprobado. Sus documentos son de consulta; un rechazo permite corregirlos.</p>
+    <button mat-stroked-button type="button" (click)="descargarDocumentos()" [disabled]="cargandoCaso || imprimiendo || guardando || !caratulaGuardada || !planGuardado || !rubricaGuardada"><mat-icon>print</mat-icon>{{imprimiendo ? 'Generando PDF…' : 'Descargar PDF para imprimir'}}</button>
+    <p>Guarda los cambios de los tres documentos antes de descargar. Imprimir no envía el expediente al analista.</p>
+    <p>El PDF conserva los formatos originales. Escribe de forma breve para que cada dato quepa en su espacio. Las firmas se agregan físicamente.</p>
+  </section>
 
   <!-- =====================================================
        ENCABEZADO
@@ -48,7 +59,7 @@
        STEPPER
   ====================================================== -->
 
-  <mat-card class="stepper-card">
+  <mat-card class="stepper-card" *ngIf="!errorContexto && !cargandoCaso">
 
     <mat-horizontal-stepper
       #stepper
@@ -490,7 +501,7 @@
                 color="primary"
                 type="button"
                 (click)="guardarCaratula()"
-                [disabled]="guardando"
+                [disabled]="guardando || soloLectura || cargandoCaso"
               >
 
                 <mat-spinner
@@ -679,6 +690,8 @@
                     [(ngModel)]="
                       elemento.informacionObtenida
                     "
+                    (ngModelChange)="planGuardado = false"
+                    [disabled]="soloLectura || guardando"
                     rows="5"
                   ></textarea>
 
@@ -698,6 +711,8 @@
                     [(ngModel)]="
                       elemento.informacionNecesitaObtener
                     "
+                    (ngModelChange)="planGuardado = false"
+                    [disabled]="soloLectura || guardando"
                     rows="5"
                   ></textarea>
 
@@ -717,6 +732,8 @@
                     [(ngModel)]="
                       elemento.diligenciasRealizar
                     "
+                    (ngModelChange)="planGuardado = false"
+                    [disabled]="soloLectura || guardando"
                     rows="5"
                   ></textarea>
 
@@ -731,6 +748,11 @@
                  OBSERVACIONES PLAN
             ============================================ -->
 
+            <mat-form-field appearance="outline" class="field-full">
+              <mat-label>Nombre del mando, si se conoce</mat-label>
+              <input matInput [(ngModel)]="mandoNombre" (ngModelChange)="planGuardado = false" [disabled]="soloLectura || guardando">
+              <mat-hint>Se imprime en el espacio del mando. La firma se agrega físicamente.</mat-hint>
+            </mat-form-field>
             <mat-form-field
               appearance="outline"
               class="field-full plan-observations"
@@ -745,6 +767,8 @@
                 [(ngModel)]="
                   observacionesPlan
                 "
+                (ngModelChange)="planGuardado = false"
+                [disabled]="soloLectura || guardando"
                 rows="4"
               ></textarea>
 
@@ -777,7 +801,7 @@
                 color="primary"
                 type="button"
                 (click)="guardarPlan()"
-                [disabled]="guardando"
+                [disabled]="guardando || soloLectura || cargandoCaso"
               >
 
                 <mat-spinner
@@ -912,6 +936,15 @@
             "
           >
 
+            <mat-form-field appearance="outline" class="field-full">
+              <mat-label>Departamento, sección o delegación supervisada</mat-label>
+              <input matInput [(ngModel)]="dependenciaSupervisada" (ngModelChange)="rubricaGuardada = false" [disabled]="soloLectura || guardando">
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="field-full">
+              <mat-label>Nombre del supervisor, si se conoce</mat-label>
+              <input matInput [(ngModel)]="supervisorNombre" (ngModelChange)="rubricaGuardada = false" [disabled]="soloLectura || guardando">
+              <mat-hint>La firma se agrega físicamente; no se usa el nombre del investigador como supervisor.</mat-hint>
+            </mat-form-field>
             <h3 class="document-title">
               {{ tituloRubrica }}
             </h3>
@@ -940,6 +973,8 @@
                 [(ngModel)]="
                   conoceProtocolo
                 "
+                (ngModelChange)="rubricaGuardada = false"
+                [disabled]="soloLectura || guardando"
                 class="yes-no-group"
               >
 
@@ -1013,6 +1048,8 @@
                     [(ngModel)]="
                       item.respuesta
                     "
+                    (ngModelChange)="rubricaGuardada = false"
+                    [disabled]="soloLectura || guardando"
                     class="yes-no-group"
                   >
 
@@ -1048,6 +1085,8 @@
                       [(ngModel)]="
                         item.observaciones
                       "
+                      (ngModelChange)="rubricaGuardada = false"
+                      [disabled]="soloLectura || guardando"
                     >
 
                   </mat-form-field>
@@ -1085,7 +1124,7 @@
                 color="primary"
                 type="button"
                 (click)="guardarRubrica()"
-                [disabled]="guardando"
+                [disabled]="guardando || soloLectura || cargandoCaso"
               >
 
                 <mat-spinner
@@ -1122,11 +1161,11 @@
               <div>
 
                 <h3>
-                  Documentación completada
+                  Borrador guardado
                 </h3>
 
                 <p>
-                  Los tres pasos fueron guardados correctamente.
+                  Completa los tres documentos antes de descargar el PDF para imprimir.
                 </p>
 
               </div>
@@ -1136,14 +1175,15 @@
                 mat-raised-button
                 color="primary"
                 type="button"
-                disabled
+                (click)="descargarDocumentos()"
+                [disabled]="imprimiendo || guardando || !caratulaGuardada || !planGuardado || !rubricaGuardada"
               >
 
                 <mat-icon>
                   picture_as_pdf
                 </mat-icon>
 
-                Generar documentación PDF
+                Descargar PDF para imprimir
 
               </button>
 

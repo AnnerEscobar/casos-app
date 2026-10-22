@@ -2,6 +2,14 @@
    CONTENEDOR GENERAL
 ========================================================= */
 
+.documentos-impresion {
+  padding: 16px;
+  margin-bottom: 18px;
+  border: 1px solid var(--ui-border, #dce2e9);
+  border-radius: 12px;
+  background: var(--ui-soft, #eef3f8);
+}
+
 .documentacion-container {
   width: 100%;
   max-width: 1450px;
