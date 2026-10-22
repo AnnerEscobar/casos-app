@@ -267,6 +267,10 @@ export class SidenavComponent implements OnDestroy {
 
   public menuItems: MenuItem[] = [
     {
+      title: 'Auditoría', icon: 'policy', roles: [UserRole.ADMIN, UserRole.JEFE],
+      children: [{ title: 'Bitácora de acciones', path: 'auditoria' }],
+    },
+    {
       title: 'Casos',
       icon: 'folder_open',
 

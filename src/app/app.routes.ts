@@ -24,6 +24,11 @@ export const routes: Routes = [
     loadComponent: () => import('./casos/dashboard-case.component'),
     children: [
       {
+        path: 'auditoria', title: 'Bitácora de auditoría', canActivate: [roleGuard],
+        data: { roles: [UserRole.ADMIN, UserRole.JEFE] },
+        loadComponent: () => import('./auditoria/auditoria.component'),
+      },
+      {
   path: 'documentacion-inicial',
   canActivate: [roleGuard],
   data: { roles: [UserRole.INVESTIGADOR] },

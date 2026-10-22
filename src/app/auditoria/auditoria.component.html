@@ -1,0 +1,59 @@
+<main class="auditoria">
+  <header><mat-icon>policy</mat-icon><div><h1>Bitácora de auditoría</h1><p>Consulta quién realizó cada acción y qué cambió. Fechas y horas de Guatemala (UTC−06:00).</p></div></header>
+  <form (ngSubmit)="buscar()" class="panel" aria-label="Filtros de auditoría">
+    <fieldset [disabled]="cargando">
+      <div class="filtros">
+        <mat-form-field appearance="outline"><mat-label>Número DEIC exacto</mat-label><input matInput name="deic" [(ngModel)]="filtros['numeroDeic']" maxlength="512"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Nombre del usuario</mat-label><input matInput name="usuario" [(ngModel)]="filtros['usuario']" maxlength="512"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Recurso</mat-label><mat-select name="recurso" [(ngModel)]="filtros['recurso']" [disabled]="cargando"><mat-option value="">Todos</mat-option>@for (r of recursos; track r) {<mat-option [value]="r">{{ r }}</mat-option>}</mat-select></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Acción</mat-label><mat-select name="accion" [(ngModel)]="filtros['accion']" [disabled]="cargando"><mat-option value="">Todas</mat-option>@for (a of acciones; track a) {<mat-option [value]="a">{{ a }}</mat-option>}</mat-select></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Resultado</mat-label><mat-select name="resultado" [(ngModel)]="filtros['resultado']" [disabled]="cargando"><mat-option value="">Todos</mat-option><mat-option value="EXITOSO">Exitoso</mat-option><mat-option value="INICIADO">Iniciado</mat-option><mat-option value="DENEGADO">Denegado</mat-option><mat-option value="ERROR">Error</mat-option></mat-select></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Desde (Guatemala)</mat-label><input matInput type="datetime-local" name="desde" [(ngModel)]="filtros['desde']"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Hasta (Guatemala)</mat-label><input matInput type="datetime-local" name="hasta" [(ngModel)]="filtros['hasta']"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Campo modificado</mat-label><input matInput name="campo" [(ngModel)]="filtros['campo']" placeholder="estadoInvestigacion" maxlength="512"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Valor anterior exacto</mat-label><input matInput name="anterior" [(ngModel)]="filtros['anterior']" placeholder="Localizado" maxlength="512"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Valor nuevo exacto</mat-label><input matInput name="nuevo" [(ngModel)]="filtros['nuevo']" placeholder="Remitido" maxlength="512"></mat-form-field>
+      </div>
+      <details><summary>Identificadores de verificación</summary><div class="filtros avanzados">
+        <mat-form-field appearance="outline"><mat-label>ID de usuario</mat-label><input matInput name="usuarioId" [(ngModel)]="filtros['usuarioId']" maxlength="512"></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>ID de solicitud</mat-label><input matInput name="solicitud" [(ngModel)]="filtros['solicitudId']" maxlength="512"></mat-form-field>
+      </div></details>
+      <div class="acciones"><button mat-flat-button type="submit" [disabled]="cargando">Buscar registros</button><button mat-button type="button" (click)="limpiar()" [disabled]="cargando">Limpiar filtros</button></div>
+    </fieldset>
+  </form>
+  @if (error) { <p role="alert" class="error">{{ error }}</p> }
+  @if (cargando) { <p role="status">Consultando bitácora…</p> }
+  @if (!cargando && !error) {
+    <section class="panel" aria-label="Resultados">
+      <p role="status">{{ total }} registros encontrados. Página {{ pagina }} de {{ paginas }}.</p>
+      <div class="tabla"><table><thead><tr><th>Fecha y hora</th><th>Usuario y rol</th><th>Acción y expediente</th><th>Resultado</th><th>Verificación</th><th>Detalle</th></tr></thead><tbody>
+        @for (e of registros; track e.eventoId) {<tr>
+          <td>{{ e.fecha | date:'dd/MM/yyyy HH:mm:ss.SSS':'-0600' }}</td>
+          <td>{{ e.usuario.nombre }}<small>{{ e.usuario.rol }} · {{ e.usuario.id || 'Sin sesión autenticada' }}</small></td>
+          <td>{{ e.accion }} · {{ e.recurso }}<small>{{ e.numeroDeic || e.ruta }}</small></td>
+          <td>{{ e.resultado }}</td><td [class.error]="!e.integridadValida">{{ e.integridadValida ? 'Firma válida' : 'ALERTA: firma inválida' }}</td>
+          <td><button mat-button type="button" (click)="seleccionado = e" [attr.aria-label]="'Ver evento ' + e.eventoId">Ver detalle</button></td>
+        </tr>} @empty {<tr><td colspan="6">No hay registros para estos filtros. Prueba ampliar las fechas o quitar algún filtro.</td></tr>}
+      </tbody></table></div>
+      <nav class="acciones" aria-label="Páginas de auditoría"><button mat-button type="button" [disabled]="pagina <= 1" (click)="cargar(pagina - 1)">Anterior</button><button mat-button type="button" [disabled]="pagina >= paginas" (click)="cargar(pagina + 1)">Siguiente</button></nav>
+    </section>
+  }
+  @if (seleccionado; as e) {
+    <section class="panel detalle" aria-label="Detalle del evento" tabindex="0">
+      <h2>Detalle del evento</h2>
+      @if (!e.integridadValida) {<p role="alert" class="error">La firma no coincide. Este registro requiere revisión; no se debe asumir que sus datos son íntegros.</p>}
+      <dl><dt>Evento</dt><dd>{{ e.eventoId }}</dd><dt>Solicitud</dt><dd>{{ e.solicitudId }}</dd>
+        <dt>Fecha UTC</dt><dd>{{ e.fecha | date:'yyyy-MM-dd HH:mm:ss.SSS':'UTC' }} UTC</dd>
+        <dt>Usuario</dt><dd>{{ e.usuario.nombre }} · {{ e.usuario.rol }} · {{ e.usuario.id }}</dd>
+        <dt>Expediente</dt><dd>{{ e.numeroDeic || 'No aplica' }} · {{ e.recursoId || '' }}</dd>
+        <dt>Petición</dt><dd>{{ e.metodo }} {{ e.ruta }} {{ e.codigoHttp || '' }}</dd>
+        <dt>Dirección de conexión</dt><dd>{{ e.ip }}</dd><dt>Navegador declarado</dt><dd>{{ e.agente }}</dd>
+      </dl>
+      <h3>Cambios guardados</h3><div class="tabla"><table><thead><tr><th>Campo</th><th>Anterior</th><th>Nuevo</th></tr></thead><tbody>
+        @for (c of e.cambios; track c.campo) {<tr><td>{{ nombreCampo(c.campo) }}</td><td class="valor">{{ valor(c.anterior) }}</td><td class="valor">{{ valor(c.nuevo) }}</td></tr>}
+        @empty {<tr><td colspan="3">Evento de acceso o solicitud; sin cambios de datos en este registro.</td></tr>}
+      </tbody></table></div>
+      <button mat-button type="button" (click)="seleccionado = null">Cerrar detalle</button>
+    </section>
+  }
+</main>
