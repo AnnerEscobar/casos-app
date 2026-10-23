@@ -23,6 +23,19 @@ describe('Consulta de bitácora', () => {
     await TestBed.configureTestingModule({ imports: [AuditoriaComponent], providers: [provideNoopAnimations(), { provide: AuditoriaService, useValue: api }] }).compileComponents();
   });
   function crear() { const fixture = TestBed.createComponent(AuditoriaComponent); fixture.detectChanges(); return fixture; }
+  it('presenta duración, motivo y fechas de sesión sin alterar registros anteriores', () => {
+    const cierre: EventoAuditoria = { ...evento, accion: 'CERRAR_SESION', cambios: [], sesion: {
+      id: 'sesion-1', inicio: '2026-10-22T15:00:00Z', fin: '2026-10-22T16:35:42Z',
+      ultimaActividad: '2026-10-22T16:20:42Z', duracionSegundos: 5742, motivo: 'INACTIVIDAD',
+    } };
+    api.buscar.and.returnValue(of(pagina(cierre)));
+    const fixture = crear(); fixture.componentInstance.seleccionado = cierre; fixture.detectChanges();
+    const texto = fixture.nativeElement.textContent;
+    expect(texto).toContain('1 h 35 min 42 s');
+    expect(texto).toContain('INACTIVIDAD');
+    expect(texto).toContain('22/10/2026 09:00:00');
+    expect(texto).toContain('sesion-1');
+  });
   it('muestra responsable, hora de Guatemala, identidad y el cambio exacto en detalle', () => {
     const fixture = crear(); fixture.componentInstance.seleccionado = evento; fixture.detectChanges();
     const texto = fixture.nativeElement.textContent;

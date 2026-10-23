@@ -1,3 +1,5 @@
+import { BorradorEstadoDirective } from '../../../shared/borradores/borrador-estado.directive';
+import { BorradorFormularioDirective } from '../../../shared/borradores/borrador-formulario.directive';
 import {
   Component,
   OnInit,
@@ -55,7 +57,7 @@ import {
   selector: 'app-nueva-documentacion',
   standalone: true,
 
-  imports: [
+  imports: [BorradorEstadoDirective,BorradorFormularioDirective,
     CommonModule,
     RouterLink,
     FormsModule,
@@ -528,6 +530,7 @@ export class NuevaDocumentacionComponent implements OnInit {
           next: () => {
 
             this.caratulaGuardada = JSON.stringify(this.caratulaForm.getRawValue()) === revisionCaratula;
+            if (this.caratulaGuardada) this.caratulaForm.markAsPristine();
 
             this.mostrarMensaje(
               'Carátula actualizada correctamente.',
@@ -633,6 +636,7 @@ export class NuevaDocumentacionComponent implements OnInit {
             documentacion._id;
 
           this.caratulaGuardada = JSON.stringify(this.caratulaForm.getRawValue()) === revisionCaratula;
+            if (this.caratulaGuardada) this.caratulaForm.markAsPristine();
 
 
           /*
@@ -852,6 +856,7 @@ export class NuevaDocumentacionComponent implements OnInit {
         next: () => {
 
           this.planGuardado = true;
+          this.estadoLocal?.confirmar('plan');
 
 
           this.mostrarMensaje(
@@ -1048,8 +1053,8 @@ export class NuevaDocumentacionComponent implements OnInit {
 
         next: () => {
 
-          this.rubricaGuardada =
-            true;
+          this.rubricaGuardada = true;
+          this.estadoLocal?.confirmar('rubrica');
 
 
           this.mostrarMensaje(
@@ -1194,5 +1199,30 @@ export class NuevaDocumentacionComponent implements OnInit {
       },
     );
   }
+
+  @ViewChild(BorradorEstadoDirective) estadoLocal?: BorradorEstadoDirective;
+  capturarEstadoLocal = () => {
+    if (this.cargandoCaso || this.cargandoPlan || this.cargandoRubrica || this.soloLectura) return undefined;
+    return {
+      paso: this.stepper?.selectedIndex || 0,
+      ...(!this.planGuardado ? { plan: { elementosPlan: this.elementosPlan, mandoNombre: this.mandoNombre, observacionesPlan: this.observacionesPlan } } : {}),
+      ...(!this.rubricaGuardada ? { rubrica: { dependenciaSupervisada: this.dependenciaSupervisada, supervisorNombre: this.supervisorNombre, conoceProtocolo: this.conoceProtocolo, itemsRubrica: this.itemsRubrica } } : {}),
+    };
+  };
+  recuperarEstadoLocal(datos: any) {
+    if (datos.errorBorrador) { this.mostrarMensaje('No se pudo guardar el borrador en este navegador. Guarda los documentos antes de salir.'); return; }
+    if (this.soloLectura) return;
+    if (datos.plan) {
+      for (const key of ['elementosPlan', 'mandoNombre', 'observacionesPlan'] as const) if (key in datos.plan) (this as any)[key] = datos.plan[key];
+      this.planGuardado = false;
+    }
+    if (datos.rubrica) {
+      for (const key of ['dependenciaSupervisada', 'supervisorNombre', 'conoceProtocolo', 'itemsRubrica'] as const) if (key in datos.rubrica) (this as any)[key] = datos.rubrica[key];
+      this.rubricaGuardada = false;
+    }
+    if (this.stepper && Number.isInteger(datos.paso) && datos.paso >= 0 && datos.paso <= 2) this.stepper.selectedIndex = datos.paso;
+  }
+
+
 
 }

@@ -53,7 +53,7 @@
   </div>
 
 
-  <form
+  <form [appBorrador]="informeDeic || (modoHistorico ? 'historico' : 'nuevo')" [prepararBorrador]="prepararBorrador"
     [formGroup]="myForm"
     (ngSubmit)="registrarCaso()"
     class="v3-form">

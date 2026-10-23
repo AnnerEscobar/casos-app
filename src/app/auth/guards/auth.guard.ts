@@ -3,12 +3,15 @@ import { CanActivateFn, Router } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
 import { AuthService } from '../auth-service/auth.service';
 
-export const authGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = (_route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
   return authService.checkSession().pipe(
     map(() => true),
-    catchError(() => of(router.createUrlTree(['/login'])))
+    catchError(() => {
+      authService.expireSession();
+      return of(router.createUrlTree(['/login'], { queryParams: { returnUrl: state.url, sessionExpired: '1' } }));
+    })
   );
 };

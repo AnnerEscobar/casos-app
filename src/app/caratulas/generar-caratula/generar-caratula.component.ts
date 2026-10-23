@@ -1,3 +1,4 @@
+import { BorradorFormularioDirective } from '../../shared/borradores/borrador-formulario.directive';
 import { Component, OnInit, inject } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,7 +15,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-generar-caratula',
-  imports: [
+  imports: [BorradorFormularioDirective,
     ReactiveFormsModule, CommonModule,
     MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule,
     MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatSnackBarModule,

@@ -1,3 +1,4 @@
+import { BorradorFormularioDirective } from '../../shared/borradores/borrador-formulario.directive';
 import { CargaArchivoComponent } from '../../shared/components/carga-archivo/carga-archivo.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -30,7 +31,7 @@ const OPCIONES:Record<string,readonly string[]>={
 
 @Component({
   selector:'app-maltrato-gestion',
-  imports:[CargaArchivoComponent,CommonModule,ReactiveFormsModule,RouterLink,MatFormFieldModule,MatInputModule,MatSelectModule,MatButtonModule,MatIconModule],
+  imports:[BorradorFormularioDirective,CargaArchivoComponent,CommonModule,ReactiveFormsModule,RouterLink,MatFormFieldModule,MatInputModule,MatSelectModule,MatButtonModule,MatIconModule],
   templateUrl:'./maltrato-gestion.component.html',styleUrl:'./maltrato-gestion.component.css',
 })
 export default class MaltratoGestionComponent implements OnInit {
@@ -141,8 +142,10 @@ export default class MaltratoGestionComponent implements OnInit {
       if(!this.file){this.error='Selecciona el expediente completo en PDF.';return;}
     }
     this.ocupado=true;this.error='';
+    const revisionGuardada=JSON.stringify(this.form.getRawValue());
     const request=this.id?this.api.guardar(this.id,this.payload()):this.api.registrar(this.payload());
     request.subscribe({next:c=>{
+      if(JSON.stringify(this.form.getRawValue())===revisionGuardada)this.form.markAsPristine();
       if(entregar && this.id){this.api.entregar(this.id,this.file!).subscribe({next:r=>{this.caso=r;this.file=null;this.form.disable();this.ocupado=false;this.snack.open('Expediente enviado al analista para revisión.','Cerrar',{duration:5000});},error:e=>{this.ocupado=false;this.error=this.mensaje(e);}});return;}
       this.ocupado=false;
       if(this.id)this.caso=c;
@@ -152,4 +155,12 @@ export default class MaltratoGestionComponent implements OnInit {
   }
   seleccionar(event:Event){const input=event.target as HTMLInputElement,file=input.files?.[0];this.file=null;if(file && file.type==='application/pdf')this.file=file;else if(file){this.error='Selecciona un archivo PDF.';input.value='';}}
   descargar(){if(this.ocupado)return;this.ocupado=true;this.api.exportar().subscribe({next:blob=>{const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='base-maltrato.xlsx';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);this.ocupado=false;},error:()=>{this.ocupado=false;this.error='No fue posible generar el Excel. Intenta nuevamente.';}});}
+  prepararBorrador = (datos: any) => {
+    for (const tipo of ["victimas","sindicados"] as const) {
+      const cantidad = Array.isArray(datos[tipo]) ? datos[tipo].length : 0;
+      while (this.personas(tipo).length < cantidad) this.agregarPersona(tipo);
+      while (this.personas(tipo).length > cantidad) this.personas(tipo).removeAt(this.personas(tipo).length - 1);
+    }
+  };
+
 }

@@ -18,7 +18,7 @@
       <span class="section-title">Datos de la carátula</span>
     </div>
 
-    <form [formGroup]="caratulaForm" (ngSubmit)="generarCaratula()">
+    <form appBorrador="caratula" [formGroup]="caratulaForm" (ngSubmit)="generarCaratula()">
 
       <!-- Identificadores -->
       <div class="fields-grid fields-grid-3">

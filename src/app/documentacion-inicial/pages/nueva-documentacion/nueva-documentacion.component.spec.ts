@@ -5,6 +5,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { of, throwError } from 'rxjs';
 import { NuevaDocumentacionComponent } from './nueva-documentacion.component';
 import { DocumentacionInicialService } from '../../services/documentacion-inicial.service';
+import { AuthService } from '../../../auth/auth-service/auth.service';
+import { BorradoresService } from '../../../shared/borradores/borradores.service';
 
 describe('Preparar documentos desde el expediente', () => {
   const documento = { _id: 'documento', tipoCaso: 'Alerta', numeroDeic: 'DEIC52-2026-10-18-001', casoId: 'caso', estado: 'BORRADOR', pasoActual: 3,
@@ -14,7 +16,7 @@ describe('Preparar documentos desde el expediente', () => {
   const rubrica = { titulo: 'Rúbrica', preguntaProtocolo: '¿Conoce el protocolo?', conoceProtocolo: 'SI', items: [{ codigo: 'B', descripcion: 'Elemento', tipo: 'ITEM', respuesta: 'SI' }] };
   let api: any;
 
-  async function crear(tipo = 'Alerta', existente: any = null, editable = true, error = false) {
+  async function crear(tipo = 'Alerta', existente: any = null, editable = true, error = false, usuario = '') {
     api = {
       paraCaso: jasmine.createSpy().and.returnValue(error ? throwError(() => ({ error: { message: 'Acceso denegado' } })) : of({
         casoId: 'caso', tipoCaso: tipo, numeroDeic: documento.numeroDeic, editable, documentacion: existente,
@@ -30,9 +32,10 @@ describe('Preparar documentos desde el expediente', () => {
     };
     await TestBed.configureTestingModule({ imports: [NuevaDocumentacionComponent], providers: [
       provideRouter([]), provideNoopAnimations(),
+      { provide: AuthService, useValue: { getCurrentUser: () => usuario ? { userId: usuario } : null } },
       { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap({ tipo, casoId: 'caso' }) } } },
       { provide: DocumentacionInicialService, useValue: api }, { provide: MatSnackBar, useValue: { open: jasmine.createSpy() } },
-    ] }).compileComponents();
+    ] }).overrideProvider(MatSnackBar, { useValue: { open: jasmine.createSpy() } }).compileComponents();
     const fixture = TestBed.createComponent(NuevaDocumentacionComponent);
     fixture.detectChanges(); await fixture.whenStable(); fixture.detectChanges();
     return { fixture, c: fixture.componentInstance };
@@ -47,11 +50,29 @@ describe('Preparar documentos desde el expediente', () => {
       expect(c.caratulaForm.get('numeroDeic')?.disabled).toBeTrue();
       expect(c.caratulaForm.get('tipoCaso')?.disabled).toBeTrue();
       expect(c.volverExpediente).toEqual(['/casos', `${tipo.toLowerCase()}-expediente`, 'caso']);
-      expect(fixture.nativeElement.textContent).toContain('Imprimir no envía el expediente al analista');
+      expect(fixture.nativeElement.textContent).toContain('Descargar el PDF no envía el expediente a revisión');
       if (tipo === 'Alerta') expect(c.caratulaForm.get('numeroAlerta')?.value).toBe('123-2026');
       expect(api.crear).not.toHaveBeenCalled();
     });
   }
+
+  it('recupera carátula, plan y rúbrica sin enviar datos ni crear otro documento', async () => {
+    const storage = new BorradoresService();
+    const claves = ['documentacion-caratula', 'documentos-extras'].map(s => storage.clave('docs-owner', '/:' + s));
+    claves.forEach(k => storage.eliminar(k));
+    const { fixture, c } = await crear('Alerta', documento, true, false, 'docs-owner');
+    c.caratulaForm.markAsDirty(); c.caratulaForm.patchValue({ nombre: 'Nombre pendiente' });
+    c.elementosPlan[0].informacionObtenida = 'Plan a medias'; c.planGuardado = false;
+    c.supervisorNombre = 'Supervisor pendiente'; c.rubricaGuardada = false;
+    c.estadoLocal?.guardar(); await fixture.whenStable(); fixture.destroy();
+    const nuevo = TestBed.createComponent(NuevaDocumentacionComponent);
+    nuevo.detectChanges(); await nuevo.whenStable(); nuevo.detectChanges();
+    expect(nuevo.componentInstance.caratulaForm.get('nombre')?.value).toBe('Nombre pendiente');
+    expect(nuevo.componentInstance.elementosPlan[0].informacionObtenida).toBe('Plan a medias');
+    expect(nuevo.componentInstance.supervisorNombre).toBe('Supervisor pendiente');
+    expect(api.crear).not.toHaveBeenCalled(); expect(api.guardarPlan).not.toHaveBeenCalled();
+    nuevo.destroy(); claves.forEach(k => storage.eliminar(k));
+  });
 
   it('guarda un borrador con el casoId y datos parciales, sin enviar el expediente', async () => {
     const { c } = await crear();

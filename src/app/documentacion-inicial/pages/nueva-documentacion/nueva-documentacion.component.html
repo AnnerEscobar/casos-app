@@ -1,4 +1,4 @@
-<div class="documentacion-container">
+<div appBorradorEstado="documentos-extras" #estadoLocal="borradorEstado" [capturarBorrador]="capturarEstadoLocal" [borradorDisponible]="!cargandoCaso && !cargandoPlan && !cargandoRubrica && !soloLectura" (recuperarEstado)="recuperarEstadoLocal($event)" (click)="estadoLocal.guardar()" class="documentacion-container">
   <a *ngIf="volverExpediente" mat-button [routerLink]="volverExpediente"><mat-icon>arrow_back</mat-icon>Volver al expediente</a>
   <p *ngIf="cargandoCaso" role="status">Cargando documentos del caso…</p>
   <p *ngIf="errorContexto" role="alert">{{errorContexto}}</p>
@@ -66,6 +66,7 @@
 
     <mat-horizontal-stepper
       #stepper
+      (selectionChange)="estadoLocal.guardar()"
       [linear]="false"
     >
 
@@ -105,7 +106,7 @@
           <mat-divider></mat-divider>
 
 
-          <form
+          <form appBorrador="documentacion-caratula"
             [formGroup]="caratulaForm"
             class="form-section"
           >
@@ -683,7 +684,7 @@
                     [(ngModel)]="
                       elemento.informacionObtenida
                     "
-                    (ngModelChange)="planGuardado = false"
+                    (ngModelChange)="planGuardado = false; estadoLocal.guardar()"
                     [disabled]="soloLectura || guardando"
                     rows="5"
                   ></textarea>
@@ -704,7 +705,7 @@
                     [(ngModel)]="
                       elemento.informacionNecesitaObtener
                     "
-                    (ngModelChange)="planGuardado = false"
+                    (ngModelChange)="planGuardado = false; estadoLocal.guardar()"
                     [disabled]="soloLectura || guardando"
                     rows="5"
                   ></textarea>
@@ -725,7 +726,7 @@
                     [(ngModel)]="
                       elemento.diligenciasRealizar
                     "
-                    (ngModelChange)="planGuardado = false"
+                    (ngModelChange)="planGuardado = false; estadoLocal.guardar()"
                     [disabled]="soloLectura || guardando"
                     rows="5"
                   ></textarea>
@@ -743,7 +744,7 @@
 
             <mat-form-field appearance="outline" class="field-full">
               <mat-label>Nombre del mando, si se conoce</mat-label>
-              <input matInput [(ngModel)]="mandoNombre" (ngModelChange)="planGuardado = false" [disabled]="soloLectura || guardando">
+              <input matInput [(ngModel)]="mandoNombre" (ngModelChange)="planGuardado = false; estadoLocal.guardar()" [disabled]="soloLectura || guardando">
             </mat-form-field>
             <mat-form-field
               appearance="outline"
@@ -759,7 +760,7 @@
                 [(ngModel)]="
                   observacionesPlan
                 "
-                (ngModelChange)="planGuardado = false"
+                (ngModelChange)="planGuardado = false; estadoLocal.guardar()"
                 [disabled]="soloLectura || guardando"
                 rows="4"
               ></textarea>
@@ -926,11 +927,11 @@
 
             <mat-form-field appearance="outline" class="field-full">
               <mat-label>Departamento, sección o delegación supervisada</mat-label>
-              <input matInput [(ngModel)]="dependenciaSupervisada" (ngModelChange)="rubricaGuardada = false" [disabled]="soloLectura || guardando">
+              <input matInput [(ngModel)]="dependenciaSupervisada" (ngModelChange)="rubricaGuardada = false; estadoLocal.guardar()" [disabled]="soloLectura || guardando">
             </mat-form-field>
             <mat-form-field appearance="outline" class="field-full">
               <mat-label>Nombre del supervisor, si se conoce</mat-label>
-              <input matInput [(ngModel)]="supervisorNombre" (ngModelChange)="rubricaGuardada = false" [disabled]="soloLectura || guardando">
+              <input matInput [(ngModel)]="supervisorNombre" (ngModelChange)="rubricaGuardada = false; estadoLocal.guardar()" [disabled]="soloLectura || guardando">
               <mat-hint>Indica al supervisor, no al investigador asignado.</mat-hint>
             </mat-form-field>
             <h3 class="document-title">
@@ -961,7 +962,7 @@
                 [(ngModel)]="
                   conoceProtocolo
                 "
-                (ngModelChange)="rubricaGuardada = false"
+                (ngModelChange)="rubricaGuardada = false; estadoLocal.guardar()"
                 [disabled]="soloLectura || guardando"
                 class="yes-no-group"
               >
@@ -1036,7 +1037,7 @@
                     [(ngModel)]="
                       item.respuesta
                     "
-                    (ngModelChange)="rubricaGuardada = false"
+                    (ngModelChange)="rubricaGuardada = false; estadoLocal.guardar()"
                     [disabled]="soloLectura || guardando"
                     class="yes-no-group"
                   >
@@ -1073,7 +1074,7 @@
                       [(ngModel)]="
                         item.observaciones
                       "
-                      (ngModelChange)="rubricaGuardada = false"
+                      (ngModelChange)="rubricaGuardada = false; estadoLocal.guardar()"
                       [disabled]="soloLectura || guardando"
                     >
 

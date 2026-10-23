@@ -9,7 +9,7 @@
   @if(caso){<p class="aviso">{{caso.expedienteEnPreparacion?'Pendiente de entrega del investigador':caso.estadoRegistro}}{{caso.estadoRegistro==='Rechazado' && caso.motivoRechazo?': '+caso.motivoRechazo:''}}</p>}
   @if(caso && !analista){<section><h2>Preparar documentos</h2><p>Guarda los datos del caso antes de preparar los documentos.</p><nav class="acciones" aria-label="Documentación del caso"><a mat-stroked-button routerLink="/casos/documentacion-inicial" [queryParams]="{tipo:'Maltrato',casoId:id}">Carátula, plan y rúbrica</a><a mat-stroked-button routerLink="/casos/crear-informe">Preparar informe</a></nav></section>}
   @if((analista && !id) || caso){
-    <form [formGroup]="form" (ngSubmit)="guardar()">
+    <form appBorrador="gestion-maltrato" [prepararBorrador]="prepararBorrador" [formGroup]="form" (ngSubmit)="guardar()">
       <section><h2>Identificación y asignación</h2><div class="grid">
         <mat-form-field appearance="outline" floatLabel="always"><mat-label>Número DEIC</mat-label><input matInput formControlName="numeroDeic" placeholder="DEIC51-2026-10-09-001"><mat-error>Ingresa un número DEIC válido.</mat-error></mat-form-field>
         <mat-form-field appearance="outline" floatLabel="always"><mat-label>Número de documento / MP</mat-label><input matInput formControlName="numeroMp" placeholder="M0030-2026-100"><mat-error>Revisa el formato del número MP.</mat-error></mat-form-field>

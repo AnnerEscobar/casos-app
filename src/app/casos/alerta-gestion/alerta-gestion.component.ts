@@ -1,3 +1,4 @@
+import { BorradorFormularioDirective } from '../../shared/borradores/borrador-formulario.directive';
 import { CargaArchivoComponent } from '../../shared/components/carga-archivo/carga-archivo.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -18,7 +19,7 @@ import { GEOGRAFIA_ALERTA, OPCIONES_ALERTA } from './alerta-catalogos';
 
 @Component({
   selector:'app-alerta-gestion',
-  imports:[CargaArchivoComponent,CommonModule,ReactiveFormsModule,RouterLink,MatFormFieldModule,MatInputModule,MatSelectModule,MatButtonModule,MatIconModule],
+  imports:[BorradorFormularioDirective,CargaArchivoComponent,CommonModule,ReactiveFormsModule,RouterLink,MatFormFieldModule,MatInputModule,MatSelectModule,MatButtonModule,MatIconModule],
   templateUrl:'./alerta-gestion.component.html',styleUrl:'./alerta-gestion.component.css',
 })
 export default class AlertaGestionComponent implements OnInit {
@@ -127,8 +128,10 @@ export default class AlertaGestionComponent implements OnInit {
     if(this.form.invalid){this.form.markAllAsTouched();this.error='Revisa los campos obligatorios y los formatos indicados.';return;}
     if(entregar && !this.file){this.error='Selecciona el expediente completo en PDF.';return;}
     this.ocupado=true;this.error='';
+    const revisionGuardada=JSON.stringify(this.form.getRawValue());
     const request=this.id?this.api.guardar(this.id,this.payload()):this.api.registrar(this.payload());
     request.subscribe({next:c=>{
+      if(JSON.stringify(this.form.getRawValue())===revisionGuardada)this.form.markAsPristine();
       if(entregar && this.id){this.api.entregar(this.id,this.file!).subscribe({next:entregado=>{this.caso=entregado;this.file=null;this.form.disable();this.ocupado=false;this.snack.open('Expediente enviado al analista para revisión.','Cerrar',{duration:5000});},error:e=>{this.ocupado=false;this.error=this.mensaje(e);}});return;}
       this.ocupado=false;
       if(this.id)this.caso=c;

@@ -1,3 +1,4 @@
+import { BorradorFormularioDirective } from '../../../shared/borradores/borrador-formulario.directive';
 import { CargaArchivoComponent } from '../../../shared/components/carga-archivo/carga-archivo.component';
 import { Input, Output, EventEmitter, DestroyRef } from '@angular/core';
 import { HistoricoDataComponent } from '../../historicos/historico-data.component';
@@ -46,7 +47,7 @@ import { InformeService } from '../../../informes/services/informe.service';
     provideNativeDateAdapter()
   ],
 
-  imports: [CargaArchivoComponent,HistoricoDataComponent,
+  imports: [BorradorFormularioDirective,CargaArchivoComponent,HistoricoDataComponent,
     MatFormFieldModule,
     MatSelectModule,
     ReactiveFormsModule,
@@ -154,9 +155,6 @@ export default class AddCaseConflictoComponent
   casoYaExiste = false;
 
   deicDuplicado = '';
-
-  private readonly draftKey =
-    'draft:add-case-conflicto';
 
 
   /* =====================================================
@@ -345,10 +343,6 @@ export default class AddCaseConflictoComponent
 
       });
 
-
-    } else {
-
-      this.restaurarBorradorLocal();
 
     }
 
@@ -610,9 +604,6 @@ export default class AddCaseConflictoComponent
 
     }
 
-
-    this.guardarBorradorLocal();
-
     this.isLoading = true;
 
 
@@ -794,11 +785,6 @@ export default class AddCaseConflictoComponent
           );
 
 
-          sessionStorage.removeItem(
-            this.draftKey
-          );
-
-
           this.selectedFile =
             null;
 
@@ -917,194 +903,18 @@ export default class AddCaseConflictoComponent
      RESET
   ===================================================== */
 
-  resetFormState(
-    form: FormGroup
-  ): void {
-
+  resetFormState(form: FormGroup): void {
     form.reset();
-
-
-    Object.keys(
-      form.controls
-    ).forEach(
-      key => {
-
-        const control =
-          form.get(key);
-
-
-        if (
-          control instanceof
-          FormGroup
-        ) {
-
-          this.resetFormState(
-            control
-          );
-
-        } else {
-
-          control
-            ?.markAsPristine();
-
-          control
-            ?.markAsUntouched();
-
-          control
-            ?.setErrors(null);
-
-        }
-
-      }
-    );
-
+    form.markAsPristine();
+    form.markAsUntouched();
   }
-
-
-  /* =====================================================
-     BORRADOR
-  ===================================================== */
-
-  private guardarBorradorLocal():
-    void {
-
-    sessionStorage.setItem(
-      this.draftKey,
-
-      JSON.stringify({
-
-        value:
-          this.myForm
-            .getRawValue(),
-
-        fileName:
-          this.fileName
-
-      })
-    );
-
-  }
-
-
-  private restaurarBorradorLocal():
-    void {
-
-    const raw =
-      sessionStorage.getItem(
-        this.draftKey
-      );
-
-
-    if (!raw) {
-      return;
+  prepararBorrador = (datos: any) => {
+    for (const tipo of ['infractores', 'victimas'] as const) {
+      const cantidad = Array.isArray(datos[tipo]) ? datos[tipo].length : 0;
+      while (this[tipo].length < cantidad) { if (tipo === 'infractores') this.agregarInfractor(); else this.agregarVictima(); }
+      while (this[tipo].length > cantidad) this[tipo].removeAt(this[tipo].length - 1);
     }
+  };
 
-
-    try {
-
-      const draft =
-        JSON.parse(raw);
-
-      const value =
-        draft.value || {};
-
-
-      value.infractores =
-        (
-          value.infractores ||
-          []
-        ).map(
-          (item: any) => ({
-
-            ...item,
-
-            fecha_Nac:
-              item.fecha_Nac
-                ? new Date(
-                    item.fecha_Nac
-                  )
-                : null
-
-          })
-        );
-
-
-      value.victimas =
-        (
-          value.victimas ||
-          []
-        ).map(
-          (item: any) => ({
-
-            ...item,
-
-            fecha_Nac:
-              item.fecha_Nac
-                ? new Date(
-                    item.fecha_Nac
-                  )
-                : null
-
-          })
-        );
-
-
-      this.infractores.clear();
-
-      this.victimas.clear();
-
-
-      (
-        value.infractores?.length
-          ? value.infractores
-          : [{}]
-      ).forEach(
-        () =>
-          this.agregarInfractor()
-      );
-
-
-      (
-        value.victimas?.length
-          ? value.victimas
-          : [{}]
-      ).forEach(
-        () =>
-          this.agregarVictima()
-      );
-
-
-      this.myForm.patchValue(
-        value
-      );
-
-
-      this.fileName =
-        draft.fileName
-          ? `${draft.fileName} (selecciona el archivo nuevamente)`
-          : null;
-
-
-      this._snackBar.open(
-        'Recuperé un borrador local. Revisa los datos y selecciona el archivo nuevamente.',
-        'Cerrar',
-        {
-          duration: 5000,
-          panelClass: [
-            'snack-warning'
-          ]
-        }
-      );
-
-
-    } catch {
-
-      sessionStorage.removeItem(
-        this.draftKey
-      );
-
-    }
-
-  }
 
 }

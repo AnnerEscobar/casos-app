@@ -65,7 +65,7 @@
   </div>
 
 
-  <form
+  <form appBorrador="seguimiento-maltrato" (borradorRecuperado)="recuperarSeguimiento()"
     [formGroup]="seguimientoForm"
     (ngSubmit)="enviarSeguimiento()"
     class="v3-form">

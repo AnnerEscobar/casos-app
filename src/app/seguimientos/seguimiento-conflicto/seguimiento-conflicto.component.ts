@@ -1,3 +1,4 @@
+import { BorradorFormularioDirective } from '../../shared/borradores/borrador-formulario.directive';
 import { CargaArchivoComponent } from '../../shared/components/carga-archivo/carga-archivo.component';
 import { SeguimientoParticipantesComponent } from '../seguimiento-participantes.component';
 import { ultimoSeguimiento, estaCerrado } from '../seguimiento-terminal';
@@ -40,7 +41,7 @@ import {
 @Component({
   selector: 'app-seguimiento-conflicto',
 
-  imports: [CargaArchivoComponent,SeguimientoParticipantesComponent, HistoricoInfoComponent, ResponsableSeguimientoComponent,
+  imports: [BorradorFormularioDirective,CargaArchivoComponent,SeguimientoParticipantesComponent, HistoricoInfoComponent, ResponsableSeguimientoComponent,
     CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -92,6 +93,12 @@ export default class SeguimientoConflictoComponent
     }
   }
 
+  private borradorPendiente: any;
+  recuperarSeguimiento = () => {
+    this.borradorPendiente = this.seguimientoForm.getRawValue();
+    this.buscarCaso();
+  };
+
   seleccionarCaso(caso: CasoSeguimiento): void {
     this.bloqueoServidor = false;
     this.casoEncontrado = caso;
@@ -103,6 +110,10 @@ export default class SeguimientoConflictoComponent
     this.investigadorAsignado.updateValueAndValidity();
     const estado = this.estados.some(e => e.value === caso.estadoInvestigacion) ? caso.estadoInvestigacion : '';
     this.seguimientoForm.patchValue({ numeroDeic: caso.numeroDeic, nuevoEstado: estado });
+    if (this.borradorPendiente?.numeroDeic === caso.numeroDeic) {
+      this.seguimientoForm.patchValue(this.borradorPendiente);
+      this.borradorPendiente = null;
+    }
   }
 
   bloqueoServidor = false;
@@ -177,6 +188,7 @@ export default class SeguimientoConflictoComponent
         ],
 
       });
+    this.seguimientoForm.addControl('investigadorAsignado', this.investigadorAsignado);
 
 
     this.seguimientoForm.get('numeroDeic')?.valueChanges.subscribe((valor: string) => {
@@ -441,6 +453,7 @@ export default class SeguimientoConflictoComponent
       .subscribe({
 
         next: (respuesta) => {
+          this.seguimientoForm.markAsPristine();
 
           this.snackBar.open(
             'Seguimiento registrado correctamente.',

@@ -227,7 +227,7 @@ describe('Históricos: continuidad del seguimiento', () => {
   beforeEach(() => {
     history.replaceState({}, ''); rol = UserRole.INVESTIGADOR;
     TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting(), provideNoopAnimations(), provideRouter([]),
-      { provide: AuthService, useValue: { hasRole: (r: UserRole) => r === rol } }] });
+      { provide: AuthService, useValue: { hasRole: (r: UserRole) => r === rol, getCurrentUser: () => null } }] });
     http = TestBed.inject(HttpTestingController);
   });
   afterEach(() => { TestBed.inject(MatDialog).closeAll(); http.verify(); });

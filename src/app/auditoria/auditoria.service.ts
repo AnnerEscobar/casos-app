@@ -8,6 +8,7 @@ export interface EventoAuditoria {
   accion: string; resultado: string; recurso: string; recursoId?: string;
   numeroDeic?: string; casoId?: string; metodo: string; ruta: string; ip: string; agente: string;
   codigoHttp?: number; integridadValida: boolean;
+  sesion?: { id: string; inicio: string; fin?: string; ultimaActividad?: string; duracionSegundos?: number; motivo?: string };
   cambios: { campo: string; anterior: unknown; nuevo: unknown }[];
 }
 export interface PaginaAuditoria { registros: EventoAuditoria[]; total: number; pagina: number; limite: number; }

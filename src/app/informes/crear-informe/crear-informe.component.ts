@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { BorradorEstadoDirective } from '../../shared/borradores/borrador-estado.directive';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -17,7 +18,7 @@ import { InformeService } from '../services/informe.service';
 @Component({
   selector: 'app-crear-informe',
   standalone: true,
-  imports: [
+  imports: [BorradorEstadoDirective,
     CommonModule, FormsModule, MatIconModule, MatButtonModule,
     MatInputModule, MatSelectModule, MatSnackBarModule,
     MatProgressSpinnerModule, MatTooltipModule,
@@ -76,6 +77,7 @@ export class CrearInformeComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.baseLocal = JSON.parse(JSON.stringify(this.estadoCampos()));
     const deic = this.route.snapshot.queryParamMap.get('deic');
     if (deic) {
       this.modoInicio = false;
@@ -142,6 +144,7 @@ export class CrearInformeComponent implements OnInit {
         this.cargarSecciones();
         this.modoInicio = false;
         this.cargando = false;
+        this.estadoLocal?.guardar();
       },
       error: (err) => {
         this.error = err.error?.message || 'Error al crear el informe.';
@@ -175,6 +178,8 @@ export class CrearInformeComponent implements OnInit {
     this.perfilacionLugar = this.normalizarPerfilacionLugar(this.informe.perfilacionLugar);
     this.diligencias = { ...this.informe.diligencias };
     this.conclusiones = { ...this.informe.conclusiones };
+    this.baseLocal = JSON.parse(JSON.stringify(this.estadoCampos()));
+    if (this.pendienteLocal) { const datos = this.pendienteLocal; this.pendienteLocal = null; this.recuperarEstadoLocal(datos); }
   }
 
   seleccionarSeccion(key: string) {
@@ -202,6 +207,8 @@ export class CrearInformeComponent implements OnInit {
       next: (data) => {
         this.informe = data;
         this.guardando = false;
+        for (const key of Object.keys(payload).filter(k => k !== 'seccionesCompletadas')) this.baseLocal[key] = JSON.parse(JSON.stringify(data[key] ?? {}));
+        this.estadoLocal?.guardar();
         this.snackBar.open('Sección guardada correctamente.', 'OK', { duration: 2000 });
       },
       error: () => {
@@ -554,4 +561,25 @@ export class CrearInformeComponent implements OnInit {
 
     return true;
   }
+
+  @ViewChild(BorradorEstadoDirective) estadoLocal?: BorradorEstadoDirective;
+  private pendienteLocal: any;
+  private baseLocal: Record<string, any> = {};
+  private readonly camposLocales = ['nuevoNumeroDeic', 'nuevoNumeroMp', 'nuevoNumeroAlerta', 'nuevoTipo', 'seccionActiva', 'datosGenerales', 'perfilVictima', 'nuevaVictima', 'indiceVictimaEditando', 'perfilSecundario', 'nuevoPerfilSecundario', 'indicePerfilSecundarioEditando', 'entrevistas', 'nuevaEntrevista', 'perfilacionLugar', 'diligencias', 'conclusiones'];
+  private estadoCampos() { return Object.fromEntries(this.camposLocales.map(key => [key, (this as any)[key]])); }
+  capturarEstadoLocal = () => {
+    if (this.cargando) return undefined;
+    return { informeDeic: this.informe?.numeroDeic || null,
+      ...Object.fromEntries(Object.entries(this.estadoCampos()).filter(([key, value]) => JSON.stringify(value) !== JSON.stringify(this.baseLocal[key]))) };
+  };
+  recuperarEstadoLocal(datos: any) {
+    if (datos.errorBorrador) { this.snackBar.open('No se pudo guardar el borrador local. Guarda los cambios antes de salir.', 'Cerrar', { duration: 5000 }); return; }
+    if (datos.informeDeic && this.informe?.numeroDeic !== datos.informeDeic) {
+      this.pendienteLocal = datos; this.modoInicio = false; this.cargarInforme(datos.informeDeic); return;
+    }
+    if (['REGISTRADO', 'EN_REVISION'].includes(this.informe?.estado)) return;
+    for (const key of this.camposLocales) if (Object.prototype.hasOwnProperty.call(datos, key)) (this as any)[key] = datos[key];
+  }
+
+
 }

@@ -31,7 +31,7 @@
           <td>{{ e.fecha | date:'dd/MM/yyyy HH:mm:ss.SSS':'-0600' }}</td>
           <td>{{ e.usuario.nombre }}<small>{{ e.usuario.rol }} · {{ e.usuario.id || 'Sin sesión autenticada' }}</small></td>
           <td>{{ e.accion }} · {{ e.recurso }}<small>{{ e.numeroDeic || e.ruta }}</small></td>
-          <td>{{ e.resultado }}</td><td [class.error]="!e.integridadValida">{{ e.integridadValida ? 'Firma válida' : 'ALERTA: firma inválida' }}</td>
+          <td>{{ e.resultado }}@if (e.sesion; as s) {@if (s.duracionSegundos !== undefined) {<small>Duración: {{ duracion(s.duracionSegundos) }}</small><small>{{ s.motivo }}</small>}}</td><td [class.error]="!e.integridadValida">{{ e.integridadValida ? 'Firma válida' : 'ALERTA: firma inválida' }}</td>
           <td><button mat-button type="button" (click)="seleccionado = e" [attr.aria-label]="'Ver evento ' + e.eventoId">Ver detalle</button></td>
         </tr>} @empty {<tr><td colspan="6">No hay registros para estos filtros. Prueba ampliar las fechas o quitar algún filtro.</td></tr>}
       </tbody></table></div>
@@ -49,6 +49,16 @@
         <dt>Petición</dt><dd>{{ e.metodo }} {{ e.ruta }} {{ e.codigoHttp || '' }}</dd>
         <dt>Dirección de conexión</dt><dd>{{ e.ip }}</dd><dt>Navegador declarado</dt><dd>{{ e.agente }}</dd>
       </dl>
+      @if (e.sesion; as s) {
+        <h3>Sesión</h3>
+        <dl><dt>Identificador</dt><dd>{{ s.id }}</dd>
+          <dt>Inicio</dt><dd>{{ s.inicio | date:'dd/MM/yyyy HH:mm:ss':'-0600' }}</dd>
+          @if (s.fin) {<dt>Fin</dt><dd>{{ s.fin | date:'dd/MM/yyyy HH:mm:ss':'-0600' }}</dd>}
+          @if (s.ultimaActividad) {<dt>Última actividad</dt><dd>{{ s.ultimaActividad | date:'dd/MM/yyyy HH:mm:ss':'-0600' }}</dd>}
+          @if (s.duracionSegundos !== undefined) {<dt>Duración total (incluye espera por inactividad)</dt><dd>{{ duracion(s.duracionSegundos) }}</dd>}
+          @if (s.motivo) {<dt>Motivo del cierre</dt><dd>{{ s.motivo }}</dd>}
+        </dl>
+      }
       <h3>Cambios guardados</h3><div class="tabla"><table><thead><tr><th>Campo</th><th>Anterior</th><th>Nuevo</th></tr></thead><tbody>
         @for (c of e.cambios; track c.campo) {<tr><td>{{ nombreCampo(c.campo) }}</td><td class="valor">{{ valor(c.anterior) }}</td><td class="valor">{{ valor(c.nuevo) }}</td></tr>}
         @empty {<tr><td colspan="3">Evento de acceso o solicitud; sin cambios de datos en este registro.</td></tr>}

@@ -51,6 +51,10 @@ export default class AuditoriaComponent implements OnInit {
   }
   get paginas() { return Math.max(1, Math.ceil(this.total / 25)); }
   valor(value: unknown) { return value === null || value === undefined ? 'Sin valor' : typeof value === 'object' ? JSON.stringify(value) : String(value); }
+  duracion(segundos: number) {
+    const minutos = Math.floor(segundos / 60);
+    return `${Math.floor(minutos / 60)} h ${minutos % 60} min ${segundos % 60} s`;
+  }
   nombreCampo(campo: string) {
     return ({ estadoInvestigacion: 'Estado de investigación', estadoRegistro: 'Estado de revisión', investigadorAsignado: 'Investigador asignado', expedienteEnPreparacion: 'Expediente en preparación' } as Record<string, string>)[campo] || campo;
   }

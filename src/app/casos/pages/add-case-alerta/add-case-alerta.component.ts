@@ -1,3 +1,4 @@
+import { BorradorFormularioDirective } from '../../../shared/borradores/borrador-formulario.directive';
 import { CargaArchivoComponent } from '../../../shared/components/carga-archivo/carga-archivo.component';
 import { Input, Output, EventEmitter, DestroyRef } from '@angular/core';
 import { HistoricoDataComponent } from '../../historicos/historico-data.component';
@@ -24,7 +25,7 @@ import { InformeService } from '../../../informes/services/informe.service';
 @Component({
   selector: 'app-add-case-alerta',
   providers: [provideNativeDateAdapter()],
-  imports: [CargaArchivoComponent,HistoricoDataComponent,
+  imports: [BorradorFormularioDirective,CargaArchivoComponent,HistoricoDataComponent,
     CommonModule, MatButtonModule, MatDatepickerModule,
     MatFormFieldModule, MatIconModule, MatInputModule,
     MatSelectModule, MatSlideToggleModule, ReactiveFormsModule,
@@ -88,7 +89,6 @@ export default class AddCaseAlertaComponent implements OnInit {
   informeDeic: string | null = null;
   casoYaExiste = false;
   deicDuplicado = '';
-  private readonly draftKey = 'draft:add-case-alerta';
 
   estados = [
     { value: 'Informado', viewValue: 'Informado' },
@@ -338,8 +338,6 @@ export default class AddCaseAlertaComponent implements OnInit {
 
         }
       });
-    } else {
-      this.restaurarBorradorLocal();
     }
   }
 
@@ -451,9 +449,6 @@ onFileSelected(event: Event): void {
 
     return;
   }
-
-
-  this.guardarBorradorLocal();
 
   this.isLoading = true;
 
@@ -663,11 +658,6 @@ onFileSelected(event: Event): void {
         );
 
 
-        sessionStorage.removeItem(
-          this.draftKey
-        );
-
-
         this.selectedFile = null;
 
         this.fileName = null;
@@ -741,98 +731,9 @@ onFileSelected(event: Event): void {
     });
   }
 
-  resetFormState(form: FormGroup) {
+  resetFormState(form: FormGroup): void {
     form.reset();
-    Object.keys(form.controls).forEach(key => {
-      const control = form.get(key);
-      if (control instanceof FormGroup) {
-        this.resetFormState(control);
-      } else {
-        control?.markAsPristine();
-        control?.markAsUntouched();
-        control?.setErrors(null);
-      }
-    });
+    form.markAsPristine();
+    form.markAsUntouched();
   }
-
-  private guardarBorradorLocal(): void {
-    sessionStorage.setItem(this.draftKey, JSON.stringify({
-      value: this.myForm.getRawValue(),
-      fileName: this.fileName,
-    }));
-  }
-
-  private restaurarBorradorLocal(): void {
-
-  const raw =
-    sessionStorage.getItem(
-      this.draftKey
-    );
-
-  if (!raw) return;
-
-
-  try {
-
-    const draft =
-      JSON.parse(raw);
-
-    const value =
-      draft.value || {};
-
-
-    if (value.fecha_Nac) {
-
-      value.fecha_Nac =
-        new Date(
-          value.fecha_Nac
-        );
-
-    }
-
-
-    if (
-      value.datosLocalizacion
-        ?.fechaLocalizacion
-    ) {
-
-      value.datosLocalizacion
-        .fechaLocalizacion =
-          new Date(
-            value.datosLocalizacion
-              .fechaLocalizacion
-          );
-
-    }
-
-
-    this.myForm.patchValue(
-      value
-    );
-
-
-    this.fileName =
-      draft.fileName
-        ? `${draft.fileName} (selecciona el archivo nuevamente)`
-        : null;
-
-
-    this._snackBar.open(
-      'Recuperé un borrador local. Revisa los datos y selecciona el archivo nuevamente.',
-      'Cerrar',
-      {
-        duration: 5000,
-        panelClass: ['snack-warning']
-      }
-    );
-
-  } catch {
-
-    sessionStorage.removeItem(
-      this.draftKey
-    );
-
-  }
-
-}
 }
