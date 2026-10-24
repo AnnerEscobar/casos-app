@@ -16,7 +16,7 @@ El diálogo reutiliza los formularios existentes de Alerta, Maltrato y Conflicto
 
 DEIC y selección de estado son obligatorios. MP es opcional, pero se valida su formato cuando está presente. Se normalizan mayúsculas, espacios exteriores y caracteres Unicode invisibles antes de validar y buscar. Se mantienen las validaciones de formato de los campos disponibles; los `required` se relajan únicamente en el modo histórico. Los formularios normales conservan sus requisitos y PDF.
 
-Los históricos se crean como JSON sin PDF obligatorio. Campos vacíos, objetos vacíos y listas vacías se omiten. Cambiar a NO_LOCALIZADO excluye los campos ocultos del envío sin borrar lo escrito. El modo histórico no carga borradores ni datos de informes normales. Alerta admite ausencia de denunciante y localización. Maltrato muestra sindicados y adapta su array interno al contrato; Conflicto conserva infractores.
+Los históricos se crean como JSON sin PDF obligatorio. Campos vacíos, objetos vacíos y listas vacías se omiten. Cambiar a NO_LOCALIZADO excluye los campos ocultos del envío sin borrar lo escrito. El modo histórico no precarga los datos del registro normal. Alerta admite ausencia de denunciante y localización. Maltrato muestra sindicados y adapta su array interno al contrato; Conflicto conserva infractores.
 
 El investigador original es opcional: usuario o nombre conocido. Nunca se guarda «No determinado»; ese texto solo se usa al visualizar. `registradoPor` procede del JWT. Para el seguimiento histórico se exige elegir un investigador activo; no se copia el investigador original ni se selecciona automáticamente al usuario conectado.
 

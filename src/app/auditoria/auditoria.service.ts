@@ -3,14 +3,41 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../environment.prod';
 
 export interface EventoAuditoria {
-  eventoId: string; solicitudId: string; fecha: string;
-  usuario: { id: string; nombre: string; rol: string };
-  accion: string; resultado: string; recurso: string; recursoId?: string;
-  numeroDeic?: string; casoId?: string; metodo: string; ruta: string; ip: string; agente: string;
-  codigoHttp?: number; integridadValida: boolean;
-  sesion?: { id: string; inicio: string; fin?: string; ultimaActividad?: string; duracionSegundos?: number; motivo?: string };
-  cambios: { campo: string; anterior: unknown; nuevo: unknown }[];
+  eventoId: string;
+  solicitudId: string;
+  fecha: string;
+  usuario: {
+    id: string;
+    nombre: string;
+    rol: string
+  };
+  accion: string;
+  resultado: string;
+  recurso: string;
+  recursoId?: string;
+  numeroDeic?: string;
+  casoId?: string;
+  metodo: string;
+  ruta: string;
+  ip: string;
+  agente: string;
+  codigoHttp?: number;
+  integridadValida: boolean;
+  sesion?: {
+    id: string;
+    inicio: string;
+    fin?: string;
+    ultimaActividad?: string;
+    duracionSegundos?: number;
+    motivo?: string
+  };
+  cambios: {
+    campo: string;
+    anterior: unknown;
+    nuevo: unknown
+  }[];
 }
+
 export interface PaginaAuditoria { registros: EventoAuditoria[]; total: number; pagina: number; limite: number; }
 @Injectable({ providedIn: 'root' })
 export class AuditoriaService {

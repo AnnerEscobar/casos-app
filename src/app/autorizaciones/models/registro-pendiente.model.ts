@@ -25,6 +25,8 @@ export interface RegistroPendiente {
 
   createdAt?: string;
 
+  fechaRevision?: string;
+
   tipoCaso: TipoCaso;
 
   caso: any;

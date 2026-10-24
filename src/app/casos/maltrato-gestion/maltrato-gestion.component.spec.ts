@@ -15,7 +15,7 @@ describe('Formulario de maltrato por rol',()=>{
     const api={listar:jasmine.createSpy().and.returnValue(of([])),detalle:jasmine.createSpy().and.returnValue(of(datos)),registrar:jasmine.createSpy().and.returnValue(of({...inicial,_id:'id'})),guardar:jasmine.createSpy().and.returnValue(of(datos)),entregar:jasmine.createSpy().and.returnValue(of({...datos,expedienteEnPreparacion:false,estadoRegistro:'Pendiente'}))};
     await TestBed.configureTestingModule({imports:[MaltratoGestionComponent],providers:[provideRouter([]),provideNoopAnimations(),
       {provide:ActivatedRoute,useValue:{snapshot:{paramMap:{get:()=>id}}}},
-      {provide:AuthService,useValue:{hasRole:()=>analista}},
+      {provide:AuthService,useValue:{hasRole:()=>analista,getCurrentUser:()=>null}},
       {provide:UsuariosService,useValue:{getInvestigadores:()=>of([{_id:'investigador',nombre:'Activo',activo:true},{_id:'inactivo',nombre:'Inactivo',activo:false}])}},
       {provide:MaltratoGestionService,useValue:api},{provide:MatSnackBar,useValue:{open:()=>{}}},
     ]}).compileComponents();

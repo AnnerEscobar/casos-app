@@ -20,7 +20,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AlertaService } from '../../services/alerta.service';
 import { MatCardModule } from '@angular/material/card';
 import { Router } from '@angular/router';
-import { InformeService } from '../../../informes/services/informe.service';
+
 
 @Component({
   selector: 'app-add-case-alerta',
@@ -80,13 +80,13 @@ export default class AddCaseAlertaComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
   private _snackBar = inject(MatSnackBar);
   private alertaService = inject(AlertaService);
-  private informeService = inject(InformeService);
+
   private router = inject(Router);
 
   isLoading = false;
   fileName: string | null = null;
   selectedFile: File | null = null;
-  informeDeic: string | null = null;
+
   casoYaExiste = false;
   deicDuplicado = '';
 
@@ -304,21 +304,7 @@ export default class AddCaseAlertaComponent implements OnInit {
 
     const datos = history.state;
 
-    if (datos?.informe) {
-      const inf = datos.informe;
-      this.informeDeic = inf.numeroDeic;
-      const v = inf.perfilVictima || {};
-      const dg = inf.datosGenerales || {};
-
-      this.myForm.patchValue({
-        numeroDeic: inf.numeroDeic,
-        numeroMp: inf.numeroMp,
-        numeroAlerta: dg.numeroAlerta || '',
-        nombreDesaparecido: v.nombre || '',
-        fecha_Nac: v.fechaNacimiento ? new Date(v.fechaNacimiento) as any : null,
-      });
-
-    } else if (datos?.numeroDeic) {
+    if (datos?.numeroDeic) {
       this.myForm.patchValue({
         numeroDeic: datos.numeroDeic,
         numeroMp: datos.numeroMp,
@@ -632,15 +618,7 @@ onFileSelected(event: Event): void {
 
       next: () => {
 
-        if (this.informeDeic) {
 
-          this.informeService
-            .eliminar(
-              this.informeDeic
-            )
-            .subscribe();
-
-        }
 
 
         this._snackBar.open(
@@ -664,7 +642,7 @@ onFileSelected(event: Event): void {
 
         this.isLoading = false;
 
-        this.informeDeic = null;
+
 
       },
 

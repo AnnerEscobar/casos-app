@@ -37,7 +37,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 
 import { ConflictoService } from '../../services/conflicto.service';
-import { InformeService } from '../../../informes/services/informe.service';
+
 
 
 @Component({
@@ -119,8 +119,7 @@ export default class AddCaseConflictoComponent
   private conflictoService =
     inject(ConflictoService);
 
-  private informeService =
-    inject(InformeService);
+
 
   private _snackBar =
     inject(MatSnackBar);
@@ -149,8 +148,7 @@ export default class AddCaseConflictoComponent
   selectedFile: File | null =
     null;
 
-  informeDeic: string | null =
-    null;
+
 
   casoYaExiste = false;
 
@@ -252,84 +250,7 @@ export default class AddCaseConflictoComponent
       history.state;
 
 
-    if (datos?.informe) {
-
-      const inf =
-        datos.informe;
-
-      this.informeDeic =
-        inf.numeroDeic;
-
-
-      this.myForm.patchValue({
-
-        numeroDeic:
-          inf.numeroDeic,
-
-        numeroMp:
-          inf.numeroMp
-
-      });
-
-
-      const s =
-        inf.perfilSecundario || {};
-
-
-      (this.infractores.at(0) as FormGroup
-      ).patchValue({
-
-        nombre:
-          s.nombre || '',
-
-        cui:
-          s.cui ||
-          s.documentoIdentificacion ||
-          '',
-
-        fecha_Nac:
-          s.fechaNacimiento
-            ? new Date(
-                s.fechaNacimiento
-              )
-            : null,
-
-        direccion:
-          s.residencia || ''
-
-      });
-
-
-      const v =
-        inf.perfilVictima || {};
-
-
-      (
-        this.victimas.at(0) as FormGroup
-      ).patchValue({
-
-        nombre:
-          v.nombre || '',
-
-        fecha_Nac:
-          v.fechaNacimiento
-            ? new Date(
-                v.fechaNacimiento
-              )
-            : null,
-
-        direccion:
-          v.residencia || '',
-
-        cui:
-          v.cui ||
-          v.documentoIdentificacion ||
-          ''
-
-      });
-
-
-    } else if (
+    if (
       datos?.numeroDeic
     ) {
 
@@ -760,17 +681,7 @@ export default class AddCaseConflictoComponent
 
         next: () => {
 
-          if (
-            this.informeDeic
-          ) {
 
-            this.informeService
-              .eliminar(
-                this.informeDeic
-              )
-              .subscribe();
-
-          }
 
 
           this._snackBar.open(
@@ -791,8 +702,7 @@ export default class AddCaseConflictoComponent
           this.fileName =
             null;
 
-          this.informeDeic =
-            null;
+
 
           this.isLoading =
             false;

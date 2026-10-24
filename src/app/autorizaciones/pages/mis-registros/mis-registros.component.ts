@@ -31,7 +31,8 @@ type FiltroEstado =
   | 'Todos'
   | 'Asignados'
   | 'Pendiente'
-  | 'Rechazado';
+  | 'Rechazado'
+  | 'Aprobado';
 
 
 @Component({
@@ -155,7 +156,7 @@ export class MisRegistrosComponent
 
 
   contar(
-    estado: 'Asignados' | 'Pendiente' | 'Rechazado'
+    estado: 'Asignados' | 'Pendiente' | 'Rechazado' | 'Aprobado'
   ): number {
 
     return this.registros.filter(
@@ -164,6 +165,13 @@ export class MisRegistrosComponent
           ? (registro.caso.procesoAlerta || registro.caso.procesoMaltrato || registro.caso.procesoConflicto) && registro.caso.expedienteEnPreparacion
           : registro.estadoRegistro === estado && !(estado==='Pendiente' && (registro.caso.procesoAlerta || registro.caso.procesoMaltrato || registro.caso.procesoConflicto) && registro.caso.expedienteEnPreparacion)
     ).length;
+  }
+
+
+  fechaRegistro(registro: RegistroPendiente): string | undefined {
+    return registro.estadoRegistro === 'Aprobado'
+      ? registro.fechaRevision
+      : registro.createdAt;
   }
 
 

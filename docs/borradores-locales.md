@@ -2,7 +2,7 @@
 
 Los formularios de recepción y registro de Alerta, Maltrato y Conflicto guardan
 sus valores mientras se editan, incluidos registros históricos y sus filas de
-personas. También se conservan seguimientos, carátulas, plan, rúbrica e informe.
+personas. También se conservan seguimientos, carátulas, plan y rúbrica.
 El cierre por 15 minutos de inactividad conserva la URL para volver a esa pantalla.
 
 Las copias se separan por ID del usuario, URL (incluye el expediente o documento)

@@ -103,6 +103,9 @@ export class AutorizacionesService {
       createdAt:
         caso.createdAt,
 
+      fechaRevision:
+        caso.fechaRevision,
+
       tipoCaso,
 
       caso
@@ -208,20 +211,29 @@ getMisRegistros(): Observable<RegistroPendiente[]> {
 
       ];
 
-      return registros.sort((a, b) => {
+      const pendientes = registros
+        .filter(registro => registro.estadoRegistro !== 'Aprobado')
+        .sort((a, b) => this.fechaOrden(b.createdAt) - this.fechaOrden(a.createdAt));
 
-        const fechaA =
-          new Date(a.createdAt ?? 0).getTime();
+      // El límite es compartido por los tres tipos de expediente.
+      const aprobados = registros
+        .filter(registro => registro.estadoRegistro === 'Aprobado')
+        .sort((a, b) =>
+          this.fechaOrden(b.fechaRevision) - this.fechaOrden(a.fechaRevision) ||
+          this.fechaOrden(b.createdAt) - this.fechaOrden(a.createdAt) ||
+          b._id.localeCompare(a._id)
+        )
+        .slice(0, 10);
 
-        const fechaB =
-          new Date(b.createdAt ?? 0).getTime();
-
-        return fechaB - fechaA;
-
-      });
+      return [...pendientes, ...aprobados];
 
     })
   );
+}
+
+private fechaOrden(fecha?: string): number {
+  const valor = new Date(fecha ?? 0).getTime();
+  return Number.isFinite(valor) ? valor : 0;
 }
 
 reenviarRegistro(

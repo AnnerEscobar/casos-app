@@ -34,7 +34,7 @@
           class="mt-1 text-sm
                  text-slate-500"
         >
-          Casos asignados y entregas a revisión.
+          Casos asignados, entregas a revisión y aprobaciones recientes.
         </p>
 
       </div>
@@ -106,8 +106,24 @@
       </span>
     </button>
 
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="cambiarFiltro('Aprobado')"
+      [class.!bg-green-700]="filtro === 'Aprobado'"
+      [class.!text-white]="filtro === 'Aprobado'"
+    >
+      Aprobados
+      <span class="ml-2">{{ contar('Aprobado') }}</span>
+    </button>
+
   </div>
 
+  @if (filtro === 'Aprobado') {
+    <p class="mb-4 text-sm text-slate-500">
+      Últimos 10 casos por fecha de aprobación.
+    </p>
+  }
 
   <!-- CONTENIDO -->
 
@@ -276,7 +292,7 @@
               mat-header-cell
               *matHeaderCellDef
             >
-              Fecha
+              {{ filtro === 'Aprobado' ? 'Aprobación' : 'Fecha' }}
             </th>
 
             <td
@@ -284,8 +300,8 @@
               *matCellDef="let registro"
             >
               {{
-                registro.createdAt
-                  ? (registro.createdAt
+                fechaRegistro(registro)
+                  ? (fechaRegistro(registro)
                       | date:'dd/MM/yyyy HH:mm')
                   : '—'
               }}
@@ -328,7 +344,17 @@
                            bg-amber-500"
                   ></span>
 
-                  {{ registro.caso.procesoAlerta && registro.caso.expedienteEnPreparacion ? 'Pendiente de entrega' : 'Pendiente' }}
+                  {{ (registro.caso.procesoAlerta || registro.caso.procesoMaltrato || registro.caso.procesoConflicto) && registro.caso.expedienteEnPreparacion ? 'Pendiente de entrega' : 'Pendiente' }}
+                </span>
+
+              } @else if (registro.estadoRegistro === 'Aprobado') {
+
+                <span
+                  class="inline-flex items-center gap-1.5 rounded-full
+                         bg-green-50 px-3 py-1 text-xs font-medium text-green-700"
+                >
+                  <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+                  Aprobado
                 </span>
 
               } @else {

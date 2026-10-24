@@ -15,7 +15,7 @@ describe('Flujo de Alerta por roles',()=>{
     const api={listar:jasmine.createSpy().and.returnValue(of([])),detalle:jasmine.createSpy().and.returnValue(of(caso)),registrar:jasmine.createSpy().and.returnValue(of({...inicial,_id:'id'})),guardar:jasmine.createSpy().and.returnValue(of(caso)),entregar:jasmine.createSpy().and.returnValue(of({...caso,expedienteEnPreparacion:false,estadoRegistro:'Pendiente'}))};
     await TestBed.configureTestingModule({imports:[AlertaGestionComponent],providers:[provideRouter([]),provideNoopAnimations(),
       {provide:ActivatedRoute,useValue:{snapshot:{paramMap:{get:()=>id}}}},
-      {provide:AuthService,useValue:{hasRole:()=>analista}},
+      {provide:AuthService,useValue:{hasRole:()=>analista,getCurrentUser:()=>null}},
       {provide:UsuariosService,useValue:{getInvestigadores:()=>of([{_id:'investigador',nombre:'Investigador activo',activo:true},{_id:'inactivo',nombre:'Inactivo',activo:false}])}},
       {provide:AlertaGestionService,useValue:api},{provide:MatSnackBar,useValue:{open:()=>{}}},
     ]}).compileComponents();
