@@ -346,7 +346,7 @@ export default class EstadisticsComponent
     ) {
 
       return (
-        `Casos registrados por tu usuario · ${this.tituloPeriodo}`
+        `Casos bajo tu responsabilidad · ${this.tituloPeriodo}`
       );
 
     }
