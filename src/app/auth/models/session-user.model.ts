@@ -3,4 +3,5 @@ export interface SessionUser {
   email: string;
   role: string;
   exp: number;
+  debeCambiarPassword?: boolean;
 }

@@ -12,6 +12,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req.clone({ withCredentials: true })).pipe(
     catchError((error) => {
+      if(error instanceof HttpErrorResponse && error.status===403 && error.error?.code==='CAMBIO_PASSWORD_REQUERIDO')router.navigate(['/change-password']);
       const isLoginRequest = req.url.includes('/auth/login');
       const isSessionCheck = req.url.includes('/auth/session');
       const isLogoutRequest = req.url.includes('/auth/logout');

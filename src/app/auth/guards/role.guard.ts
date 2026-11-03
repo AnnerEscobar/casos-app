@@ -23,6 +23,8 @@ export const roleGuard: CanActivateFn = (
     return router.createUrlTree(['/login']);
   }
 
+  if(user.debeCambiarPassword)return router.createUrlTree(['/change-password']);
+
   if (allowedRoles.includes(user.role as UserRole)) {
     return true;
   }

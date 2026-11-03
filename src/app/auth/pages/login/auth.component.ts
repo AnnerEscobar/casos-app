@@ -30,7 +30,7 @@ export default class AuthComponent {
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private route: ActivatedRoute) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.maxLength(254)]],
       password: ['', Validators.required],
     });
     this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/casos';
@@ -89,7 +89,7 @@ export default class AuthComponent {
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private route: ActivatedRoute) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, Validators.maxLength(254)]],
       password: ['', Validators.required],
     });
     this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/casos';
@@ -119,7 +119,7 @@ export default class AuthComponent {
         } else if (error.status === 401) {
           this.loginError = error.error?.message === 'Usuario inactivo, contacte al administrador'
             ? 'Tu cuenta está inactiva. Comunícate con el administrador para recuperar el acceso.'
-            : 'El correo o la contraseña son incorrectos. Revisa tus datos antes de volver a intentarlo.';
+            : 'El usuario/correo o la contraseña son incorrectos. Revisa tus datos antes de volver a intentarlo.';
         } else if (error.status === 0) {
           this.loginError = 'No se pudo conectar con el servidor. Revisa tu conexión e intenta nuevamente.';
         } else if (error.status === 403) {

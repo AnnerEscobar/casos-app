@@ -27,6 +27,7 @@ export default class ChangePasswordComponent {
   private router    = inject(Router);
   private auth      = inject(AuthService);
   private snackBar  = inject(MatSnackBar);
+  readonly obligatorio=!!this.auth.getCurrentUser()?.debeCambiarPassword;
 
   isLoading   = false;
   hideCurrent = true;
@@ -50,7 +51,8 @@ export default class ChangePasswordComponent {
     return n && c && n !== c ? { mismatch: true } : null;
   }
 
-  goBack() { history.back(); }
+  goBack() { if(!this.obligatorio)history.back(); }
+  salir(){this.auth.logout();}
 
   onSubmit() {
     if (this.form.invalid || this.isLoading) return;

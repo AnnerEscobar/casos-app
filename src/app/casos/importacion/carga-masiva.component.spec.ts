@@ -36,4 +36,14 @@ describe('Carga masiva',()=>{
     component.seleccionar({target:input} as unknown as Event);
     expect(component.archivo).toBeNull();expect(component.vista).toBeNull();expect(component.error).toContain('hasta 5 MB');
   });
+  it('muestra propuestas de cuentas y exige otra revisión después de editarlas',()=>{
+    component.archivo=new File(['datos'],'base.csv');component.hoja='MALTRATO 2026';component.solicitar(false);
+    const req=http.expectOne(r=>r.url.endsWith('/maltratos/carga-masiva'));expect(req.request.body.get('crearInvestigadores')).toBe('si');
+    req.flush({...respuesta,cuentas:[{nombre:'Ánner Escobar',usuario:'anner.escobar',estado:'nuevo'}]});fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Se creará');component.confirmado=true;component.editarCuenta(component.cuentas[0],'anner.perez');
+    expect(component.confirmado).toBeFalse();expect(component.vista).toBeNull();
+    component.solicitar(false);const revisar=http.expectOne(r=>r.url.endsWith('/maltratos/carga-masiva'));
+    expect(JSON.parse(revisar.request.body.get('cuentasPropuestas'))).toEqual({'ANNER ESCOBAR':'anner.perez'});revisar.flush(respuesta);
+    component.cambiarCreacion();expect(component.cuentas).toEqual([]);expect(component.ajustes).toEqual({});
+  });
 });
