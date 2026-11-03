@@ -2,6 +2,7 @@
   <header><div><h1>{{ id ? editable ? 'Registrar Alerta Alba-Keneth' : 'Expediente de Alerta' : analista ? 'Registrar Alerta Alba-Keneth' : 'Alertas asignadas' }}</h1>
     <p>{{ id ? analista ? 'Consulta los datos del expediente y la entrega del investigador.' : 'Los datos registrados por el analista ya están cargados. Completa lo que falte y envía el expediente para revisión.' : analista ? 'Registra el requerimiento y asigna un investigador. En esta etapa no se adjuntan archivos.' : 'Completa los casos que te asignó el analista.' }}</p></div>
     @if(analista){<button mat-stroked-button [disabled]="ocupado" (click)="descargar()"><mat-icon>download</mat-icon>Exportar base Excel</button>}
+    @if(analista && !id){<app-carga-masiva tipo="alerta" />}
   </header>
   @if(id && !analista){<a mat-button routerLink="/casos/mis-registros"><mat-icon>arrow_back</mat-icon>Volver a Mis registros</a>}
   @if(error){<p role="alert" class="aviso error">{{ error }}</p>}

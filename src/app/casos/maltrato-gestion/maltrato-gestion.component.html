@@ -2,6 +2,7 @@
   <header><div><h1>{{id ? editable ? 'Registrar caso de maltrato' : 'Expediente de maltrato' : analista ? 'Registrar caso de maltrato' : 'Casos de maltrato asignados'}}</h1>
     <p>{{id ? analista ? 'Consulta los datos y la entrega del investigador.' : 'Completa los datos registrados por el analista y entrega el expediente para revisión.' : analista ? 'Registra el requerimiento y asigna un investigador. En esta etapa no se adjuntan archivos.' : 'Completa los casos que te asignó el analista.'}}</p></div>
     @if(analista){<button mat-stroked-button [disabled]="ocupado" (click)="descargar()"><mat-icon>download</mat-icon>Exportar base Excel</button>}
+    @if(analista && !id){<app-carga-masiva tipo="maltrato" />}
   </header>
   @if(id && !analista){<a mat-button routerLink="/casos/mis-registros"><mat-icon>arrow_back</mat-icon>Volver a Mis registros</a>}
   @if(error){<p role="alert" class="aviso error">{{error}}</p>}

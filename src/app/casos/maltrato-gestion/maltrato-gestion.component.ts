@@ -1,3 +1,4 @@
+import { CargaMasivaComponent } from '../importacion/carga-masiva.component';
 import { BorradorFormularioDirective } from '../../shared/borradores/borrador-formulario.directive';
 import { CargaArchivoComponent } from '../../shared/components/carga-archivo/carga-archivo.component';
 import { Component, OnInit, inject } from '@angular/core';
@@ -31,7 +32,7 @@ const OPCIONES:Record<string,readonly string[]>={
 
 @Component({
   selector:'app-maltrato-gestion',
-  imports:[BorradorFormularioDirective,CargaArchivoComponent,CommonModule,ReactiveFormsModule,RouterLink,MatFormFieldModule,MatInputModule,MatSelectModule,MatButtonModule,MatIconModule],
+  imports:[CargaMasivaComponent,BorradorFormularioDirective,CargaArchivoComponent,CommonModule,ReactiveFormsModule,RouterLink,MatFormFieldModule,MatInputModule,MatSelectModule,MatButtonModule,MatIconModule],
   templateUrl:'./maltrato-gestion.component.html',styleUrl:'./maltrato-gestion.component.css',
 })
 export default class MaltratoGestionComponent implements OnInit {

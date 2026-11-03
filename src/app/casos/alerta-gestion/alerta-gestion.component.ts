@@ -1,3 +1,4 @@
+import { CargaMasivaComponent } from '../importacion/carga-masiva.component';
 import { BorradorFormularioDirective } from '../../shared/borradores/borrador-formulario.directive';
 import { CargaArchivoComponent } from '../../shared/components/carga-archivo/carga-archivo.component';
 import { Component, OnInit, inject } from '@angular/core';
@@ -19,7 +20,7 @@ import { GEOGRAFIA_ALERTA, OPCIONES_ALERTA } from './alerta-catalogos';
 
 @Component({
   selector:'app-alerta-gestion',
-  imports:[BorradorFormularioDirective,CargaArchivoComponent,CommonModule,ReactiveFormsModule,RouterLink,MatFormFieldModule,MatInputModule,MatSelectModule,MatButtonModule,MatIconModule],
+  imports:[CargaMasivaComponent,BorradorFormularioDirective,CargaArchivoComponent,CommonModule,ReactiveFormsModule,RouterLink,MatFormFieldModule,MatInputModule,MatSelectModule,MatButtonModule,MatIconModule],
   templateUrl:'./alerta-gestion.component.html',styleUrl:'./alerta-gestion.component.css',
 })
 export default class AlertaGestionComponent implements OnInit {
