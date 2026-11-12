@@ -1886,48 +1886,14 @@ export default class EstadisticsComponent
       caso => {
 
 
-        const usuario =
-          caso.registradoPor;
-
-
-        /*
-         * Los históricos V2 pueden no
-         * tener registradoPor.
-         */
-
-        if (
-          !usuario ||
-          typeof usuario !==
-            'object' ||
-          !usuario._id
-        ) {
-
-          return;
-
-        }
-
-
-        /*
-         * Esta gráfica representa
-         * INVESTIGADORES, no registros
-         * creados directamente por analistas.
-         */
-
-        if (
-          usuario.role !==
-          'Investigador'
-        ) {
-
-          return;
-
-        }
-
-
-        const id =
-          usuario
-            ._id
-            .toString();
-
+        // La responsabilidad es independiente del usuario que cargó el expediente.
+        const historico = caso.origenCaso === 'HISTORICO' ? caso.investigadorOriginal : undefined;
+        const usuario = caso.investigadorAsignado || historico?.usuarioId ||
+          (historico?.nombre ? { nombre: historico.nombre, role: 'Investigador' } : caso.registradoPor);
+        if (!usuario || typeof usuario !== 'object' || usuario.role !== 'Investigador') return;
+        const nombre = String(usuario.nombre || '').trim();
+        if (!usuario._id && !nombre) return;
+        const id = usuario._id?.toString() || 'historico:' + nombre.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').toUpperCase();
 
         const actual =
           acumulado.get(
